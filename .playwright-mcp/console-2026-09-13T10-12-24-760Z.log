@@ -1,0 +1,16 @@
+[    -974ms] [INFO] Download the Vue Devtools extension for a better development experience:
+https://github.com/vuejs/vue-devtools @ https://data.daegu.go.kr/js/vue/vue.js:9047
+[    -974ms] [INFO] You are running Vue in development mode.
+Make sure to turn on production mode when deploying for production.
+See more tips at https://vuejs.org/guide/deployment.html @ https://data.daegu.go.kr/js/vue/vue.js:9056
+[    -902ms] [LOG] convertJson 오류 @ https://data.daegu.go.kr/js/Common.js:51
+[    -902ms] [LOG] convertJson 오류 @ https://data.daegu.go.kr/js/Common.js:51
+[    -902ms] [LOG] convertJson 오류 @ https://data.daegu.go.kr/js/Common.js:51
+[    -902ms] [LOG] convertJson 오류 @ https://data.daegu.go.kr/js/Common.js:51
+[    -902ms] [LOG] convertJson 오류 @ https://data.daegu.go.kr/js/Common.js:51
+[   22610ms] TypeError: Cannot read properties of undefined (reading 'dataSetDetailId')
+    at Object.complete (https://data.daegu.go.kr/open/data/dataView.do?dataSetId=DMI_0000119348&provdMethod=FILE:1808:36)
+    at i (https://data.daegu.go.kr/resources/openDgbp/js/jquery-1.12.4.min.js:2:27449)
+    at Object.fireWith (https://data.daegu.go.kr/resources/openDgbp/js/jquery-1.12.4.min.js:2:28213)
+    at y (https://data.daegu.go.kr/resources/openDgbp/js/jquery-1.12.4.min.js:4:22849)
+    at XMLHttpRequest.c (https://data.daegu.go.kr/resources/openDgbp/js/jquery-1.12.4.min.js:4:26925)

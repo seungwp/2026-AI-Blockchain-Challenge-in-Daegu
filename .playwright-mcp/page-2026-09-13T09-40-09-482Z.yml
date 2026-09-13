@@ -1,0 +1,319 @@
+- generic [active] [ref=f1e1]:
+  - link "본문 바로가기" [ref=f1e2] [cursor=pointer]:
+    - /url: "#cont"
+  - banner [ref=f1e3]:
+    - generic [ref=f1e4]:
+      - link "전체메뉴 보기" [ref=f1e5] [cursor=pointer]:
+        - /url: "#this"
+      - text: 
+    - generic [ref=f1e10]:
+      - navigation [ref=f1e11]:
+        - heading "주메뉴 영역" [level=2] [ref=f1e12]
+        - list [ref=f1e13]:
+          - listitem [ref=f1e14]:
+            - link "데이터 이용" [ref=f1e15] [cursor=pointer]:
+              - /url: /open/data/introduce.do
+              - text: 데이터이용
+          - listitem [ref=f1e16]:
+            - link "데이터 활용" [ref=f1e17] [cursor=pointer]:
+              - /url: /open/caseAnalysis/visualList.do
+              - text: 데이터활용
+          - listitem [ref=f1e18]:
+            - link "대구 삶의지표" [ref=f1e19] [cursor=pointer]:
+              - /url: /open/status/statsList.do
+              - text: 대구삶의지표
+          - listitem [ref=f1e20]:
+            - link "데이터 소통" [ref=f1e21] [cursor=pointer]:
+              - /url: /open/introduce/main.do
+              - text: 데이터소통
+          - listitem [ref=f1e22]:
+            - link "빅데이터 활용센터" [ref=f1e23] [cursor=pointer]:
+              - /url: /open/bigData/introduce.do
+              - text: 빅데이터활용센터
+      - list [ref=f1e24]:
+        - listitem [ref=f1e25]:
+          - link "D-데이터허브 동영상" [ref=f1e26] [cursor=pointer]:
+            - /url: "#this"
+            - generic [ref=f1e28]: D-데이터허브동영상
+        - listitem [ref=f1e29]:
+          - link "빅데이터 활용센터 동영상" [ref=f1e30] [cursor=pointer]:
+            - /url: "#this"
+            - generic [ref=f1e32]: 빅데이터활용센터 동영상
+    - text:  
+  - generic [ref=f1e35]:
+    - generic [ref=f1e36]:
+      - generic [ref=f1e37]:
+        - heading [level=1] [ref=f1e38]:
+          - link [ref=f1e39] [cursor=pointer]:
+            - /url: /open/main.do
+            - img "D-데이터허브" [ref=f1e40]
+        - generic [ref=f1e41]:
+          - textbox "대구 데이터를 찾아보세요" [ref=f1e42]
+          - button "검색" [ref=f1e43] [cursor=pointer]
+      - generic [ref=f1e45]:
+        - heading "데이터 상세검색" [level=3] [ref=f1e46]
+        - list [ref=f1e47]:
+          - listitem [ref=f1e48]:
+            - link " home" [ref=f1e49] [cursor=pointer]:
+              - /url: /open/main.do
+              - generic [ref=f1e50]: 
+              - generic [ref=f1e51]: home
+          - listitem [ref=f1e52]:
+            - link "데이터 이용" [ref=f1e53] [cursor=pointer]:
+              - /url: "#this"
+          - listitem [ref=f1e54]:
+            - link "데이터 상세검색" [ref=f1e55] [cursor=pointer]:
+              - /url: /open/data/dataList.do
+      - generic [ref=f1e56]:
+        - list [ref=f1e58]:
+          - listitem [ref=f1e59]:
+            - link "공공데이터 안내 및 신청" [ref=f1e60] [cursor=pointer]:
+              - /url: https://data.daegu.go.kr/open/introduce/openData.do
+          - listitem [ref=f1e61]:
+            - link "공공데이터 포털" [ref=f1e62] [cursor=pointer]:
+              - /url: https://www.data.go.kr
+        - generic [ref=f1e63]:
+          - generic [ref=f1e65]:
+            - generic [ref=f1e66]:
+              - strong [ref=f1e67]: 카테고리
+              - link "전체 카테고리" [ref=f1e69] [cursor=pointer]:
+                - /url: "#this"
+            - generic [ref=f1e70]:
+              - strong [ref=f1e71]: 파일유형
+              - list [ref=f1e72]:
+                - listitem [ref=f1e73] [cursor=pointer]: 전체
+                - listitem [ref=f1e74] [cursor=pointer]: FILE
+                - listitem [ref=f1e75] [cursor=pointer]: API
+                - listitem [ref=f1e76] [cursor=pointer]: LINK
+                - listitem [ref=f1e77] [cursor=pointer]: MAP
+            - generic [ref=f1e78]:
+              - strong [ref=f1e79]: 직접검색
+              - textbox "검색어 입력" [ref=f1e80]:
+                - /placeholder: 데이터명 직접 입력
+                - text: 소상공인
+            - button " 검색" [ref=f1e81] [cursor=pointer]:
+              - generic [ref=f1e82]: 
+              - text: 검색
+          - generic [ref=f1e83]:
+            - generic [ref=f1e84]:
+              - paragraph [ref=f1e85]: 전체 카테고리 목록
+              - tree [ref=f1e86]:
+                - list [ref=f1e87]:
+                  - treeitem "전체 카테고리" [ref=f1e88]:
+                    - generic [ref=f1e89] [cursor=pointer]
+                    - generic [ref=f1e90] [cursor=pointer]
+                    - link "전체 카테고리" [ref=f1e91] [cursor=pointer]:
+                      - /url: "#"
+                  - treeitem "교육" [ref=f1e93]:
+                    - generic [ref=f1e94] [cursor=pointer]
+                    - generic [ref=f1e95] [cursor=pointer]
+                    - link "교육" [ref=f1e96] [cursor=pointer]:
+                      - /url: "#"
+                  - treeitem "국토관리" [ref=f1e98]:
+                    - generic [ref=f1e99] [cursor=pointer]
+                    - generic [ref=f1e100] [cursor=pointer]
+                    - link "국토관리" [ref=f1e101] [cursor=pointer]:
+                      - /url: "#"
+                  - treeitem "공공행정" [ref=f1e103]:
+                    - generic [ref=f1e104] [cursor=pointer]
+                    - generic [ref=f1e105] [cursor=pointer]
+                    - link "공공행정" [ref=f1e106] [cursor=pointer]:
+                      - /url: "#"
+                  - treeitem "재정금융" [ref=f1e108]:
+                    - generic [ref=f1e109] [cursor=pointer]
+                    - generic [ref=f1e110] [cursor=pointer]
+                    - link "재정금융" [ref=f1e111] [cursor=pointer]:
+                      - /url: "#"
+                  - treeitem "산업고용" [ref=f1e113]:
+                    - generic [ref=f1e114] [cursor=pointer]
+                    - generic [ref=f1e115] [cursor=pointer]
+                    - link "산업고용" [ref=f1e116] [cursor=pointer]:
+                      - /url: "#"
+                  - treeitem "사회복지" [ref=f1e118]:
+                    - generic [ref=f1e119] [cursor=pointer]
+                    - generic [ref=f1e120] [cursor=pointer]
+                    - link "사회복지" [ref=f1e121] [cursor=pointer]:
+                      - /url: "#"
+                  - treeitem "식품건강" [ref=f1e123]:
+                    - generic [ref=f1e124] [cursor=pointer]
+                    - generic [ref=f1e125] [cursor=pointer]
+                    - link "식품건강" [ref=f1e126] [cursor=pointer]:
+                      - /url: "#"
+                  - treeitem "문화관광" [ref=f1e128]:
+                    - generic [ref=f1e129] [cursor=pointer]
+                    - generic [ref=f1e130] [cursor=pointer]
+                    - link "문화관광" [ref=f1e131] [cursor=pointer]:
+                      - /url: "#"
+                  - treeitem "보건의료" [ref=f1e133]:
+                    - generic [ref=f1e134] [cursor=pointer]
+                    - generic [ref=f1e135] [cursor=pointer]
+                    - link "보건의료" [ref=f1e136] [cursor=pointer]:
+                      - /url: "#"
+                  - treeitem "재난안전" [ref=f1e138]:
+                    - generic [ref=f1e139] [cursor=pointer]
+                    - generic [ref=f1e140] [cursor=pointer]
+                    - link "재난안전" [ref=f1e141] [cursor=pointer]:
+                      - /url: "#"
+                  - treeitem "교통물류" [ref=f1e143]:
+                    - generic [ref=f1e144] [cursor=pointer]
+                    - generic [ref=f1e145] [cursor=pointer]
+                    - link "교통물류" [ref=f1e146] [cursor=pointer]:
+                      - /url: "#"
+                  - treeitem "환경기상" [ref=f1e148]:
+                    - generic [ref=f1e149] [cursor=pointer]
+                    - generic [ref=f1e150] [cursor=pointer]
+                    - link "환경기상" [ref=f1e151] [cursor=pointer]:
+                      - /url: "#"
+                  - treeitem "과학기술" [ref=f1e153]:
+                    - generic [ref=f1e154] [cursor=pointer]
+                    - generic [ref=f1e155] [cursor=pointer]
+                    - link "과학기술" [ref=f1e156] [cursor=pointer]:
+                      - /url: "#"
+                  - treeitem "농축수산" [ref=f1e158]:
+                    - generic [ref=f1e159] [cursor=pointer]
+                    - generic [ref=f1e160] [cursor=pointer]
+                    - link "농축수산" [ref=f1e161] [cursor=pointer]:
+                      - /url: "#"
+                  - treeitem "통일외교안보" [ref=f1e163]:
+                    - generic [ref=f1e164] [cursor=pointer]
+                    - generic [ref=f1e165] [cursor=pointer]
+                    - link "통일외교안보" [ref=f1e166] [cursor=pointer]:
+                      - /url: "#"
+                  - treeitem "법률" [ref=f1e168]:
+                    - generic [ref=f1e169] [cursor=pointer]
+                    - generic [ref=f1e170] [cursor=pointer]
+                    - link "법률" [ref=f1e171] [cursor=pointer]:
+                      - /url: "#"
+                  - treeitem "기타" [ref=f1e173]:
+                    - generic [ref=f1e174] [cursor=pointer]
+                    - generic [ref=f1e175] [cursor=pointer]
+                    - link "기타" [ref=f1e176] [cursor=pointer]:
+                      - /url: "#"
+            - generic [ref=f1e178]:
+              - generic [ref=f1e179]:
+                - generic [ref=f1e180]:
+                  - paragraph [ref=f1e181]: FILE , API , MAP 데이터 7 건이 검색되었습니다.
+                  - list [ref=f1e182]:
+                    - listitem [ref=f1e183]:
+                      - link "최신순" [ref=f1e184] [cursor=pointer]:
+                        - /url: "#"
+                    - listitem [ref=f1e185]:
+                      - link "제목순" [ref=f1e186] [cursor=pointer]:
+                        - /url: "#"
+                - generic [ref=f1e187]:
+                  - generic [ref=f1e188]:
+                    - paragraph [ref=f1e189]:
+                      - generic [ref=f1e190]: FILE
+                      - generic [ref=f1e191]: 일반공개
+                    - text: 공공행정
+                    - link "대구광역시 동구_자원봉사자 할인가맹점 현황_20260330" [ref=f1e192] [cursor=pointer]:
+                      - /url: "#this"
+                    - paragraph [ref=f1e193]:
+                      - text: 2026-04-10
+                      - generic [ref=f1e194]:
+                        - generic [ref=f1e195]: 
+                        - text: "4"
+                  - generic [ref=f1e196]:
+                    - paragraph [ref=f1e197]:
+                      - generic [ref=f1e198]: FILE
+                      - generic [ref=f1e199]: 일반공개
+                    - text: 공공행정
+                    - link "대구광역시 동구_자원봉사자 할인가맹점 현황_20250320" [ref=f1e200] [cursor=pointer]:
+                      - /url: "#this"
+                    - paragraph [ref=f1e201]:
+                      - text: 2025-08-28
+                      - generic [ref=f1e202]:
+                        - generic [ref=f1e203]: 
+                        - text: "45"
+                  - generic [ref=f1e204]:
+                    - paragraph [ref=f1e205]:
+                      - generic [ref=f1e206]: FILE
+                      - generic [ref=f1e207]: 일반공개
+                    - text: 산업고용
+                    - link "대구광역시 북구_전통시장 현황정보 데이터_20221212" [ref=f1e208] [cursor=pointer]:
+                      - /url: "#this"
+                    - paragraph [ref=f1e209]:
+                      - text: 2024-10-29
+                      - generic [ref=f1e210]:
+                        - generic [ref=f1e211]: 
+                        - text: "148"
+                  - generic [ref=f1e212]:
+                    - paragraph [ref=f1e213]:
+                      - generic [ref=f1e214]: FILE
+                      - generic [ref=f1e215]: 일반공개
+                    - text: 공공행정
+                    - link "대구광역시 동구_자원봉사자 할인가맹점 현황_20240319" [ref=f1e216] [cursor=pointer]:
+                      - /url: "#this"
+                    - paragraph [ref=f1e217]:
+                      - text: 2024-03-19
+                      - generic [ref=f1e218]:
+                        - generic [ref=f1e219]: 
+                        - text: "33"
+                  - generic [ref=f1e220]:
+                    - paragraph [ref=f1e221]:
+                      - generic [ref=f1e222]: FILE
+                      - generic [ref=f1e223]: 일반공개
+                    - text: 공공행정
+                    - link "대구광역시 동구_자원봉사자 할인가맹점 현황_20230413" [ref=f1e224] [cursor=pointer]:
+                      - /url: "#this"
+                    - paragraph [ref=f1e225]:
+                      - text: 2023-04-13
+                      - generic [ref=f1e226]:
+                        - generic [ref=f1e227]: 
+                        - text: "195"
+                  - generic [ref=f1e228]:
+                    - paragraph [ref=f1e229]:
+                      - generic [ref=f1e230]: FILE
+                      - generic [ref=f1e231]: 일반공개
+                    - text: 공공행정
+                    - link "대구광역시 동구_자원봉사자 할인가맹점 현황_20200529" [ref=f1e232] [cursor=pointer]:
+                      - /url: "#this"
+                    - paragraph [ref=f1e233]:
+                      - text: 2020-09-25
+                      - generic [ref=f1e234]:
+                        - generic [ref=f1e235]: 
+                        - text: "178"
+                  - generic [ref=f1e236]:
+                    - paragraph [ref=f1e237]:
+                      - generic [ref=f1e238]: FILE
+                      - generic [ref=f1e239]: 일반공개
+                    - text: 공공행정
+                    - link "대구광역시 동구_자원봉사자 할인가맹점 현황_20160331" [ref=f1e240] [cursor=pointer]:
+                      - /url: "#this"
+                    - paragraph [ref=f1e241]:
+                      - text: 2018-09-28
+                      - generic [ref=f1e242]:
+                        - generic [ref=f1e243]: 
+                        - text: "162"
+                - navigation "pagination" [ref=f1e244]:
+                  - menubar "Pagination" [ref=f1e245]:
+                    - listitem [aria-hidden] [ref=f1e246]:
+                      - generic: «
+                    - listitem [aria-hidden] [ref=f1e247]:
+                      - generic: ‹
+                    - menuitemradio "Goto page 1" [checked] [ref=f1e248] [cursor=pointer]: "1"
+                    - listitem [aria-hidden] [ref=f1e249]:
+                      - generic: ›
+                    - listitem [aria-hidden] [ref=f1e250]:
+                      - generic: »
+              - generic [ref=f1e251]:
+                - generic [ref=f1e252]:
+                  - paragraph [ref=f1e253]: LINK 데이터 건이 검색되었습니다.
+                  - list [ref=f1e254]:
+                    - listitem [ref=f1e255]:
+                      - link "최신순" [ref=f1e256] [cursor=pointer]:
+                        - /url: "#"
+                    - listitem [ref=f1e257]:
+                      - link "제목순" [ref=f1e258] [cursor=pointer]:
+                        - /url: "#"
+                - generic [ref=f1e259]: 검색된 결과가 없습니다.
+                - navigation "pagination"
+    - contentinfo [ref=f1e261]:
+      - generic [ref=f1e262]:
+        - img "대구광역시 DAEGU METRO" [ref=f1e263]
+        - generic [ref=f1e264]:
+          - list [ref=f1e265]:
+            - listitem [ref=f1e266]: "동인청사 : (우 41911) 대구광역시 중구 공평로 88"
+            - listitem [ref=f1e267]: "산격청사 : (우 41542) 대구광역시 북구 연암로 40"
+            - listitem [ref=f1e268]: "전화번호 : 053)803-7955"
+          - paragraph [ref=f1e269]: © Daegu Metropolitan City all rights reserved.
