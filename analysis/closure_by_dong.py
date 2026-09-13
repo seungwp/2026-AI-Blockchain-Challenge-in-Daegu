@@ -1,6 +1,6 @@
 """대구 인허가(일반음식점) → 행정동 × 분기 개업·폐업·폐업률 집계.
 
-usage: py -X utf8 closure_by_dong.py <인허가.xlsx> <HangJeongDong.geojson> <out_dir>
+usage: py -X utf8 closure_by_dong.py data/raw/licenses/<인허가.xlsx> data/raw/boundary/HangJeongDong_ver20250401.geojson data/processed
 폐업률 = 분기 중 폐업 수 / 분기 시작 시점 영업 점포 수
 """
 import json, sys

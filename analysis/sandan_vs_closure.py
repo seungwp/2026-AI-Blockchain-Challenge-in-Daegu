@@ -1,6 +1,6 @@
 """대구 산단 분기 고용·가동업체 → 배후 행정동 폐업률 선행성 확인.
 
-usage: py -X utf8 sandan_vs_closure.py <산단파일 dir> <HangJeongDong.geojson> <analysis/out>
+usage: py -X utf8 sandan_vs_closure.py data/raw/sandan data/raw/boundary/HangJeongDong_ver20250401.geojson data/processed
 """
 import io, json, re, sys, zipfile, warnings
 from pathlib import Path
