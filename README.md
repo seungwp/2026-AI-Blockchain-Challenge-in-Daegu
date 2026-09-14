@@ -9,6 +9,7 @@
 | 대구 과거 날씨 (ASOS 일자료) | `data/raw/weather/` | 기상청 기상자료개방포털 (https://data.kma.go.kr), 대구 관측소 143 | 2023-01-01 ~ 2026-09-13 | O |
 | 대구 날씨 예보 (단기예보) | `data/raw/forecast/` | 공공데이터포털 기상청_단기예보 조회서비스 (https://www.data.go.kr), 격자 nx=89, ny=90 | 2026-09-14 05시 발표분 | O |
 | 대구 문화축제 | `data/raw/festival/` | 공공데이터포털 대구광역시_문화축제 (https://www.data.go.kr/data/15130238/fileData.do), 공공누리 제4유형(출처표시·상업적 이용금지·변경금지) | 2024년 32건 | O |
+| 대구 행사·축제 (좌표 포함) | `data/raw/festival/daegu_festival_tourapi.csv` | 공공데이터포털 한국관광공사_국문 관광정보 서비스_GW `searchFestival2` (https://www.data.go.kr/data/15101578/openapi.do), `analysis/fetch_festival.py` | 2026년 17건 | O |
 | 농축수산물 품목·등급 코드표 | `data/raw/kamis/` | KAMIS 농산물유통정보 Open-API (https://www.kamis.or.kr) | - | O |
 | 대구 소매가격 (식자재 8품목) | `data/raw/kamis/daegu_retail_daily.csv` | KAMIS Open-API `periodRetailProductList`, 지역코드 2200(대구), `analysis/fetch_kamis.py` | 2023-01-01 ~ 2026-09-13 | O |
 | 일반음식점 인허가 | `data/raw/licenses/daegu_restaurants.csv` | D-데이터허브 (https://data.daegu.go.kr) DMI_0000119348, 원본 xlsx에서 분석용 8개 컬럼만 추출 | 2026년 7월 기준 94,160곳 | O |
