@@ -1,6 +1,7 @@
 """대구 인허가(일반음식점) → 행정동 × 분기 개업·폐업·폐업률 집계.
 
-usage: py -X utf8 closure_by_dong.py data/raw/licenses/<인허가.xlsx> data/raw/boundary/HangJeongDong_ver20250401.geojson data/processed
+usage: py -X utf8 closure_by_dong.py data/raw/licenses/daegu_restaurants.csv data/raw/boundary/daegu_dong_ver20250401.geojson data/processed
+(인허가 원본 xlsx에서 필요한 8개 컬럼만 CSV로 저장한 것, 원본 xlsx도 그대로 입력 가능)
 폐업률 = 분기 중 폐업 수 / 분기 시작 시점 영업 점포 수
 """
 import json, sys
@@ -14,8 +15,9 @@ from pyproj import Transformer
 xlsx, geojson, out = sys.argv[1], sys.argv[2], Path(sys.argv[3])
 out.mkdir(parents=True, exist_ok=True)
 
-df = pd.read_excel(xlsx, usecols=["관리번호", "인허가일자", "폐업일자", "영업상태명", "업태구분명",
-                                  "소재지전체주소", "좌표정보X(EPSG5174)", "좌표정보Y(EPSG5174)"])
+cols = ["관리번호", "인허가일자", "폐업일자", "영업상태명", "업태구분명",
+        "소재지전체주소", "좌표정보X(EPSG5174)", "좌표정보Y(EPSG5174)"]
+df = pd.read_csv(xlsx, usecols=cols, dtype=str) if xlsx.endswith(".csv") else pd.read_excel(xlsx, usecols=cols)
 date = lambda s: pd.to_datetime(s.astype(str).str.replace("-", "").str[:8], format="%Y%m%d", errors="coerce")
 df["open"], df["close"] = date(df["인허가일자"]), date(df["폐업일자"])
 print("rows", len(df), "| 폐업상태인데 폐업일자 없음", ((df["영업상태명"] == "폐업") & df["close"].isna()).sum())
