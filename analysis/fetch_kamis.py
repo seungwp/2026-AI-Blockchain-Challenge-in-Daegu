@@ -9,7 +9,7 @@ from pathlib import Path
 import pandas as pd
 
 out = Path(sys.argv[1])
-env = dict(l.strip().split("=", 1) for l in open(".env", encoding="utf-8") if "=" in l and not l.startswith("#"))
+env = dict(l.strip().split("=", 1) for l in open(".env", encoding="utf-8-sig") if "=" in l and not l.startswith("#"))
 KEY, ID = env["KAMIS_CERT_KEY"], env["KAMIS_CERT_ID"]
 
 # 품목명: (부류, 품목, 품종, 등급)  코드는 kamis_codes.xlsx 기준, 등급 04=상품
@@ -44,10 +44,19 @@ for name, codes in ITEMS.items():
         items = data.get("item", []) if isinstance(data, dict) else []
         code = data.get("error_code") if isinstance(data, dict) else data
         print(f"{name} {start[:4]}: {len(items)}건 (code={code})")
+        # 응답 = 평균(대구 시장 평균) + 평년 + 시장·품종별 행. 평균·평년만 사용
         for it in items:
-            rows.append(dict(item=name, **it))
+            if it["countyname"] in ("평균", "평년"):
+                rows.append(dict(item=name, date=f"{it['yyyy']}-{it['regday'].replace('/', '-')}",
+                                 kind=it["countyname"], price=it["price"]))
         time.sleep(0.5)
 
 df = pd.DataFrame(rows)
-df.to_csv(out / "daegu_retail_raw.csv", index=False, encoding="utf-8-sig")
-print(df.head(10).to_string() if len(df) else "데이터 없음 - 응답 형식 확인 필요:\n" + json.dumps(j, ensure_ascii=False)[:1000])
+if df.empty:
+    sys.exit("데이터 없음 - 응답 확인 필요:\n" + json.dumps(j, ensure_ascii=False)[:1000])
+df["price"] = pd.to_numeric(df["price"].str.replace(",", ""), errors="coerce")
+df = df.pivot_table(index=["item", "date"], columns="kind", values="price").reset_index()
+df = df.rename(columns={"평균": "price", "평년": "normal_price"})
+df.to_csv(out / "daegu_retail_daily.csv", index=False, encoding="utf-8-sig")
+print(df.groupby("item").agg(days=("date", "size"), start=("date", "min"), end=("date", "max"),
+                             missing=("price", lambda s: s.isna().sum())).to_string())

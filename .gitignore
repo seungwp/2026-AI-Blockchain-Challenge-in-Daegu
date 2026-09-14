@@ -1,4 +1,9 @@
-data/raw/
+# 용량 큰 원본은 제외 (README 출처에서 다시 받기)
+data/raw/boundary/
+data/raw/licenses/
+# 수동 다운로드 임시본 (API 결과와 비교 후 삭제)
+data/raw/kamis/*.xls
 .playwright-mcp/
 graphify-out/cache/
 .env
+~$*
