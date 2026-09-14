@@ -1,3 +1,4 @@
 data/raw/
 .playwright-mcp/
 graphify-out/cache/
+.env
