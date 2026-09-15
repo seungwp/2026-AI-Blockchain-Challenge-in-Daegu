@@ -137,25 +137,33 @@
     }
   },
   "advice": {
-    "summary": "추석 연휴 대비 배달 강화와 대구메이커페스타 기간 매출 증대 준비가 필요합니다.",
+    "summary": "추석 연휴 전 주말에 근처 축제가 있어 매출 증가가 기대됩니다.",
     "advices": [
       {
-        "title": "추석 연휴 배달 집중",
-        "reason": "최근1년_비오는날_배달매출_변화_퍼센트: 29, 배달비중_퍼센트: 16",
-        "action": "9월 24일(목)~9월 26일(토) 추석 연휴 기간 배달 포장 용품 확충 및 배달 인력 사전 배치",
-        "urgency": "높음",
+        "title": "추석 연휴 대비 준비",
+        "reason": "9월 24일(목)~9월 26일(토) 추석 공휴일이 있습니다.",
+        "action": "추석 연휴 영업 시간과 메뉴를 미리 계획하세요.",
+        "urgency": "보통",
         "evidence": [
-          "sales_recent",
-          "holidays_next14"
+          "holiday"
         ]
       },
       {
-        "title": "대구메이커페스타 대비 매출 기회 포착",
-        "reason": "festival_2877219: 대구메이커페스타, 기간: 9월 19일(토)~9월 20일(일), 거리_m: 499",
-        "action": "9월 19일(토)~9월 20일(일) 축제 기간 동안 이동판매용 간편메뉴 준비 및 현장 할인 이벤트 기획",
+        "title": "주말 축제 수요 대응",
+        "reason": "대구메이커페스타가 9월 19일(토)~9월 20일(일)에 가게에서 499m 거리에서 열립니다.",
+        "action": "주말에 방문객 증가를 고려해 주방과 홀 준비를 강화하세요.",
         "urgency": "보통",
         "evidence": [
-          "festivals_next7"
+          "festival_2877219"
+        ]
+      },
+      {
+        "title": "신규 경쟁점 경계",
+        "reason": "8월 26일(수) 같은 업종 한식 가게가 320m 거리에 새로 생겼습니다.",
+        "action": "경쟁점의 메뉴와 가격을 확인해 우리 가게의 차별점을 준비하세요.",
+        "urgency": "참고",
+        "evidence": [
+          "comp_2026-08-26"
         ]
       }
     ]
@@ -168,9 +176,8 @@
       "invented_dates": [
         "9월 23일"
       ],
-      "missing_signals": [
-        "근처 경쟁점 개업"
-      ],
+      "missing_signals": [],
+      "format_issues": [],
       "passed": false
     },
     {
@@ -178,20 +185,9 @@
       "model": "nvidia/nemotron-3-super-120b-a12b",
       "invented_numbers": [],
       "invented_dates": [],
-      "missing_signals": [
-        "대구메이커페스타"
-      ],
-      "passed": false
-    },
-    {
-      "attempt": 3,
-      "model": "nvidia/nemotron-3-super-120b-a12b",
-      "invented_numbers": [],
-      "invented_dates": [],
-      "missing_signals": [
-        "근처 경쟁점 개업"
-      ],
-      "passed": false
+      "missing_signals": [],
+      "format_issues": [],
+      "passed": true
     }
   ]
 }

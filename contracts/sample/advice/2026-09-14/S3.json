@@ -113,34 +113,24 @@
     }
   },
   "advice": {
-    "summary": "추석 연휴 대비 배달 강화와 인근 신규 경쟁점 대응이 필요합니다.",
+    "summary": "추석 연휴 전 주에 배달 매출 증가와 경쟁점 개업 상황을 고려해 준비하세요.",
     "advices": [
       {
-        "title": "추석 연휴 배달 집중 준비",
-        "reason": "최근1년_비오는날_배달매출_변화_퍼센트: 34, 배달비중_퍼센트: 57",
-        "action": "9월 24~26일 추석 연휴 기간 배달 포장 용량 20% 늘리고 배달 앱 할인 쿠폰 발행",
-        "urgency": "높음",
+        "title": "배달 준비 강화",
+        "reason": "최근1년 비오는날 배달매출 변화가 34% 증가했고, 배달비중은 57%입니다.",
+        "action": "배달 주문 증가에 대비해 포장 용품과 배달 전용 메뉴 구성을 점검하세요.",
+        "urgency": "보통",
         "evidence": [
-          "sales_recent",
-          "holidays_next14"
+          "sales_recent"
         ]
       },
       {
-        "title": "인근 신규 호프/통닭 경쟁점 대응",
-        "reason": "comp_2026-06-24: 개업일 6월 24일(수), 경과일 82일, 거리_m: 398",
-        "action": "이번 주 중 경쟁점 메뉴 가격 조사 후 자사 주력 메뉴 할인 이벤트 기획",
+        "title": "경쟁점 개업 대응",
+        "reason": "반경 398m 내에 호프/통닭 업종이 6월 24일에 개업해 82일이 지났습니다.",
+        "action": "주변 신규 경쟁점의 메뉴와 가격을 확인하고, 차별화 포인트를 검토하세요.",
         "urgency": "보통",
         "evidence": [
           "competitors_90d"
-        ]
-      },
-      {
-        "title": "축제 기간 매출 기회 포착",
-        "reason": "festival_2392105: 2026 달성 대구현대미술제 Movement: Flow-Ringer-Flux, 기간: 9월 11일(금)~10월 11일(일), 거리_m: 1440",
-        "action": "축제 기간 중 주말 저녁 배달 프로모션 추가 운영 검토",
-        "urgency": "참고",
-        "evidence": [
-          "festivals_next7"
         ]
       }
     ]
@@ -151,7 +141,30 @@
       "model": "nvidia/nemotron-3-super-120b-a12b",
       "invented_numbers": [],
       "invented_dates": [],
+      "missing_signals": [
+        "JSON 형식 오류"
+      ],
+      "format_issues": [],
+      "passed": false
+    },
+    {
+      "attempt": 2,
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "invented_numbers": [],
+      "invented_dates": [],
+      "missing_signals": [
+        "근처 경쟁점 개업"
+      ],
+      "format_issues": [],
+      "passed": false
+    },
+    {
+      "attempt": 3,
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "invented_numbers": [],
+      "invented_dates": [],
       "missing_signals": [],
+      "format_issues": [],
       "passed": true
     }
   ]

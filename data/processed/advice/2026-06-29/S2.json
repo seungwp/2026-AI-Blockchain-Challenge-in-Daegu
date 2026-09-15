@@ -123,25 +123,25 @@
     }
   },
   "advice": {
-    "summary": "7월 1일 비 예보로 배달 주문 증가 예상, 무 가격 상승 위험 주의 필요",
+    "summary": "7월 1일(수)에 강수량 7.0mm의 비가 예보되어 배달 매출 변화에 주의하고, 무 가격 상승 위험에 대비해야 합니다.",
     "advices": [
       {
-        "title": "배달 준비 강화",
-        "reason": "7월 1일 강수량_mm 7.0, 최근1년_비오는날_배달매출_변화_퍼센트 27",
-        "action": "7월 1일 배달 포장재 및 인력 사전 준비",
+        "title": "배달 준비 점검",
+        "reason": "7월 1일(수) 강수량 7.0mm로 비 예보 있으며, 최근 1년 비 오는 날 배달 매출 변화율은 27%입니다.",
+        "action": "7월 1일(수) 배달 주문 증가에 대비해 포장 용품과 배달 인력 준비 상태를 점검하세요.",
         "urgency": "보통",
         "evidence": [
-          "weather_next7.days[1]",
-          "sales_recent.최근1년_비오는날_배달매출_변화_퍼센트"
+          "weather_next7",
+          "sales_recent"
         ]
       },
       {
-        "title": "무 가격 동향 모니터링",
-        "reason": "price_무 다음주_급등확률_퍼센트 30, 평년대비_퍼센트 22",
-        "action": "무 사용량 점검 및 대체재 검토",
+        "title": "무 가격 상승 대비",
+        "reason": "무 현재 가격은 2500원이며, 다음 주 급등 확률은 30%이고 평년보다 22% 비쌉니다.",
+        "action": "무 가격 상승 가능성에 대비해 대체 메뉴 검토 또는 재고 수준을 확인하세요.",
         "urgency": "보통",
         "evidence": [
-          "ingredients[1]"
+          "price_무"
         ]
       }
     ]
@@ -152,17 +152,8 @@
       "model": "nvidia/nemotron-3-super-120b-a12b",
       "invented_numbers": [],
       "invented_dates": [],
-      "missing_signals": [
-        "비 예보"
-      ],
-      "passed": false
-    },
-    {
-      "attempt": 2,
-      "model": "nvidia/nemotron-3-super-120b-a12b",
-      "invented_numbers": [],
-      "invented_dates": [],
       "missing_signals": [],
+      "format_issues": [],
       "passed": true
     }
   ],
