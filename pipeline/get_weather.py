@@ -3,10 +3,12 @@ import pandas as pd
 import os
 
 url = 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst'
-api_key = '키_삭제됨'  # ← 발급받은 키를 여기에 넣으세요
+# 키는 코드에 넣지 않고 프로젝트 루트 .env 의 DATA_GO_KR_KEY 에서 읽음 (git 제외 파일)
+env = dict(l.strip().split('=', 1) for l in open('.env', encoding='utf-8-sig') if '=' in l and not l.startswith('#'))
+api_key = env['DATA_GO_KR_KEY']
 
 params = {
-    'ServiceKey': requests.utils.unquote(api_key), 
+    'ServiceKey': requests.utils.unquote(api_key),
     'pageNo': '1',
     'numOfRows': '1000',
     'dataType': 'JSON',

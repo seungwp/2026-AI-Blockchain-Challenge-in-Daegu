@@ -1,0 +1,86 @@
+[
+  {
+    "id": "S1",
+    "login_id": "demo-s1",
+    "category": "치킨",
+    "license_category": "호프/통닭",
+    "gu": "달서구",
+    "dong": "달서구 두류1,2동",
+    "role": "치맥페스티벌 인근 치킨집",
+    "scenario": "①축제·날씨",
+    "dong_center": {
+      "lat": 35.85425,
+      "lon": 128.5668
+    }
+  },
+  {
+    "id": "S2",
+    "login_id": "demo-s2",
+    "category": "한식",
+    "license_category": "한식",
+    "gu": "북구",
+    "dong": "북구 침산2동",
+    "role": "이번 주말 메이커페스타 인근 한식당",
+    "scenario": "①이번 주말 축제",
+    "dong_center": {
+      "lat": 35.88806,
+      "lon": 128.59597
+    }
+  },
+  {
+    "id": "S3",
+    "login_id": "demo-s3",
+    "category": "치킨",
+    "license_category": "호프/통닭",
+    "gu": "달성군",
+    "dong": "달성군 다사읍",
+    "role": "최근 동종 개업 인근 치킨집",
+    "scenario": "③경쟁점",
+    "dong_center": {
+      "lat": 35.8777,
+      "lon": 128.47669
+    }
+  },
+  {
+    "id": "S4",
+    "login_id": "demo-s4",
+    "category": "고깃집",
+    "license_category": "식육(숯불구이)",
+    "gu": "남구",
+    "dong": "남구 대명3동",
+    "role": "삼겹살·배추 쓰는 고깃집",
+    "scenario": "②식자재",
+    "dong_center": {
+      "lat": 35.85091,
+      "lon": 128.58134
+    }
+  },
+  {
+    "id": "S5",
+    "login_id": "demo-s5",
+    "category": "중국식",
+    "license_category": "중국식",
+    "gu": "중구",
+    "dong": "중구 성내1동",
+    "role": "최근 동종 개업 인근 중국집",
+    "scenario": "③경쟁점",
+    "dong_center": {
+      "lat": 35.86606,
+      "lon": 128.59739
+    }
+  },
+  {
+    "id": "S6",
+    "login_id": "demo-s6",
+    "category": "한식",
+    "license_category": "한식",
+    "gu": "수성구",
+    "dong": "수성구 파동",
+    "role": "이벤트 없는 주거지 한식당(대조군)",
+    "scenario": "대조군",
+    "dong_center": {
+      "lat": 35.81487,
+      "lon": 128.61489
+    }
+  }
+]

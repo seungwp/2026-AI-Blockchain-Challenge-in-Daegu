@@ -1,0 +1,8 @@
+* text=auto eol=lf
+*.bat text eol=crlf
+*.png binary
+*.xlsx binary
+*.xls binary
+*.pdf binary
+*.hwpx binary
+*.geojson text eol=lf

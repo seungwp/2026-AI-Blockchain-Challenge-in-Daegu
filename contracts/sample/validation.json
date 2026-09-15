@@ -1,0 +1,306 @@
+{
+  "sales_model": {
+    "note": "가상 매출 기준(성능 상한). 실데이터로 같은 파이프라인 재학습 예정",
+    "learning_curve": [
+      {
+        "train_months": 3.0,
+        "model": 0.1011909616948793,
+        "baseline": 0.0815807372366807,
+        "floor": 0.043013929744439
+      },
+      {
+        "train_months": 6.0,
+        "model": 0.0812643177220375,
+        "baseline": 0.0815807372366807,
+        "floor": 0.043013929744439
+      },
+      {
+        "train_months": 12.0,
+        "model": 0.0524057703094512,
+        "baseline": 0.0815807372366807,
+        "floor": 0.043013929744439
+      },
+      {
+        "train_months": 24.0,
+        "model": 0.0515693912362771,
+        "baseline": 0.0815807372366807,
+        "floor": 0.043013929744439
+      },
+      {
+        "train_months": 36.0,
+        "model": 0.0496497322372259,
+        "baseline": 0.0815807372366807,
+        "floor": 0.043013929744439
+      }
+    ],
+    "per_store": [
+      {
+        "store_id": "S1",
+        "model": 0.0555571506437959,
+        "baseline": 0.073991961306928,
+        "floor": 0.0382423440292271
+      },
+      {
+        "store_id": "S2",
+        "model": 0.0418422834582346,
+        "baseline": 0.0804819998306081,
+        "floor": 0.041341331373882
+      },
+      {
+        "store_id": "S3",
+        "model": 0.0564562146850606,
+        "baseline": 0.0637323855331162,
+        "floor": 0.0404128535512833
+      },
+      {
+        "store_id": "S4",
+        "model": 0.055025228813457,
+        "baseline": 0.1012588051823079,
+        "floor": 0.0517995140707059
+      },
+      {
+        "store_id": "S5",
+        "model": 0.0418908816899852,
+        "baseline": 0.0720199780366994,
+        "floor": 0.0377963695371876
+      },
+      {
+        "store_id": "S6",
+        "model": 0.0440521103078281,
+        "baseline": 0.0832599338223259,
+        "floor": 0.0421268197313634
+      }
+    ],
+    "effects": [
+      {
+        "factor": "비 → 홀",
+        "truth": -0.2,
+        "m3": -0.1486162589527989,
+        "m36": -0.1910408715791374
+      },
+      {
+        "factor": "비 → 배달",
+        "truth": 0.3,
+        "m3": 0.2114717215135741,
+        "m36": 0.28371704642119
+      },
+      {
+        "factor": "폭염 → 홀",
+        "truth": -0.1,
+        "m3": 0.0,
+        "m36": -0.103331730268445
+      },
+      {
+        "factor": "축제 1km",
+        "truth": 0.25,
+        "m3": 0.0,
+        "m36": 0.215413492929247
+      },
+      {
+        "factor": "경쟁점 1곳",
+        "truth": -0.03,
+        "m3": 0.1678715731209206,
+        "m36": -0.0327251945880351
+      }
+    ]
+  },
+  "price_spike_model": {
+    "note": "KAMIS 대구 실제 가격, 2026년(학습 미사용 기간) 검증",
+    "overall": [
+      {
+        "who": "model",
+        "precision": 0.2040133779264214,
+        "recall": 0.7577639751552795,
+        "f1": 0.3214756258234519,
+        "pr_auc": 0.4311482722448156,
+        "base_rate": 0.0808232931726907
+      },
+      {
+        "who": "momentum",
+        "precision": 0.0747422680412371,
+        "recall": 0.1801242236024844,
+        "f1": 0.1056466302367941,
+        "pr_auc": null,
+        "base_rate": 0.0808232931726907
+      }
+    ],
+    "per_item": [
+      {
+        "item": "계란",
+        "episodes": 3.0,
+        "caught_model": 2.0,
+        "caught_momentum": 0.0
+      },
+      {
+        "item": "깐마늘",
+        "episodes": 6.0,
+        "caught_model": 4.0,
+        "caught_momentum": 1.0
+      },
+      {
+        "item": "닭",
+        "episodes": 7.0,
+        "caught_model": 7.0,
+        "caught_momentum": 4.0
+      },
+      {
+        "item": "대파",
+        "episodes": 3.0,
+        "caught_model": 3.0,
+        "caught_momentum": 2.0
+      },
+      {
+        "item": "무",
+        "episodes": 7.0,
+        "caught_model": 5.0,
+        "caught_momentum": 1.0
+      },
+      {
+        "item": "배추",
+        "episodes": 2.0,
+        "caught_model": 2.0,
+        "caught_momentum": 1.0
+      },
+      {
+        "item": "삼겹살",
+        "episodes": 0.0,
+        "caught_model": 0.0,
+        "caught_momentum": 0.0
+      },
+      {
+        "item": "양파",
+        "episodes": 5.0,
+        "caught_model": 4.0,
+        "caught_momentum": 2.0
+      }
+    ],
+    "learning_curve": [
+      {
+        "train_months": 6.0,
+        "pr_auc": 0.2911066377742876
+      },
+      {
+        "train_months": 12.0,
+        "pr_auc": 0.3636288130521442
+      },
+      {
+        "train_months": 24.0,
+        "pr_auc": 0.397372733569269
+      },
+      {
+        "train_months": 33.0,
+        "pr_auc": 0.4490512503024138
+      }
+    ]
+  },
+  "advice_llm": [
+    {
+      "as_of": "2026-06-29",
+      "store_id": "S1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "attempts": 1,
+      "passed": true,
+      "first_try_passed": true
+    },
+    {
+      "as_of": "2026-06-29",
+      "store_id": "S2",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "attempts": 2,
+      "passed": true,
+      "first_try_passed": false
+    },
+    {
+      "as_of": "2026-06-29",
+      "store_id": "S3",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "attempts": 1,
+      "passed": true,
+      "first_try_passed": true
+    },
+    {
+      "as_of": "2026-06-29",
+      "store_id": "S4",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "attempts": 1,
+      "passed": true,
+      "first_try_passed": true
+    },
+    {
+      "as_of": "2026-06-29",
+      "store_id": "S5",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "attempts": 1,
+      "passed": true,
+      "first_try_passed": true
+    },
+    {
+      "as_of": "2026-06-29",
+      "store_id": "S6",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "attempts": 2,
+      "passed": true,
+      "first_try_passed": false
+    },
+    {
+      "as_of": "2026-09-14",
+      "store_id": "S1",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "attempts": 3,
+      "passed": false,
+      "first_try_passed": false
+    },
+    {
+      "as_of": "2026-09-14",
+      "store_id": "S2",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "attempts": 3,
+      "passed": false,
+      "first_try_passed": false
+    },
+    {
+      "as_of": "2026-09-14",
+      "store_id": "S3",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "attempts": 1,
+      "passed": true,
+      "first_try_passed": true
+    },
+    {
+      "as_of": "2026-09-14",
+      "store_id": "S4",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "attempts": 1,
+      "passed": true,
+      "first_try_passed": true
+    },
+    {
+      "as_of": "2026-09-14",
+      "store_id": "S5",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "attempts": 2,
+      "passed": true,
+      "first_try_passed": false
+    },
+    {
+      "as_of": "2026-09-14",
+      "store_id": "S6",
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "attempts": 2,
+      "passed": true,
+      "first_try_passed": false
+    }
+  ],
+  "figures": [
+    "docs/figures/advice_1_validation.png",
+    "docs/figures/advice_2_replay_outcome.png",
+    "docs/figures/price_spike_1_timeline.png",
+    "docs/figures/price_spike_2_overall.png",
+    "docs/figures/price_spike_3_per_item.png",
+    "docs/figures/price_spike_4_learning_curve.png",
+    "docs/figures/sales_model_1_actual_vs_pred.png",
+    "docs/figures/sales_model_2_error_by_store.png",
+    "docs/figures/sales_model_3_learning_curve.png",
+    "docs/figures/sales_model_4_effects.png"
+  ]
+}

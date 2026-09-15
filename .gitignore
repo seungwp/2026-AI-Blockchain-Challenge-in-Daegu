@@ -8,3 +8,7 @@ data/raw/kamis/*.xls
 graphify-out/cache/
 .env
 ~$*
+
+# node / build
+web/node_modules/
+web/dist/
