@@ -114,24 +114,24 @@
     }
   },
   "advice": {
-    "summary": "추석 연휴 대비 매출 증대를 위해 금토 매출 상승 패턴을 활용한 준비가 필요합니다.",
+    "summary": "추석 연휴 전 주간 매출 변동에 대비해 준비하세요.",
     "advices": [
       {
-        "title": "추석 연휴 대비 금토 매출 상승 패턴 활용",
-        "reason": "최근1년_금토_매출_변화_퍼센트: 20",
-        "action": "9월 25일(금)과 26일(토)에 인원 및 재료를 평소보다 20% 늘려 준비하세요",
+        "title": "추석 연휴 대비 매출 변화 점검",
+        "reason": "최근 28일 하루 평균 매출 1111000원, 금·토 매출 20% 변화",
+        "action": "금요일과 토요일 매출 변화를 주간 단위로 비교해 추석 전 주말 대비 계획을 세우세요",
         "urgency": "보통",
         "evidence": [
           "sales_recent"
         ]
       },
       {
-        "title": "배달 비중 낮음에도 비오는 날 매출 증가 대비",
-        "reason": "배달비중_퍼센트: 5, 최근1년_비오는날_배달매출_변화_퍼센트: 29",
-        "action": "날씨가 흐릴 경우를 대비해 배달 포장용기 및 소스 비축을 확인하세요",
-        "urgency": "참고",
+        "title": "추석 연휴 휴무일 확인",
+        "reason": "9월 24일(목) 추석, 9월 25일(금) 추석, 9월 26일(토) 추석",
+        "action": "추석 연휴 기간 영업 여부를 결정하고 필요한 경우 사전 공지를 준비하세요",
+        "urgency": "보통",
         "evidence": [
-          "sales_recent"
+          "holiday"
         ]
       }
     ]
@@ -141,8 +141,20 @@
       "attempt": 1,
       "model": "nvidia/nemotron-3-super-120b-a12b",
       "invented_numbers": [],
+      "invented_dates": [
+        "9월 23일"
+      ],
+      "missing_signals": [],
+      "format_issues": [],
+      "passed": false
+    },
+    {
+      "attempt": 2,
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "invented_numbers": [],
       "invented_dates": [],
       "missing_signals": [],
+      "format_issues": [],
       "passed": true
     }
   ]

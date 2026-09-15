@@ -129,31 +129,30 @@
     }
   },
   "advice": {
-    "summary": "추석 연휴 대비 배달 강화와 경쟁점 개업 영향 점검이 필요합니다.",
+    "summary": "추석 연휴 대비 매출 증대와 경쟁점 개업 영향 점검이 필요한 주입니다.",
     "advices": [
       {
-        "title": "추석 연휴 배달 준비",
-        "reason": "최근1년_비오는날_배달매출_변화_퍼센트: 26, 배달비중_퍼센트: 47",
-        "action": "9월 24~26일 추석 연휴 기간 배달 포장용품 재고 확인 및 주문",
-        "urgency": "높음",
+        "title": "추석 연휴 매출 준비",
+        "reason": "추석 연휴가 9월 24일(목)부터 9월 26일(토)까지 이어집니다.",
+        "action": "연휴 기간 영업 시간 및 메뉴 운영 계획을 검토하세요.",
+        "urgency": "보통",
         "evidence": [
-          "sales_recent",
           "holidays_next14"
         ]
       },
       {
-        "title": "경쟁점 개업 영향 점검",
-        "reason": "중국식 업종 경쟁점 개업일: 7월 29일(수), 거리_m: 263, 경과일: 47",
-        "action": "이번 주 메뉴 가격 및 인기 메뉴 대비 점검",
+        "title": "경쟁점 영향 점검",
+        "reason": "중구 성내1동에 중국식 업종 경쟁점이 7월 29일(수)에 개업하여 현재 47일이 지났습니다.",
+        "action": "경쟁점과의 차별화 포인트를 메뉴나 서비스 측면에서 점검하세요.",
         "urgency": "보통",
         "evidence": [
           "competitors_90d"
         ]
       },
       {
-        "title": "대구메이커페스타 대비 매출 기회 검토",
-        "reason": "대구메이커페스타 기간: 9월 19일(토)~9월 20일(일), 거리_m: 1467",
-        "action": "축제 기간 매출 변동 대비 주말 매출 목표 설정",
+        "title": "대구메이커페스타 대비 준비",
+        "reason": "대구메이커페스타가 9월 19일(토)~9월 20일(일)에 개최되며, 거리는 1467m입니다.",
+        "action": "축제 기간 동안 방문객 증가를 고려해 주말 매대 운영 방안을 검토하세요.",
         "urgency": "참고",
         "evidence": [
           "festivals_next7"
@@ -170,17 +169,29 @@
         "9월 23일"
       ],
       "missing_signals": [
-        "대구메이커페스타",
         "근처 경쟁점 개업"
       ],
+      "format_issues": [],
       "passed": false
     },
     {
       "attempt": 2,
       "model": "nvidia/nemotron-3-super-120b-a12b",
       "invented_numbers": [],
+      "invented_dates": [
+        "9월 23일"
+      ],
+      "missing_signals": [],
+      "format_issues": [],
+      "passed": false
+    },
+    {
+      "attempt": 3,
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "invented_numbers": [],
       "invented_dates": [],
       "missing_signals": [],
+      "format_issues": [],
       "passed": true
     }
   ]

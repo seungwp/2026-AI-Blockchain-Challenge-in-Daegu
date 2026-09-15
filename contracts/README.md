@@ -48,7 +48,7 @@ sample/
 | `model` | 조언 생성 LLM |
 | `advice.summary` | 이번 주 한 문장 요약 |
 | `advice.advices[]` | 최대 3개, 중요도 순. `title`, `reason`(근거), `action`(할 일), `urgency`(`높음`/`보통`/`참고`), `evidence`(근거 신호 id 목록) |
-| `validation[]` | 생성 시도별 검증. **마지막 원소의 `passed`가 false면 조언을 화면에 표시하지 않고 "이번 주 조언을 준비 중" 상태로 처리** |
+| `validation[]` | 생성 시도별 검증: `attempt`, `model`, `invented_numbers`, `invented_dates`, `missing_signals`, `format_issues`(문장에 노출된 JSON 키), `passed`. **마지막 원소의 `passed`가 false면 조언을 화면에 표시하지 않고 "이번 주 조언을 준비 중" 상태로 처리** |
 | `signals.store` | `id`, `업종`, `동네` |
 | `signals.기준일` | 표시용 날짜 문자열 (`6월 29일(월)`) |
 | `signals.sales_recent` | `최근28일_일평균매출_원`, `배달비중_퍼센트`, `최근1년_비오는날_배달매출_변화_퍼센트`, `최근1년_금토_매출_변화_퍼센트` |

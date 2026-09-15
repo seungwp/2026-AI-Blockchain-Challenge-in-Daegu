@@ -23,19 +23,19 @@ plt.rcParams.update({"font.family": ["Malgun Gothic", "Segoe UI Symbol"], "axes.
                      "axes.titlesize": 12, "axes.titleweight": "bold", "axes.unicode_minus": False})
 
 # ① 검증 표
-cols = ["지어낸 숫자", "지어낸 날짜", "빠진 신호", "시도 횟수"]
+cols = ["지어낸 숫자", "지어낸 날짜", "빠진 신호", "키 노출", "시도 횟수"]
 rows, labels = [], []
 for r in recs:
     last = r["validation"][-1]
-    rows.append([len(last["invented_numbers"]), len(last["invented_dates"]), len(last["missing_signals"]), len(r["validation"])])
+    rows.append([len(last["invented_numbers"]), len(last["invented_dates"]), len(last["missing_signals"]), len(last.get("format_issues", [])), len(r["validation"])])
     labels.append(f"{r['as_of'][5:]} {r['signals']['store']['id']} {r['signals']['store']['업종']}")
-fig, ax = plt.subplots(figsize=(7.5, 0.42 * len(rows) + 1.6))
+fig, ax = plt.subplots(figsize=(8.5, 0.42 * len(rows) + 1.6))
 for i, row in enumerate(rows):
     for j, v in enumerate(row):
-        ok = v == 0 if j < 3 else v == 1
+        ok = v == 0 if j < 4 else v == 1
         mark = "✓" if ok else "✗"
-        text = f"{mark} {v}" if j < 3 else (f"{mark} 1회" if v == 1 else f"↻ {v}회")
-        color = GOOD if ok else (CRIT if j < 3 else INK2)
+        text = f"{mark} {v}" if j < 4 else (f"{mark} 1회" if v == 1 else f"↻ {v}회")
+        color = GOOD if ok else (CRIT if j < 4 else INK2)
         ax.text(j, i, text, ha="center", va="center", fontsize=10, color=color, fontweight="bold")
 ax.set_xlim(-0.5, len(cols) - 0.5)
 ax.set_ylim(len(rows) - 0.5, -0.5)

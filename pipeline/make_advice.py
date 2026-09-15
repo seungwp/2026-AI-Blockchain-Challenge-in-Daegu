@@ -149,17 +149,22 @@ class AdviceSet(BaseModel):
     advices: list[Advice] = Field(description="중요한 순서로 1~3개")
 
 
-SYSTEM = """당신은 대구 음식점 사장님을 돕는 '동네 주치의'입니다. 입력 JSON(signals)만 보고 이번 주 조언을 씁니다.
+SYSTEM = """당신은 대구 음식점 사장님을 돕는 '동네 주치의'입니다. 입력으로 주는 '가게 신호 요약'만 보고 이번 주 조언을 씁니다.
 규칙:
 - 숫자와 날짜는 signals에 있는 값만 그대로 쓰세요(예: 추석 전날처럼 날짜를 계산해 새로 만들지 말 것). 더하거나 곱해서 새 숫자(예: 예상 매출액, 필요한 인원 수, 발주량)를 만들지 마세요.
 - signals에 없는 사실(다른 축제, 날씨, 가게 사정)을 지어내지 마세요. 예보가 없는 날의 날씨는 말하지 마세요.
 - 가게 이름이나 주소는 쓰지 말고, 업종과 동네까지만 쓰세요.
 - 급등경고가 있는 식자재, 7일 안 1km 이내 축제, 90일 안 근처 경쟁점, 14일 안 설날·추석, 강수 5mm 이상이거나 강수확률 60% 이상인 날이 있으면 반드시 조언에 반영하세요.
+- 날짜는 signals에 적힌 표기 그대로(예: 9월 19일(토)) 쓰세요. '○일까지', '○일부터'처럼 signals에 없는 날짜를 만들지 마세요.
+- 인원 수(○명), 며칠분, 수량(○kg, ○개)은 쓰지 마세요. 준비할 것은 수량 없이 말하세요.
+- reason과 action은 사장님이 읽는 자연스러운 문장으로 쓰세요. signals의 키 이름(예: 거리_m, 배달비중_퍼센트)이나 id(예: festival_123)를 문장에 쓰지 말고, id는 evidence 배열에만 넣으세요.
 - 조언은 최대 3개, 중요한 순서로. 존댓말로 짧고 쉽게. 행동은 '무엇을 언제 할지'가 드러나게."""
 
 
 NUM_UNIT = re.compile(r"(\d[\d,]*(?:\.\d+)?)\s*(%|퍼센트|원|mm|°C|도|m|km|곳|건|일)")
 DATE = re.compile(r"(\d{1,2})월\s*(\d{1,2})일")
+QTY = re.compile(r"\d+\s*(?:명|인분|일분|kg|개|박스)")  # 인원·수량은 signals에 없으므로 나오면 무조건 지어낸 값
+RAW_KEY = re.compile(r"[가-힣A-Za-z]+_[가-힣A-Za-z0-9]+")  # JSON 키·id가 문장에 그대로 노출
 
 
 def allowed_numbers(sig):
@@ -180,6 +185,7 @@ def validate(sig, adv):
         ok = any(abs(v - a) < 0.51 for a in allowed) or (unit == "원" and any(abs(v - a) / max(a, 1) < 0.01 for a in allowed))
         if not ok:
             bad_nums.append(f"{raw}{unit}")
+    bad_nums += [q for q in QTY.findall(stripped) if q not in bad_nums]
     missing = []
     for f in sig["festivals_next7"]:  # 필수는 매출 영향이 큰 1km 안 축제만 (가상 매출 규칙: 1km +25%, 2km +10%)
         if f["거리_m"] <= 1000 and f["이름"].split()[0][:4] not in text:
@@ -193,10 +199,12 @@ def validate(sig, adv):
         if re.search("설날|추석", h["이름"]) and h["이름"][:2] not in text:
             missing.append(h["이름"])
     wet = [d for d in sig["weather_next7"]["days"] if d.get("강수량_mm", 0) >= 5 or d.get("강수확률_최대", 0) >= 60]
-    if wet and "비" not in text:
+    # "준비"의 '비'가 통과되지 않도록 비 관련 표현만 인정
+    if wet and not re.search(r"(?<![가-힣])비\s*(?:예보|소식|오|가|를|와|로|에|날)|우천|강수|빗", text):
         missing.append("비 예보")
-    return dict(invented_numbers=bad_nums, invented_dates=bad_dates, missing_signals=missing,
-                passed=not (bad_nums or bad_dates or missing))
+    raw_keys = sorted(set(RAW_KEY.findall(text)))
+    return dict(invented_numbers=bad_nums, invented_dates=bad_dates, missing_signals=missing, format_issues=raw_keys,
+                passed=not (bad_nums or bad_dates or missing or raw_keys))
 
 
 SCHEMA_NOTE = ("\n\n출력은 설명 없이 아래 JSON 스키마를 따르는 JSON 객체 하나만 쓰세요.\n"
@@ -220,12 +228,47 @@ def call_llm(contents):
         return None, MODEL
 
 
+def brief(sig):
+    """LLM 입력용 문장형 요약. JSON 키를 그대로 주면 모델이 '거리_m' 같은 키 이름을 문장에 옮겨 적어서 사람이 읽는 표현으로 변환.
+    화면용 계약(signals JSON)은 그대로 두고 LLM 입력만 바꿈. 검증은 원래 signals 기준."""
+    st, sr, w = sig["store"], sig["sales_recent"], sig["weather_next7"]
+    must, lines, ids = [], [], ["sales_recent", "weather_next7"]
+    for f in sig["festivals_next7"]:
+        (must if f["거리_m"] <= 1000 else lines).append(f"근처 축제: {f['이름']}, {f['기간']}, 가게에서 {f['거리_m']}m")
+        ids.append(f["id"])
+    for c in sig["competitors_90d"]:
+        must.append(f"근처 경쟁점 개업: {c['개업일']} 같은 업종({c['업종']}) 가게가 {c['거리_m']}m 거리에 새로 생김({c['경과일']}일 전)")
+        ids.append(c["id"])
+    for h in sig["holidays_next14"]:
+        (must if re.search("설날|추석", h["이름"]) else lines).append(f"공휴일: {h['날짜']} {h['이름']}")
+    for d in w["days"]:
+        wet = d.get("강수량_mm", 0) >= 5 or d.get("강수확률_최대", 0) >= 60
+        txt = f"{d['date']} 최고 {d['최고기온']}도 최저 {d['최저기온']}도, 강수량 {d['강수량_mm']}mm" + (f", 강수확률 {d['강수확률_최대']}%" if "강수확률_최대" in d else "")
+        (must if wet else lines).append(("비 예보: " if wet else "날씨: ") + txt)
+    for i in sig["ingredients"]:
+        txt = f"{i['품목']} 현재 {i['현재가_원']}원, 다음 주 급등 확률 {i['다음주_급등확률_퍼센트']}%, 평년보다 {abs(i['평년대비_퍼센트'])}% {'비쌈' if i['평년대비_퍼센트'] > 0 else '쌈'}"
+        (must if i["급등경고"] else lines).append(("급등 경고 식자재: " if i["급등경고"] else "식자재: ") + txt)
+        ids.append(i["id"])
+    if "dong_closure" in sig:
+        dc = sig["dong_closure"]
+        lines.append(f"동네 음식점 폐업률({dc['연도']}년): 우리 동네 {dc['우리동네_음식점_폐업률_퍼센트']}%, 대구 평균 {dc['대구평균_폐업률_퍼센트']}%")
+        ids.append("closure")
+    out = [f"가게: {st['동네']} {st['업종']} / 기준일 {sig['기준일']}",
+           f"매출: 최근 28일 하루 평균 {sr['최근28일_일평균매출_원']}원, 배달 비중 {sr['배달비중_퍼센트']}%, "
+           f"최근 1년 비 오는 날 배달 매출 {sr['최근1년_비오는날_배달매출_변화_퍼센트']}% 변화, 금·토 매출 {sr['최근1년_금토_매출_변화_퍼센트']}% 변화",
+           f"날씨 출처: {w['source']}"]
+    out += ["", "[반드시 조언에 반영할 신호]"] + (must or ["없음"])
+    out += ["", "[참고 신호]"] + (lines or ["없음"])
+    out += ["", "evidence에 쓸 수 있는 id: " + ", ".join(ids + ["holiday"])]
+    return "\n".join(out)
+
+
 def generate(sig, max_attempts=3):
     attempts, feedback = [], ""
     for n in range(1, max_attempts + 1):
-        adv, model = call_llm(json.dumps(sig, ensure_ascii=False) + feedback)
+        adv, model = call_llm(brief(sig) + feedback)
         if adv is None:
-            attempts.append(dict(attempt=n, model=model, invented_numbers=[], invented_dates=[], missing_signals=["JSON 형식 오류"], passed=False))
+            attempts.append(dict(attempt=n, model=model, invented_numbers=[], invented_dates=[], missing_signals=["JSON 형식 오류"], format_issues=[], passed=False))
             feedback = "\n\n[이전 답변이 JSON 스키마에 맞지 않음 - JSON 객체만 다시 출력]"
             continue
         check = validate(sig, adv)
@@ -234,7 +277,8 @@ def generate(sig, max_attempts=3):
             return adv, attempts
         last_ok = adv
         feedback = ("\n\n[이전 답변 검증 실패 - 고쳐서 다시 작성] 지어낸 숫자: " + ", ".join(check["invented_numbers"] + check["invented_dates"])
-                    + " / 빠진 신호: " + ", ".join(check["missing_signals"]))
+                    + " / 빠진 신호: " + ", ".join(check["missing_signals"])
+                    + " / 문장에 노출된 키: " + ", ".join(check["format_issues"]))
     if "last_ok" not in locals():
         raise RuntimeError(f"{max_attempts}번 모두 JSON 형식 오류 - 다른 모델(NVIDIA_MODEL)을 시도하세요")
     return last_ok, attempts  # 검증 실패 결과도 저장하되 validation에 실패로 기록됨
@@ -243,16 +287,18 @@ def generate(sig, max_attempts=3):
 # 검사기 자체 시험: 일부러 틀린 조언을 넣으면 반드시 실패해야 함 (API 호출 없음)
 _sig = signals_for(next(stores.itertuples()), pd.Timestamp("2026-06-29"))  # S1: 치맥페스티벌·7월 1일 비 있음
 _bad = AdviceSet(summary="이번 주 매출이 35% 오를 거예요", advices=[Advice(
-    title="7월 9일 할인 행사", reason="평소보다 12,000원 더 벌 수 있어요", action="직원을 2명 늘리세요", urgency="높음", evidence=[])])
+    title="7월 9일 할인 행사", reason="평소보다 12,000원 더 벌 수 있어요 (거리_m 879)", action="직원을 2명 늘리고 닭 3일분 준비", urgency="높음", evidence=[])])
 _chk = validate(_sig, _bad)
 assert not _chk["passed"] and "35%" in _chk["invented_numbers"] and "12,000원" in _chk["invented_numbers"], _chk
+assert "2명" in _chk["invented_numbers"] and "거리_m" in _chk["format_issues"], _chk
 assert "7월 9일" in _chk["invented_dates"] and "대구치맥페스티벌" in _chk["missing_signals"] and "비 예보" in _chk["missing_signals"], _chk
 print("검사기 자체 시험 통과:", _chk)
 
 def run_job(job):
     as_of, s, sig = job
     path = OUT / as_of.strftime("%Y-%m-%d") / f"{s.store_id}.json"
-    if path.exists() and (_r := json.loads(path.read_text(encoding="utf-8"))).get("model") == MODEL and _r["validation"][-1]["passed"]:  # 같은 모델로 통과한 건 건너뜀(이어하기)
+    # 같은 모델로 만든 조언이 '현재' 검사 기준도 통과하면 건너뜀 (검사 기준이 강화되면 기존 조언도 다시 검사)
+    if path.exists() and (_r := json.loads(path.read_text(encoding="utf-8"))).get("model") == MODEL and validate(sig, AdviceSet(**_r["advice"]))["passed"]:
         r = json.loads(path.read_text(encoding="utf-8"))
         a = r["validation"]
         return dict(as_of=r["as_of"], store_id=s.store_id, model=MODEL, attempts=len(a), passed=a[-1]["passed"], first_try_passed=a[0]["passed"],

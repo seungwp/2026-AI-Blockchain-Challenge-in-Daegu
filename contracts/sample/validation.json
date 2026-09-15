@@ -206,9 +206,9 @@
       "as_of": "2026-06-29",
       "store_id": "S2",
       "model": "nvidia/nemotron-3-super-120b-a12b",
-      "attempts": 2,
+      "attempts": 1,
       "passed": true,
-      "first_try_passed": false
+      "first_try_passed": true
     },
     {
       "as_of": "2026-06-29",
@@ -247,38 +247,38 @@
       "store_id": "S1",
       "model": "nvidia/nemotron-3-super-120b-a12b",
       "attempts": 3,
-      "passed": false,
+      "passed": true,
       "first_try_passed": false
     },
     {
       "as_of": "2026-09-14",
       "store_id": "S2",
       "model": "nvidia/nemotron-3-super-120b-a12b",
-      "attempts": 3,
-      "passed": false,
+      "attempts": 2,
+      "passed": true,
       "first_try_passed": false
     },
     {
       "as_of": "2026-09-14",
       "store_id": "S3",
       "model": "nvidia/nemotron-3-super-120b-a12b",
-      "attempts": 1,
+      "attempts": 3,
       "passed": true,
-      "first_try_passed": true
+      "first_try_passed": false
     },
     {
       "as_of": "2026-09-14",
       "store_id": "S4",
       "model": "nvidia/nemotron-3-super-120b-a12b",
-      "attempts": 1,
+      "attempts": 2,
       "passed": true,
-      "first_try_passed": true
+      "first_try_passed": false
     },
     {
       "as_of": "2026-09-14",
       "store_id": "S5",
       "model": "nvidia/nemotron-3-super-120b-a12b",
-      "attempts": 2,
+      "attempts": 3,
       "passed": true,
       "first_try_passed": false
     },
@@ -286,9 +286,9 @@
       "as_of": "2026-09-14",
       "store_id": "S6",
       "model": "nvidia/nemotron-3-super-120b-a12b",
-      "attempts": 2,
+      "attempts": 1,
       "passed": true,
-      "first_try_passed": false
+      "first_try_passed": true
     }
   ],
   "figures": [

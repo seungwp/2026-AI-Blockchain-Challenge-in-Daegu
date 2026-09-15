@@ -4,7 +4,6 @@ usage: py -X utf8 pipeline/export_web_data.py
 형식 설명은 contracts/README.md. 실존 가게 식별 정보(관리번호·정확 좌표·상호)는 내보내지 않음.
 """
 import json
-import shutil
 from pathlib import Path
 
 import numpy as np
@@ -20,15 +19,15 @@ UNITS = {"배추": "1포기", "무": "1개", "양파": "1kg", "대파": "1kg", "
 
 def dump(obj, path):
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding="utf-8")
+    path.write_text(json.dumps(obj, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")  # OS 상관없이 LF
 
 
 def nan_to_none(v):
     return None if isinstance(v, float) and np.isnan(v) else v
 
 
-if OUT.exists():
-    shutil.rmtree(OUT)
+for old in OUT.rglob("*.json"):  # 폴더는 두고 파일만 지움 (Windows에서 탐색기가 폴더를 잡고 있으면 rmtree 실패)
+    old.unlink()
 
 # 가게 목록 + 동네 중심점(지도용, 가게 정확 위치 대신)
 stores = pd.read_csv("data/processed/demo_stores.csv")
