@@ -1,7 +1,7 @@
 """대구 인허가(일반음식점) → 행정동 × 분기 개업·폐업·폐업률 집계.
 
 usage: py -X utf8 closure_by_dong.py data/raw/licenses/daegu_restaurants.csv data/raw/boundary/daegu_dong_ver20250401.geojson data/processed
-(인허가 원본 xlsx에서 필요한 8개 컬럼만 CSV로 저장한 것, 원본 xlsx도 그대로 입력 가능)
+(공공데이터포털 행정안전부_식품_일반음식점 대구 파일에서 8개 컬럼만 추출한 것)
 폐업률 = 분기 중 폐업 수 / 분기 시작 시점 영업 점포 수
 """
 import json, sys
@@ -51,7 +51,7 @@ print("\n월별 폐업 중앙값", med, "| 급증 의심 월:\n", spikes.to_stri
 # 행정동 × 분기 패널
 d = df.dropna(subset=["adm_nm", "open"])
 rows = []
-for q in pd.period_range("2016Q1", "2025Q2", freq="Q"):
+for q in pd.period_range("2016Q1", "2026Q2", freq="Q"):
     s, e = q.start_time, q.end_time
     alive = (d["open"] < s) & (d["close"].isna() | (d["close"] >= s))
     g = pd.DataFrame({"adm_nm": d["adm_nm"], "stock": alive,

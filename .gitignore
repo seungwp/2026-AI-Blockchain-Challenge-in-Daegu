@@ -1,6 +1,7 @@
 # 용량 큰 원본은 제외, 대구만 줄인 파일(daegu_*)은 git 포함
 data/raw/boundary/HangJeongDong_*.geojson
 data/raw/licenses/*.xlsx
+data/raw/licenses/식품_*.csv
 # 수동 다운로드 임시본 (API 결과와 비교 후 삭제)
 data/raw/kamis/*.xls
 .playwright-mcp/
