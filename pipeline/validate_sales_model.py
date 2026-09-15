@@ -11,13 +11,13 @@ usage: py -X utf8 validate_sales_model.py data/processed docs/figures
 import sys
 from pathlib import Path
 
-import lightgbm as lgb
 import matplotlib
 import numpy as np
 import pandas as pd
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from sales_features import TARGETS, daily_total, features, fit, predict, wmape
 
 data, figs = Path(sys.argv[1]), Path(sys.argv[2])
 figs.mkdir(parents=True, exist_ok=True)
@@ -32,42 +32,7 @@ plt.rcParams.update({"font.family": "Malgun Gothic", "axes.facecolor": SURF, "fi
 
 s = pd.read_csv(data / "virtual_sales.csv", parse_dates=["date"])
 exp = pd.read_csv(data / "virtual_sales_expected.csv", parse_dates=["date"])
-FEATS = ["store_id", "time_slot", "dow", "month", "doy_sin", "doy_cos", "is_holiday", "big_holiday",
-         "is_rain", "is_heat", "is_cold", "fest_mult", "n_comp_90d"]
-
-
-def features(df):
-    X = pd.DataFrame({"store_id": df["store_id"].astype("category"), "time_slot": df["time_slot"].astype("category"),
-                      "dow": df["date"].dt.dayofweek, "month": df["date"].dt.month,
-                      "doy_sin": np.sin(2 * np.pi * df["date"].dt.dayofyear / 365.25),
-                      "doy_cos": np.cos(2 * np.pi * df["date"].dt.dayofyear / 365.25),
-                      "is_holiday": df["holiday"].notna().astype(int),
-                      "big_holiday": df["holiday"].fillna("").str.contains("설날|추석").astype(int) * ~df["holiday"].fillna("").str.contains("대체"),
-                      "is_rain": df["is_rain"].astype(int), "is_heat": df["is_heat"].astype(int), "is_cold": df["is_cold"].astype(int),
-                      "fest_mult": df["fest_mult"], "n_comp_90d": df["n_comp_90d"]})
-    return X[FEATS]
-
-
-def fit(train, target):
-    params = dict(n_estimators=600, learning_rate=0.03, num_leaves=31, min_child_samples=10, subsample=0.8, subsample_freq=1,
-                  colsample_bytree=0.9, random_state=42, verbose=-1)
-    return lgb.LGBMRegressor(**params).fit(features(train), np.log1p(train[target]))
-
-
-def predict(models, df):
-    return pd.DataFrame({t: np.expm1(m.predict(features(df))) for t, m in models.items()}, index=df.index)
-
-
-def wmape(y, yhat):
-    return float(np.abs(y - yhat).sum() / y.sum())
-
-
-def daily_total(df, cols):
-    return df.groupby(["store_id", "date"])[cols].sum().sum(axis=1)
-
-
 test = s[s["date"] >= TEST_START]
-TARGETS = ["sales_hall", "sales_delivery"]
 y_true = daily_total(test, TARGETS)
 
 # 기준선: 최근 4주 같은 요일 평균 (가게×시간대×채널별)
@@ -118,7 +83,8 @@ def effect(m, target, col, on, off):
     X_on[col], X_off[col] = on, off
     if col == "is_heat":
         X_on["is_cold"] = X_off["is_cold"] = 0
-    return float(np.expm1(models[target].predict(features(X_on))).sum() / np.expm1(models[target].predict(features(X_off))).sum() - 1)
+    one = {target: models[target]}  # predict()가 가게×시간대 offset까지 더해줌
+    return float(predict(one, X_on)[target].sum() / predict(one, X_off)[target].sum() - 1)
 
 
 FACTORS = [("비 → 홀", "sales_hall", "is_rain", True, False, -0.20), ("비 → 배달", "sales_delivery", "is_rain", True, False, 0.30),

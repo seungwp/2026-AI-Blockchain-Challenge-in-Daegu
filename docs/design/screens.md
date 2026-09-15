@@ -40,6 +40,8 @@
 - 요약: `sales_recent` 4개 값
 - 그래프: `sales/<id>.json` 최근 90일 일별 `hall`·`delivery` (선 또는 막대, 라이브러리 기본 스타일)
 - 비 온 날·공휴일·축제일 표시(`is_rain`, `holiday`, `fest_mult>1`) — 텍스트 범례
+- **다음 7일 예측** (`forecast/<기준일>/<id>.json`): "다음 주 예상 매출 ○○원 · 평소보다 ○%"(`summary`), 일별 예측 막대/선 + 사장님 감(`baseline_total`) 비교, 날짜별 요인 표시(비·축제·휴일·경쟁점). `weather_known=false`인 날은 "날씨 반영 전"
+- replay 기준일이면 예측 옆에 실제 매출(`actual_total`)과 오차(`wmape_model` vs `wmape_baseline`) 표시
 - "가상 매출 데이터" 문구
 
 ## 5. 식자재 (탭)
@@ -58,7 +60,7 @@
 ## 7. 신뢰도 (상단 메뉴, 심사위원용)
 - 조언 뒤 실제 결과: replay 기준일의 가게별 `actual_after` 표
 - 식자재 급등 모델: `price_spike_model.overall`(모델 vs 규칙), `per_item`, `learning_curve`
-- 매출 예측 모델: `sales_model.learning_curve`, `per_store`, `effects` (가상 데이터 기준 문구)
+- 매출 예측 모델: `sales_model.learning_curve`, `per_store`, `effects`, 재현 주간 `sales_forecast_replay` (가상 데이터 기준 문구)
 - LLM 조언 검증: `advice_llm` 통과 현황
 - 데이터 출처 링크 목록 (README 출처 표)
 

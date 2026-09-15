@@ -1,0 +1,152 @@
+{
+  "store_id": "S6",
+  "as_of": "2026-06-29",
+  "mode": "replay",
+  "is_virtual": true,
+  "model": "LightGBM (기준일까지 가상 매출로 학습)",
+  "unit": "원",
+  "summary": {
+    "next7_predicted_total": 4723800,
+    "next7_baseline_total": 4826500,
+    "change_vs_baseline": -0.021,
+    "weather_known_days": 7,
+    "next7_actual_total": 5036000,
+    "wmape_model": 0.062,
+    "wmape_baseline": 0.042
+  },
+  "days": [
+    {
+      "date": "2026-06-30",
+      "predicted": {
+        "hall": 559500,
+        "delivery": 101600,
+        "total": 661100
+      },
+      "baseline_total": 651600,
+      "weather_known": true,
+      "drivers": {
+        "is_rain": false,
+        "is_heat": false,
+        "is_cold": false,
+        "holiday": null,
+        "fest_mult": 1.0,
+        "n_comp_90d": 1
+      },
+      "actual_total": 668200
+    },
+    {
+      "date": "2026-07-01",
+      "predicted": {
+        "hall": 444900,
+        "delivery": 129800,
+        "total": 574700
+      },
+      "baseline_total": 633700,
+      "weather_known": true,
+      "drivers": {
+        "is_rain": true,
+        "is_heat": false,
+        "is_cold": false,
+        "holiday": null,
+        "fest_mult": 1.0,
+        "n_comp_90d": 1
+      },
+      "actual_total": 642400
+    },
+    {
+      "date": "2026-07-02",
+      "predicted": {
+        "hall": 559700,
+        "delivery": 101700,
+        "total": 661500
+      },
+      "baseline_total": 652300,
+      "weather_known": true,
+      "drivers": {
+        "is_rain": false,
+        "is_heat": false,
+        "is_cold": false,
+        "holiday": null,
+        "fest_mult": 1.0,
+        "n_comp_90d": 1
+      },
+      "actual_total": 714300
+    },
+    {
+      "date": "2026-07-03",
+      "predicted": {
+        "hall": 665700,
+        "delivery": 118500,
+        "total": 784200
+      },
+      "baseline_total": 831200,
+      "weather_known": true,
+      "drivers": {
+        "is_rain": false,
+        "is_heat": false,
+        "is_cold": false,
+        "holiday": null,
+        "fest_mult": 1.0,
+        "n_comp_90d": 1
+      },
+      "actual_total": 855400
+    },
+    {
+      "date": "2026-07-04",
+      "predicted": {
+        "hall": 667200,
+        "delivery": 115300,
+        "total": 782500
+      },
+      "baseline_total": 719500,
+      "weather_known": true,
+      "drivers": {
+        "is_rain": false,
+        "is_heat": false,
+        "is_cold": false,
+        "holiday": null,
+        "fest_mult": 1.0,
+        "n_comp_90d": 1
+      },
+      "actual_total": 807200
+    },
+    {
+      "date": "2026-07-05",
+      "predicted": {
+        "hall": 552600,
+        "delivery": 96000,
+        "total": 648600
+      },
+      "baseline_total": 671200,
+      "weather_known": true,
+      "drivers": {
+        "is_rain": false,
+        "is_heat": false,
+        "is_cold": false,
+        "holiday": null,
+        "fest_mult": 1.0,
+        "n_comp_90d": 1
+      },
+      "actual_total": 678900
+    },
+    {
+      "date": "2026-07-06",
+      "predicted": {
+        "hall": 512200,
+        "delivery": 99000,
+        "total": 611200
+      },
+      "baseline_total": 667000,
+      "weather_known": true,
+      "drivers": {
+        "is_rain": false,
+        "is_heat": true,
+        "is_cold": false,
+        "holiday": null,
+        "fest_mult": 1.0,
+        "n_comp_90d": 1
+      },
+      "actual_total": 669600
+    }
+  ]
+}

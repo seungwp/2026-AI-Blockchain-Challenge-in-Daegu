@@ -49,6 +49,13 @@ for d in dates:
     for p in sorted((ADVICE_SRC / d).glob("S*.json")):
         dump(json.loads(p.read_text(encoding="utf-8")), OUT / "advice" / d / p.name)
 
+# 다음 7일 매출 예측: pipeline/forecast_sales.py 결과 그대로
+FORECAST_SRC = Path("data/processed/forecast")
+forecast_dates = sorted(p.name for p in FORECAST_SRC.iterdir() if p.is_dir())
+for d in forecast_dates:
+    for p in sorted((FORECAST_SRC / d).glob("S*.json")):
+        dump(json.loads(p.read_text(encoding="utf-8")), OUT / "forecast" / d / p.name)
+
 # 매출: 가게별 최근 90일 일별
 sales = pd.read_csv("data/processed/virtual_sales.csv", parse_dates=["date"])
 last = sales["date"].max()
@@ -95,14 +102,17 @@ dump(dict(
                            per_item=rec(ps[ps["kind"] == "per_item"], ["item", "episodes", "caught_model", "caught_momentum"]),
                            learning_curve=rec(ps[ps["kind"] == "learning_curve"], ["train_months", "pr_auc"])),
     advice_llm=rec(adv, ["as_of", "store_id", "model", "attempts", "passed", "first_try_passed"]),
+    sales_forecast_replay=[dict(as_of=d, store_id=p.stem, **{k: v for k, v in json.loads(p.read_text(encoding="utf-8"))["summary"].items()
+                                                              if k in ("wmape_model", "wmape_baseline", "next7_actual_total", "next7_predicted_total")})
+                           for d in forecast_dates if d != LIVE_DATE for p in sorted((FORECAST_SRC / d).glob("S*.json"))],
     figures=sorted(f"docs/figures/{p.name}" for p in Path("docs/figures").glob("*.png")),
 ), OUT / "validation.json")
 
-dump(dict(advice_dates=dates, live_date=LIVE_DATE, replay_dates=[d for d in dates if d != LIVE_DATE],
+dump(dict(advice_dates=dates, forecast_dates=forecast_dates, live_date=LIVE_DATE, replay_dates=[d for d in dates if d != LIVE_DATE],
           store_ids=stores["store_id"].tolist(), sales_last_date=last.strftime("%Y-%m-%d")), OUT / "index.json")
 
 files = sorted(p.relative_to(OUT).as_posix() for p in OUT.rglob("*.json"))
-assert len(files) == 4 + len(stores) + len(dates) * len(stores), files
+assert len(files) == 4 + len(stores) + (len(dates) + len(forecast_dates)) * len(stores), files
 text = "".join(p.read_text(encoding="utf-8") for p in OUT.rglob("*.json"))
 assert "관리번호" not in text and '"x"' not in text, "실존 가게 식별 정보가 섞임"
 print(f"{len(files)}개 파일 → {OUT}")

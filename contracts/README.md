@@ -15,6 +15,7 @@ sample/
 ├─ index.json                  기준일 목록, 가게 ID 목록
 ├─ stores.json                 데모 가게 6곳 (로그인 대상)
 ├─ advice/<기준일>/<가게ID>.json 이번 주 조언 + 근거 신호 + 검증 결과
+├─ forecast/<기준일>/<가게ID>.json 다음 7일 매출 예측 (가상 매출로 학습한 모델)
 ├─ sales/<가게ID>.json          최근 90일 일별 매출 (가상)
 ├─ prices.json                 식자재 8품목 최근 90일 가격 + 최신 급등 확률 (실제 KAMIS)
 └─ validation.json             모델·LLM 검증 수치 (신뢰도 화면)
@@ -24,6 +25,7 @@ sample/
 | 필드 | 타입 | 설명 |
 |---|---|---|
 | `advice_dates` | string[] | 조언이 있는 기준일 (`2026-06-29`, `2026-09-14`) |
+| `forecast_dates` | string[] | 매출 예측이 있는 기준일 (현재 advice_dates와 같음) |
 | `live_date` | string | 실시간 모드 기준일 (기상청 예보 사용) |
 | `replay_dates` | string[] | 과거 재현 기준일 (실측 날씨, `actual_after` 있음) |
 | `store_ids` | string[] | `S1`~`S6` |
@@ -60,6 +62,19 @@ sample/
 | `signals.dong_closure` | `연도`, `우리동네_음식점_폐업률_퍼센트`, `대구평균_폐업률_퍼센트` (없을 수 있음) |
 | `actual_after` | replay만. `다음7일_일평균매출_변화_퍼센트`, `다음7일_식자재_주평균가격_변화_퍼센트{품목: %}` → 신뢰도 화면 "조언 뒤 실제 결과" |
 
+## forecast/<기준일>/<가게ID>.json
+| 필드 | 설명 |
+|---|---|
+| `store_id`, `as_of`, `mode`(`live`/`replay`), `is_virtual`(true), `model`, `unit`(`원`) | |
+| `summary.next7_predicted_total` | 다음 7일 예측 매출 합계 |
+| `summary.next7_baseline_total` | 사장님 감(최근 4주 같은 요일 평균) 합계 |
+| `summary.change_vs_baseline` | 예측 ÷ 감 − 1 (0~1 소수, 예 0.12 = 평소보다 12% 많을 전망) |
+| `summary.weather_known_days` | 날씨 정보가 있는 날 수 (live는 예보 제공일까지만) |
+| `summary.next7_actual_total`, `wmape_model`, `wmape_baseline` | replay만. 실제 매출과 오차(0~1) |
+| `days[]` | `date`, `predicted{hall, delivery, total}`, `baseline_total`, `weather_known`, `drivers{is_rain, is_heat, is_cold, holiday, fest_mult, n_comp_90d}`, (replay) `actual_total` |
+
+- `weather_known=false`인 날은 날씨를 모르고 예측한 값이므로 화면에 "날씨 반영 전" 표시
+
 ## sales/<가게ID>.json
 | 필드 | 설명 |
 |---|---|
@@ -80,4 +95,5 @@ sample/
 | `sales_model` | `note`, `learning_curve[]`(`train_months`, `model`, `baseline`, `floor` 오차 0~1), `per_store[]`, `effects[]`(`factor`, `truth`, `m3`, `m36`) |
 | `price_spike_model` | `note`, `overall[]`(`who`=model/momentum, `precision`, `recall`, `f1`, `pr_auc`, `base_rate`), `per_item[]`(`item`, `episodes`, `caught_model`, `caught_momentum`), `learning_curve[]` |
 | `advice_llm[]` | `as_of`, `store_id`, `model`, `attempts`, `passed`, `first_try_passed` |
+| `sales_forecast_replay[]` | `as_of`, `store_id`, `wmape_model`, `wmape_baseline`, `next7_actual_total`, `next7_predicted_total` (과거 재현 주간 예측 검증) |
 | `figures[]` | 저장소 기준 그래프 PNG 경로 (`docs/figures/...`). 웹에서 쓰려면 빌드 시 복사 |

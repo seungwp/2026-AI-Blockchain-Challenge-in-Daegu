@@ -12,3 +12,4 @@ graphify-out/cache/
 # node / build
 web/node_modules/
 web/dist/
+__pycache__/

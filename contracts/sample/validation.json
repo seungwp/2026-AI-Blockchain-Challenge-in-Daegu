@@ -4,31 +4,31 @@
     "learning_curve": [
       {
         "train_months": 3.0,
-        "model": 0.1011909616948793,
+        "model": 0.0758156140352727,
         "baseline": 0.0815807372366807,
         "floor": 0.043013929744439
       },
       {
         "train_months": 6.0,
-        "model": 0.0812643177220375,
+        "model": 0.0570882277176313,
         "baseline": 0.0815807372366807,
         "floor": 0.043013929744439
       },
       {
         "train_months": 12.0,
-        "model": 0.0524057703094512,
+        "model": 0.0479985925864116,
         "baseline": 0.0815807372366807,
         "floor": 0.043013929744439
       },
       {
         "train_months": 24.0,
-        "model": 0.0515693912362771,
+        "model": 0.0463303744137126,
         "baseline": 0.0815807372366807,
         "floor": 0.043013929744439
       },
       {
         "train_months": 36.0,
-        "model": 0.0496497322372259,
+        "model": 0.0459184025869678,
         "baseline": 0.0815807372366807,
         "floor": 0.043013929744439
       }
@@ -36,37 +36,37 @@
     "per_store": [
       {
         "store_id": "S1",
-        "model": 0.0555571506437959,
+        "model": 0.0414735728309082,
         "baseline": 0.073991961306928,
         "floor": 0.0382423440292271
       },
       {
         "store_id": "S2",
-        "model": 0.0418422834582346,
+        "model": 0.04427032929101,
         "baseline": 0.0804819998306081,
         "floor": 0.041341331373882
       },
       {
         "store_id": "S3",
-        "model": 0.0564562146850606,
+        "model": 0.0459342655514061,
         "baseline": 0.0637323855331162,
         "floor": 0.0404128535512833
       },
       {
         "store_id": "S4",
-        "model": 0.055025228813457,
+        "model": 0.0540915638416769,
         "baseline": 0.1012588051823079,
         "floor": 0.0517995140707059
       },
       {
         "store_id": "S5",
-        "model": 0.0418908816899852,
+        "model": 0.0407485111116917,
         "baseline": 0.0720199780366994,
         "floor": 0.0377963695371876
       },
       {
         "store_id": "S6",
-        "model": 0.0440521103078281,
+        "model": 0.0432364016501721,
         "baseline": 0.0832599338223259,
         "floor": 0.0421268197313634
       }
@@ -75,32 +75,32 @@
       {
         "factor": "비 → 홀",
         "truth": -0.2,
-        "m3": -0.1486162589527989,
-        "m36": -0.1910408715791374
+        "m3": -0.1681843458499254,
+        "m36": -0.1896855392046584
       },
       {
         "factor": "비 → 배달",
         "truth": 0.3,
-        "m3": 0.2114717215135741,
-        "m36": 0.28371704642119
+        "m3": 0.2509421159641685,
+        "m36": 0.2992359322616023
       },
       {
         "factor": "폭염 → 홀",
         "truth": -0.1,
         "m3": 0.0,
-        "m36": -0.103331730268445
+        "m36": -0.1062236947709664
       },
       {
         "factor": "축제 1km",
         "truth": 0.25,
         "m3": 0.0,
-        "m36": 0.215413492929247
+        "m36": 0.2445445594002882
       },
       {
         "factor": "경쟁점 1곳",
         "truth": -0.03,
-        "m3": 0.1678715731209206,
-        "m36": -0.0327251945880351
+        "m3": -0.0171514191963846,
+        "m36": -0.0348978828195396
       }
     ]
   },
@@ -291,9 +291,60 @@
       "first_try_passed": true
     }
   ],
+  "sales_forecast_replay": [
+    {
+      "as_of": "2026-06-29",
+      "store_id": "S1",
+      "next7_predicted_total": 5625000,
+      "next7_actual_total": 5721200,
+      "wmape_model": 0.037,
+      "wmape_baseline": 0.138
+    },
+    {
+      "as_of": "2026-06-29",
+      "store_id": "S2",
+      "next7_predicted_total": 4921200,
+      "next7_actual_total": 5072800,
+      "wmape_model": 0.051,
+      "wmape_baseline": 0.071
+    },
+    {
+      "as_of": "2026-06-29",
+      "store_id": "S3",
+      "next7_predicted_total": 4519600,
+      "next7_actual_total": 4382000,
+      "wmape_model": 0.037,
+      "wmape_baseline": 0.08
+    },
+    {
+      "as_of": "2026-06-29",
+      "store_id": "S4",
+      "next7_predicted_total": 8111600,
+      "next7_actual_total": 8069300,
+      "wmape_model": 0.061,
+      "wmape_baseline": 0.118
+    },
+    {
+      "as_of": "2026-06-29",
+      "store_id": "S5",
+      "next7_predicted_total": 4382300,
+      "next7_actual_total": 4467900,
+      "wmape_model": 0.05,
+      "wmape_baseline": 0.051
+    },
+    {
+      "as_of": "2026-06-29",
+      "store_id": "S6",
+      "next7_predicted_total": 4723800,
+      "next7_actual_total": 5036000,
+      "wmape_model": 0.062,
+      "wmape_baseline": 0.042
+    }
+  ],
   "figures": [
     "docs/figures/advice_1_validation.png",
     "docs/figures/advice_2_replay_outcome.png",
+    "docs/figures/forecast_1_replay.png",
     "docs/figures/price_spike_1_timeline.png",
     "docs/figures/price_spike_2_overall.png",
     "docs/figures/price_spike_3_per_item.png",
