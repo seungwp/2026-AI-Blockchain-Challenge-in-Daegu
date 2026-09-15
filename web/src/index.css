@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { font-family: system-ui, sans-serif; color: #111; background: #fff; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; overflow-x: hidden; }
+a { color: inherit; }
+button, input, select { font: inherit; }
+button, select, input { border: 1px solid #999; background: #fff; padding: .55rem; }
+.app { min-height: 100vh; }
+.wrap { width: min(100% - 2rem, 720px); margin: 0 auto; }
+header { border-bottom: 1px solid #ccc; }
+.header-row { display: flex; justify-content: space-between; align-items: center; gap: .75rem; padding: .8rem 0; }
+.header-tools { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; font-size: .8rem; }
+.content { padding: 1.25rem 0 5rem; }
+.stack { display: grid; gap: 1rem; }
+h1, h2, h3, p { margin: 0; }
+h1 { font-size: 1.35rem; }
+h2 { font-size: 1rem; }
+.muted, small { color: #555; }
+.login { display: grid; gap: 1rem; padding-top: 3rem; }
+label { display: grid; gap: .35rem; }
+.option, .item, .notice { display: grid; gap: .35rem; border: 1px solid #aaa; padding: .85rem; text-align: left; text-decoration: none; }
+.row { display: flex; justify-content: space-between; gap: .5rem; flex-wrap: wrap; border-bottom: 1px solid #ddd; padding: .55rem 0; }
+.bottom-nav { position: fixed; inset: auto 0 0; background: #fff; border-top: 1px solid #ccc; }
+.nav-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+.nav-grid a { padding: .8rem .25rem; text-align: center; text-decoration: none; }
+.nav-grid a.active { font-weight: 700; text-decoration: underline; }
+.table-wrap { overflow-x: auto; max-width: 100%; }
+table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+th, td { border: 1px solid #bbb; padding: .5rem; text-align: left; white-space: nowrap; }
+.chart { width: 100%; height: 260px; min-width: 0; }
+.leaflet-container { width: 100%; height: 240px; }
+code { overflow-wrap: anywhere; }
+@media (max-width: 430px) { .header-row { align-items: flex-start; flex-direction: column; } .header-tools { justify-content: flex-start; } }
