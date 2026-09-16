@@ -1,0 +1,59 @@
+/* 개발용 최소 스타일. 디자인팀이 전면 교체할 수 있도록 색·타이포 시스템을 만들지 않는다. */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+  color: #111;
+  background: #fff;
+}
+
+main { padding: 16px; max-width: 720px; margin: 0 auto; }
+
+header, footer { padding: 12px 16px; border-bottom: 1px solid #ccc; }
+footer { border-bottom: none; border-top: 1px solid #ccc; font-size: 13px; }
+
+h1 { font-size: 20px; margin: 16px 0 8px; }
+h2 { font-size: 17px; margin: 20px 0 8px; }
+h3 { font-size: 15px; margin: 12px 0 4px; }
+
+label { display: block; margin: 8px 0 4px; }
+
+input, select, button, textarea {
+  font: inherit;
+  padding: 10px;
+  min-height: 44px;           /* 모바일 터치 타겟 */
+  border: 1px solid #999;
+  background: #fff;
+  color: inherit;
+}
+
+button { cursor: pointer; }
+button:disabled { color: #888; cursor: not-allowed; }
+
+ul { padding-left: 18px; }
+li { margin: 4px 0; }
+
+section { margin: 16px 0; }
+
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; vertical-align: top; }
+
+.card { border: 1px solid #ccc; padding: 12px; margin: 8px 0; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.muted { color: #555; font-size: 13px; }
+.badge { border: 1px solid #999; padding: 1px 6px; font-size: 12px; }
+.error { border: 1px solid #b00; padding: 8px; }
+.notice { border: 1px dashed #999; padding: 8px; font-size: 13px; }
+.table-scroll { overflow-x: auto; max-width: 100%; }
+
+/* 긴 URL이 모바일에서 가로 스크롤을 만들지 않도록 */
+a { overflow-wrap: anywhere; }
+.card, .notice, p { overflow-wrap: break-word; }
+
+@media (max-width: 480px) {
+  /* 입력창만 한 줄 전체를 쓰고, 배지·버튼은 그대로 줄바꿈되게 둔다 */
+  .row > input { width: 100%; }
+}

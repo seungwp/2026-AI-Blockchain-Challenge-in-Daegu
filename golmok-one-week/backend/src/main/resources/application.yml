@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: golmok-one-week
+  profiles:
+    default: local
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+  jackson:
+    time-zone: Asia/Seoul
+
+server:
+  port: 8080
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+golmok:
+  cors-allowed-origins: http://localhost:3000
+  keys:
+    data-go-kr: ${DATA_GO_KR_KEY:}
+  # 외부 API 키는 환경변수로만 주입 (코드·yml에 직접 쓰지 않음)
+  providers:
+    weather: kma       # mock | kma
+    air-quality: mock  # mock | airkorea
+    festival: mock     # mock | tourapi
+    holiday: kasi      # mock | kasi
+    store-search: mock # mock | sbiz
+
+---
+# 실제 API 연동 시 사용할 키 자리 (값은 환경변수)
+spring:
+  config:
+    activate:
+      on-profile: local
+golmok:
+  keys:
+    data-go-kr: ${DATA_GO_KR_KEY:}

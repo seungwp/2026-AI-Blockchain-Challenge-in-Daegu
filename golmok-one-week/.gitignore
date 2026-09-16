@@ -1,0 +1,31 @@
+# Node / Next.js
+node_modules/
+.next/
+out/
+npm-debug.log*
+.env.local
+.env*.local
+
+# Gradle / Java
+.gradle/
+build/
+bin/
+*.class
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 논문 원문 (저작권 자료 - 커밋 금지). 목록·인용은 docs/coefficients.md 에만 남긴다.
+docs/papers/*.pdf
+docs/papers/*.png
+docs/papers/*.jpg
+
+# VS Code Java 언어 서버가 build/ 를 잠글 때 쓰는 대체 출력 디렉터리
+build-claude/
