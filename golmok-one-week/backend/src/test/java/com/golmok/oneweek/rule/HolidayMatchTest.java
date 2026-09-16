@@ -28,7 +28,7 @@ class HolidayMatchTest {
     }
 
     private WeatherDay day(LocalDate d) {
-        return new WeatherDay(d, "금", "맑음", 25.0, 15.0, 10, 0.0, 50, "보통", false, 6L);
+        return new WeatherDay(d, "금", "맑음", 25.0, 15.0, 10, 0.0, 50, false, 6L);
     }
 
     @SuppressWarnings("unchecked")

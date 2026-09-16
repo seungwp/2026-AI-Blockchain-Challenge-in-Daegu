@@ -242,7 +242,6 @@ public class KmaWeatherProvider implements WeatherProvider {
                     pop != null ? pop : demo.precipitationProbability(),
                     mm != null ? mm : (real ? 0.0 : demo.precipitationMm()),
                     reh != null ? reh : (real ? null : demo.humidity()),   // 중기예보에는 습도가 없다
-                    null,                 // 미세먼지는 AirQualityProvider 가 채운다
                     !real,                // 실제 예보로 채워졌으면 데모 아님
                     SourceCatalog.WEATHER_API_ID);
         }

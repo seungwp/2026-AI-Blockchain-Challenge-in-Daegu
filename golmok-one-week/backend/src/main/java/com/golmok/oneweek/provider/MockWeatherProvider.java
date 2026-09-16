@@ -39,7 +39,7 @@ public class MockWeatherProvider implements WeatherProvider {
             LocalDate d = start.plusDays(i);
             Pattern p = WEEK.get(i % WEEK.size());
             out.add(new WeatherDay(d, DOW[d.getDayOfWeek().getValue() - 1], p.condition(), p.tMax(), p.tMin(),
-                    p.pop(), p.mm(), p.reh(), null, true, SourceCatalog.WEATHER_API_ID));
+                    p.pop(), p.mm(), p.reh(), true, SourceCatalog.WEATHER_API_ID));
         }
         return out;
     }

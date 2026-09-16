@@ -28,15 +28,17 @@ public class DataSeeder {
 
     @Bean
     public ApplicationRunner seedData(SourceRepository sources, StoreRepository stores,
-                                      FestivalEventRepository festivals, MenuRuleRepository rules) {
+                                      FestivalEventRepository festivals, MenuRuleRepository rules,
+                                      IngredientPriceRepository prices) {
         return args -> {
             if (sources.count() > 0) return;
             seedSources(sources);
             seedStores(stores);
             seedFestivals(festivals);
             seedRules(rules);
-            log.info("seed 완료: 출처 {}건, 가게 {}건, 행사 {}건, 규칙 {}건",
-                    sources.count(), stores.count(), festivals.count(), rules.count());
+            seedIngredientPrices(prices);
+            log.info("seed 완료: 출처 {}건, 가게 {}건, 행사 {}건, 규칙 {}건, 식자재 {}건",
+                    sources.count(), stores.count(), festivals.count(), rules.count(), prices.count());
         };
     }
 
@@ -126,6 +128,29 @@ public class DataSeeder {
                     .recommendationText(c[4])
                     .sourceId(Long.parseLong(c[5]))
                     .confidence(Confidence.valueOf(c[6]))
+                    .build());
+        }
+        repo.saveAll(out);
+    }
+
+    /**
+     * KAMIS 대구 소매가격 + 급등확률 모델 결과. 원본은 pipeline/price_spike_model.py 출력을
+     * 옮긴 resources/data/ingredient_prices.csv.
+     * 컬럼: item,unit,price,priceDate,probSpike,alert,vsNormalRatio
+     */
+    private void seedIngredientPrices(IngredientPriceRepository repo) {
+        List<IngredientPrice> out = new ArrayList<>();
+        for (String[] c : readCsv("/data/ingredient_prices.csv", 7)) {
+            out.add(IngredientPrice.builder()
+                    .item(c[0])
+                    .unit(c[1])
+                    .price(Double.parseDouble(c[2]))
+                    .priceDate(LocalDate.parse(c[3]))
+                    .probSpike(Double.parseDouble(c[4]))
+                    .alert(Boolean.parseBoolean(c[5]))
+                    .vsNormalRatio(Double.parseDouble(c[6]))
+                    .sourceId(SourceCatalog.KAMIS_PRICE_ID)
+                    .demoData(false)
                     .build());
         }
         repo.saveAll(out);

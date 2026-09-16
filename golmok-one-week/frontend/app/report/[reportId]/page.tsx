@@ -7,6 +7,7 @@ import ReportSummary from "@/components/report/ReportSummary";
 import WeatherList from "@/components/report/WeatherList";
 import CommercialAreaSummary from "@/components/report/CommercialAreaSummary";
 import FestivalList from "@/components/report/FestivalList";
+import IngredientPriceList from "@/components/report/IngredientPriceList";
 import DailyGuideList from "@/components/report/DailyGuideList";
 import SourceList from "@/components/report/SourceList";
 import Disclaimer from "@/components/common/Disclaimer";
@@ -38,6 +39,7 @@ export default function ReportPage() {
           <WeatherList days={report.weather} />
           <CommercialAreaSummary area={report.commercialArea} />
           <FestivalList festivals={report.festivals} />
+          <IngredientPriceList prices={report.ingredientPrices} />
           <DailyGuideList guides={report.dailyGuides} />
           <SourceList sources={report.sources} />
           <Disclaimer text={report.disclaimer} />

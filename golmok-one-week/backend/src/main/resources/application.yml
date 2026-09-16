@@ -23,10 +23,11 @@ golmok:
   cors-allowed-origins: http://localhost:3000
   keys:
     data-go-kr: ${DATA_GO_KR_KEY:}
+    kamis-cert-key: ${KAMIS_CERT_KEY:}
+    kamis-cert-id: ${KAMIS_CERT_ID:}
   # 외부 API 키는 환경변수로만 주입 (코드·yml에 직접 쓰지 않음)
   providers:
     weather: kma       # mock | kma
-    air-quality: mock  # mock | airkorea
     festival: mock     # mock | tourapi
     holiday: kasi      # mock | kasi
     store-search: mock # mock | sbiz
@@ -40,3 +41,5 @@ spring:
 golmok:
   keys:
     data-go-kr: ${DATA_GO_KR_KEY:}
+    kamis-cert-key: ${KAMIS_CERT_KEY:}
+    kamis-cert-id: ${KAMIS_CERT_ID:}

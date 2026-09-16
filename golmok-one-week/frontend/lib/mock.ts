@@ -48,6 +48,32 @@ export function mockClassify(menuName: string): MenuClassification {
   return { menuCategory: KEYWORDS[hit], confidence: "HIGH", matchedKeywords: [hit], isDemoData: true };
 }
 
+const INGREDIENT_PRICES: Record<string, { unit: string; price: number; probSpike: number; alert: boolean; vsNormalRatio: number }> = {
+  계란: { unit: "30구(1판)", price: 7247, probSpike: 0.03, alert: false, vsNormalRatio: 0.16 },
+  깐마늘: { unit: "1kg", price: 9280, probSpike: 0.01, alert: false, vsNormalRatio: -0.19 },
+  닭: { unit: "1kg", price: 4269, probSpike: 0.01, alert: false, vsNormalRatio: -0.24 },
+  대파: { unit: "1kg", price: 2573, probSpike: 0.05, alert: false, vsNormalRatio: -0.21 },
+  무: { unit: "1개", price: 2470, probSpike: 0.02, alert: false, vsNormalRatio: -0.07 },
+  배추: { unit: "1포기", price: 5363, probSpike: 0.04, alert: false, vsNormalRatio: -0.22 },
+  삼겹살: { unit: "100g", price: 2918, probSpike: 0.0, alert: false, vsNormalRatio: 0.09 },
+  양파: { unit: "1kg", price: 1390, probSpike: 0.05, alert: false, vsNormalRatio: -0.38 },
+};
+
+const MENU_INGREDIENTS: Partial<Record<MenuCategory, string[]>> = {
+  치킨: ["닭"],
+  구이: ["삼겹살"],
+  국물요리: ["대파", "무", "배추"],
+  분식: ["대파", "양파", "계란"],
+  중식: ["양파", "대파", "깐마늘"],
+  보양식: ["닭", "깐마늘"],
+};
+
+function demoIngredientPrices(category: MenuCategory, priceDate: string): AnalysisReport["ingredientPrices"] {
+  return (MENU_INGREDIENTS[category] ?? []).map((item) => ({
+    item, priceDate, isDemoData: true, sourceId: 14, ...INGREDIENT_PRICES[item],
+  }));
+}
+
 export function mockSources(): Source[] {
   return [
     {
@@ -67,13 +93,13 @@ export function mockSources(): Source[] {
 
 function demoWeather(): WeatherDay[] {
   const base = [
-    { condition: "맑음", tempMax: 27, tempMin: 18, pop: 10, mm: 0, reh: 55, pm10: "보통" },
-    { condition: "흐림", tempMax: 25, tempMin: 19, pop: 30, mm: 0, reh: 70, pm10: "나쁨" },
-    { condition: "비", tempMax: 22, tempMin: 19, pop: 80, mm: 12.5, reh: 90, pm10: "좋음" },
-    { condition: "비", tempMax: 23, tempMin: 19.5, pop: 60, mm: 5, reh: 85, pm10: "좋음" },
-    { condition: "맑음", tempMax: 31, tempMin: 21, pop: 10, mm: 0, reh: 50, pm10: "보통" },
-    { condition: "맑음", tempMax: 33.5, tempMin: 23, pop: 0, mm: 0, reh: 45, pm10: "보통" },
-    { condition: "흐림", tempMax: 29, tempMin: 20, pop: 20, mm: 0, reh: 65, pm10: "나쁨" },
+    { condition: "맑음", tempMax: 27, tempMin: 18, pop: 10, mm: 0, reh: 55 },
+    { condition: "흐림", tempMax: 25, tempMin: 19, pop: 30, mm: 0, reh: 70 },
+    { condition: "비", tempMax: 22, tempMin: 19, pop: 80, mm: 12.5, reh: 90 },
+    { condition: "비", tempMax: 23, tempMin: 19.5, pop: 60, mm: 5, reh: 85 },
+    { condition: "맑음", tempMax: 31, tempMin: 21, pop: 10, mm: 0, reh: 50 },
+    { condition: "맑음", tempMax: 33.5, tempMin: 23, pop: 0, mm: 0, reh: 45 },
+    { condition: "흐림", tempMax: 29, tempMin: 20, pop: 20, mm: 0, reh: 65 },
   ];
   const dow = ["월", "화", "수", "목", "금", "토", "일"];
   return base.map((b, i) => {
@@ -83,7 +109,7 @@ function demoWeather(): WeatherDay[] {
       date: d.toISOString().slice(0, 10),
       dayOfWeek: dow[(d.getDay() + 6) % 7],
       condition: b.condition, tempMax: b.tempMax, tempMin: b.tempMin,
-      precipitationProbability: b.pop, precipitationMm: b.mm, humidity: b.reh, pm10Grade: b.pm10,
+      precipitationProbability: b.pop, precipitationMm: b.mm, humidity: b.reh,
       isDemoData: true, sourceId: 6,
     };
   });
@@ -134,6 +160,7 @@ export function mockReport(
       competitionLevel: "높음", note: "반경 500m 기준 음식점 8곳, 유사 업종 3곳 (데모 데이터)",
       isDemoData: true, sourceIds: [1],
     },
+    ingredientPrices: demoIngredientPrices(menuCategory, weather[0].date),
     festivals: [
       {
         id: 1, name: "대구치맥페스티벌 (데모)", startDate: weather[2].date, endDate: weather[5].date,
@@ -145,7 +172,7 @@ export function mockReport(
     ],
     dailyGuides: weather.map((w) => ({
       date: w.date, dayOfWeek: w.dayOfWeek,
-      weatherSummary: `${w.condition} · 최고 ${w.tempMax}℃ / 최저 ${w.tempMin}℃ · 강수확률 ${w.precipitationProbability}% · 미세먼지 ${w.pm10Grade}`,
+      weatherSummary: `${w.condition} · 최고 ${w.tempMax}℃ / 최저 ${w.tempMin}℃ · 강수확률 ${w.precipitationProbability}%`,
       guides: (w.precipitationProbability ?? 0) >= 60 ? [topActions[0]] : [],
     })),
     sources: mockSources(),

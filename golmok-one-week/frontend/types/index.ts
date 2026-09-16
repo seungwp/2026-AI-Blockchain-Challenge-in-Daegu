@@ -13,7 +13,7 @@ export type Priority = "HIGH" | "MEDIUM" | "LOW";
 export type RecommendationType =
   | "INVENTORY" | "STAFFING" | "MENU" | "DELIVERY" | "MARKETING" | "NOTICE";
 export type ConditionType =
-  | "RAIN" | "HOT" | "COLD" | "DUST" | "WEEKEND" | "HOLIDAY" | "FESTIVAL" | "COMPETITION";
+  | "RAIN" | "HOT" | "COLD" | "WEEKEND" | "HOLIDAY" | "FESTIVAL" | "COMPETITION" | "PRICE_SPIKE";
 export type SourceType = "PAPER" | "PUBLIC_DATA" | "API" | "FESTIVAL" | "INDUSTRY" | "DEMO";
 
 export interface Store {
@@ -45,7 +45,6 @@ export interface WeatherDay {
   precipitationProbability: number | null;
   precipitationMm: number | null;
   humidity: number | null;
-  pm10Grade: string | null;
   isDemoData: boolean;
   sourceId: number | null;
 }
@@ -73,6 +72,18 @@ export interface FestivalEvent {
   distanceMeters: number | null;
   impactLevel: string | null;
   impactNote: string | null;
+  isDemoData: boolean;
+  sourceId: number | null;
+}
+
+export interface IngredientPrice {
+  item: string;
+  unit: string | null;
+  price: number | null;
+  priceDate: string | null;
+  probSpike: number | null;
+  alert: boolean;
+  vsNormalRatio: number | null;
   isDemoData: boolean;
   sourceId: number | null;
 }
@@ -120,6 +131,7 @@ export interface AnalysisReport {
   weather: WeatherDay[];
   commercialArea: CommercialArea | null;
   festivals: FestivalEvent[];
+  ingredientPrices: IngredientPrice[];
   dailyGuides: DailyGuide[];
   sources: Source[];
   isDemoData: boolean;

@@ -20,6 +20,7 @@ public class AnalysisReport {
     @Lob private String weeklyWeatherJson;
     @Lob private String commercialAreaJson;
     @Lob private String festivalJson;
+    @Lob private String ingredientPricesJson;
     @Lob private String recommendationsJson;
     @Column(name = "is_demo_data") private boolean demoData;
     private LocalDateTime createdAt;

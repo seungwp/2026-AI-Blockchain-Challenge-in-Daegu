@@ -13,7 +13,7 @@ export default function WeatherList({ days }: { days: WeatherDay[] }) {
         <table>
           <thead>
             <tr>
-              <th>날짜</th><th>요일</th><th>날씨</th><th>최고/최저</th><th>강수확률</th><th>강수량</th><th>습도</th><th>미세먼지</th>
+              <th>날짜</th><th>요일</th><th>날씨</th><th>최고/최저</th><th>강수확률</th><th>강수량</th><th>습도</th>
             </tr>
           </thead>
           <tbody>
@@ -26,14 +26,13 @@ export default function WeatherList({ days }: { days: WeatherDay[] }) {
                 <td>{d.precipitationProbability}%</td>
                 <td>{d.precipitationMm}mm</td>
                 <td>{d.humidity == null ? "-" : `${d.humidity}%`}</td>
-                <td>{d.pm10Grade}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
       <p className="muted">
-        기온·강수·습도는 기상청 예보입니다. 미세먼지는 아직 예시 값입니다.
+        기온·강수·습도는 기상청 예보입니다.
         4일 뒤부터는 동네 단위가 아닌 대구 전역 기준 중기예보라 습도가 제공되지 않습니다.
       </p>
     </section>

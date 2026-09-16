@@ -8,7 +8,7 @@ public final class Enums {
     private Enums() {}
 
     public enum SourceType { PAPER, PUBLIC_DATA, API, FESTIVAL, INDUSTRY, DEMO }
-    public enum ConditionType { RAIN, HOT, COLD, DUST, WEEKEND, HOLIDAY, FESTIVAL, COMPETITION }
+    public enum ConditionType { RAIN, HOT, COLD, WEEKEND, HOLIDAY, FESTIVAL, COMPETITION, PRICE_SPIKE }
     public enum RecommendationType { INVENTORY, STAFFING, MENU, DELIVERY, MARKETING, NOTICE }
     public enum Confidence { HIGH, MEDIUM, LOW }
     public enum Priority { HIGH, MEDIUM, LOW }

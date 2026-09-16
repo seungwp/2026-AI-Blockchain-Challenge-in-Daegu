@@ -19,7 +19,7 @@ public final class ReportDtos {
     /** 하루치 날씨 (예보). */
     public record WeatherDay(LocalDate date, String dayOfWeek, String condition, Double tempMax, Double tempMin,
                              Integer precipitationProbability, Double precipitationMm, Integer humidity,
-                             String pm10Grade, boolean isDemoData, Long sourceId) {}
+                             boolean isDemoData, Long sourceId) {}
 
     /** 주변 상권 요약. */
     public record CommercialArea(String district, String dong, Integer totalStores, Integer sameCategoryStores,
@@ -38,9 +38,15 @@ public final class ReportDtos {
     /** 요일별 운영 가이드. */
     public record DailyGuide(LocalDate date, String dayOfWeek, String weatherSummary, List<Recommendation> guides) {}
 
+    /** 식자재 참고 가격 1건. price·vsNormalRatio 는 실측치, probSpike 는 모델 추정값(정밀도 낮음, 확인용). */
+    public record IngredientPriceInfo(String item, String unit, Double price, LocalDate priceDate,
+                                      Double probSpike, boolean alert, Double vsNormalRatio,
+                                      boolean isDemoData, Long sourceId) {}
+
     public record ReportResponse(Long reportId, StoreResponse store, String mainMenu, MenuCategory menuCategory,
                                  LocalDate analysisStartDate, LocalDate analysisEndDate, String summary,
                                  List<Recommendation> topActions, List<WeatherDay> weather, CommercialArea commercialArea,
-                                 List<FestivalInfo> festivals, List<DailyGuide> dailyGuides, List<SourceResponse> sources,
+                                 List<FestivalInfo> festivals, List<IngredientPriceInfo> ingredientPrices,
+                                 List<DailyGuide> dailyGuides, List<SourceResponse> sources,
                                  boolean isDemoData, String demoNotice, String disclaimer) {}
 }

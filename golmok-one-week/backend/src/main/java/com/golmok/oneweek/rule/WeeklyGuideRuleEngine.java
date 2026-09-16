@@ -22,7 +22,8 @@ public class WeeklyGuideRuleEngine {
     private final MenuRuleRepository menuRuleRepository;
 
     public record Input(MenuCategory menuCategory, List<WeatherDay> weather, List<FestivalInfo> festivals,
-                        CommercialArea commercialArea, Map<LocalDate, String> holidays) {}
+                        CommercialArea commercialArea, Map<LocalDate, String> holidays,
+                        List<IngredientPriceInfo> ingredientPrices) {}
 
     public record Output(List<Recommendation> topActions, List<DailyGuide> dailyGuides, String summary) {}
 
@@ -61,6 +62,16 @@ public class WeeklyGuideRuleEngine {
             }
         }
 
+        // 식자재 급등확률 규칙도 날짜와 무관하게 카테고리별 품목을 한 번만 확인한다
+        for (MenuRule rule : rules) {
+            if (rule.getConditionType() != ConditionType.PRICE_SPIKE) continue;
+            in.ingredientPrices().stream().filter(IngredientPriceInfo::alert).findFirst().ifPresent(p -> {
+                String basis = "%s 급등확률 %.0f%% (평년 대비 %+.0f%%)"
+                        .formatted(p.item(), p.probSpike() * 100, p.vsNormalRatio() * 100);
+                all.add(toRecommendation(rule, null, basis, false));
+            });
+        }
+
         List<Recommendation> top = topThree(all);
         return new Output(top, daily, summarize(in, all));
     }
@@ -75,8 +86,6 @@ public class WeeklyGuideRuleEngine {
                     ? Optional.of("%s 최고기온 %.1f℃".formatted(label, day.tempMax())) : Optional.empty();
             case COLD -> day.tempMin() != null && day.tempMin() <= doubleValue(rule.getConditionValue(), 5)
                     ? Optional.of("%s 최저기온 %.1f℃".formatted(label, day.tempMin())) : Optional.empty();
-            case DUST -> isBadDust(day.pm10Grade())
-                    ? Optional.of("%s 미세먼지 %s".formatted(label, day.pm10Grade())) : Optional.empty();
             case WEEKEND -> isWeekend(day.date())
                     ? Optional.of("%s 주말".formatted(label)) : Optional.empty();
             case FESTIVAL -> {
@@ -90,6 +99,7 @@ public class WeeklyGuideRuleEngine {
             case HOLIDAY -> holidayCode != null && holidayCode.equals(rule.getConditionValue())
                     ? Optional.of("%s %s".formatted(label, holidayLabel(holidayCode))) : Optional.empty();
             case COMPETITION -> Optional.empty();
+            case PRICE_SPIKE -> Optional.empty();   // 날짜와 무관, 위에서 1회만 처리한다
         };
     }
 
@@ -148,7 +158,6 @@ public class WeeklyGuideRuleEngine {
             case RAIN -> day.precipitationProbability() != null && day.precipitationProbability() >= 60;
             case HOT -> day.tempMax() != null && day.tempMax() >= 33;
             case COLD -> day.tempMin() != null && day.tempMin() <= 0;
-            case DUST -> "매우나쁨".equals(day.pm10Grade());
             case FESTIVAL -> nearby.stream().anyMatch(f -> f.distanceMeters() != null && f.distanceMeters() <= 1000);
             case HOLIDAY -> true;
             default -> false;
@@ -180,11 +189,11 @@ public class WeeklyGuideRuleEngine {
             case RAIN -> "비 예보";
             case HOT -> "고온";
             case COLD -> "저온";
-            case DUST -> "미세먼지";
             case WEEKEND -> "주말";
             case HOLIDAY -> "명절";
             case FESTIVAL -> "행사";
             case COMPETITION -> "경쟁 상권";
+            case PRICE_SPIKE -> "식자재 가격";
         };
         return "%s · %s".formatted(when, what);
     }
@@ -205,8 +214,8 @@ public class WeeklyGuideRuleEngine {
             case HOT -> 3;
             case COLD -> 4;
             case RAIN -> 5;
-            case DUST -> 6;
-            case COMPETITION -> 7;
+            case COMPETITION -> 6;
+            case PRICE_SPIKE -> 7;
         };
     }
 
@@ -223,7 +232,6 @@ public class WeeklyGuideRuleEngine {
     private String summarize(Input in, List<Recommendation> all) {
         long rainDays = in.weather().stream().filter(d -> d.precipitationProbability() != null && d.precipitationProbability() >= 60).count();
         long hotDays = in.weather().stream().filter(d -> d.tempMax() != null && d.tempMax() >= 30).count();
-        long dustDays = in.weather().stream().filter(d -> isBadDust(d.pm10Grade())).count();
         String fest = in.festivals().stream()
                 .filter(f -> f.distanceMeters() != null && f.distanceMeters() <= 3000)
                 .map(FestivalInfo::name).findFirst().orElse(null);
@@ -232,7 +240,6 @@ public class WeeklyGuideRuleEngine {
         List<String> parts = new ArrayList<>();
         if (rainDays > 0) parts.add("비 예보 %d일".formatted(rainDays));
         if (hotDays > 0) parts.add("30℃ 이상 %d일".formatted(hotDays));
-        if (dustDays > 0) parts.add("미세먼지 나쁨 %d일".formatted(dustDays));
         if (fest != null) parts.add("인근 행사 '%s'".formatted(fest));
         if (in.commercialArea() != null) parts.add("경쟁 강도 %s".formatted(in.commercialArea().competitionLevel()));
         sb.append(parts.isEmpty() ? "특이 조건이 적습니다" : String.join(", ", parts));
@@ -241,16 +248,12 @@ public class WeeklyGuideRuleEngine {
     }
 
     private String weatherSummary(WeatherDay d) {
-        return "%s · 최고 %.1f℃ / 최저 %.1f℃ · 강수확률 %d%% · 미세먼지 %s"
-                .formatted(d.condition(), d.tempMax(), d.tempMin(), d.precipitationProbability(), d.pm10Grade());
+        return "%s · 최고 %.1f℃ / 최저 %.1f℃ · 강수확률 %d%%"
+                .formatted(d.condition(), d.tempMax(), d.tempMin(), d.precipitationProbability());
     }
 
     private boolean isWeekend(LocalDate d) {
         return d.getDayOfWeek() == DayOfWeek.SATURDAY || d.getDayOfWeek() == DayOfWeek.SUNDAY;
-    }
-
-    private boolean isBadDust(String grade) {
-        return "나쁨".equals(grade) || "매우나쁨".equals(grade);
     }
 
     private int intValue(String v, int fallback) {

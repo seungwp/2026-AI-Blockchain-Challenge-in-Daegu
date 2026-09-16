@@ -9,9 +9,11 @@ import com.golmok.oneweek.entity.AnalysisReport;
 import com.golmok.oneweek.entity.Enums.MenuCategory;
 import com.golmok.oneweek.entity.Store;
 import com.golmok.oneweek.exception.NotFoundException;
-import com.golmok.oneweek.provider.Providers.AirQualityProvider;
 import com.golmok.oneweek.provider.Providers.FestivalProvider;
 import com.golmok.oneweek.provider.Providers.HolidayProvider;
+import com.golmok.oneweek.repository.IngredientPriceRepository;
+import com.golmok.oneweek.provider.KamisPriceProvider;
+import com.golmok.oneweek.provider.KamisPriceProvider.LivePrice;
 import com.golmok.oneweek.provider.Providers.WeatherProvider;
 import com.golmok.oneweek.repository.AnalysisReportRepository;
 import com.golmok.oneweek.repository.SourceRepository;
@@ -32,7 +34,7 @@ public class ReportService {
     public static final String DISCLAIMER =
             "본 결과는 공공데이터 및 연구자료를 기반으로 한 운영 참고용 제안이며, 실제 매출을 보장하지 않습니다.";
     public static final String DEMO_NOTICE =
-            "가게·상권·축제·날씨는 공공데이터 실데이터입니다. 미세먼지만 아직 예시 값이며, 에어코리아 API 연동 시 같은 형식으로 교체됩니다.";
+            "일부 데이터는 아직 예시 값입니다. 아래 각 항목의 '데모 데이터' 표시로 어느 부분인지 확인할 수 있습니다.";
     private static final int DAYS = 7;
 
     private final StoreService storeService;
@@ -40,9 +42,10 @@ public class ReportService {
     private final CommercialAreaService commercialAreaService;
     private final WeeklyGuideRuleEngine ruleEngine;
     private final WeatherProvider weatherProvider;
-    private final AirQualityProvider airQualityProvider;
     private final FestivalProvider festivalProvider;
     private final HolidayProvider holidayProvider;
+    private final IngredientPriceRepository ingredientPriceRepository;
+    private final KamisPriceProvider kamisPriceProvider;
     private final AnalysisReportRepository reportRepository;
     private final SourceRepository sourceRepository;
     private final ObjectMapper objectMapper;
@@ -61,9 +64,16 @@ public class ReportService {
         List<FestivalInfo> festivals = festivals(store, start, end);
         CommercialArea area = commercialAreaService.summarize(store);
         Map<LocalDate, String> holidays = holidayProvider.classify(start, end);
+        List<IngredientPriceInfo> prices = ingredientPrices(category);
 
         var output = ruleEngine.evaluate(
-                new WeeklyGuideRuleEngine.Input(category, weather, festivals, area, holidays));
+                new WeeklyGuideRuleEngine.Input(category, weather, festivals, area, holidays, prices));
+
+        boolean anyDemo = store.isDemoData()
+                || weather.stream().anyMatch(WeatherDay::isDemoData)
+                || festivals.stream().anyMatch(FestivalInfo::isDemoData)
+                || (area != null && area.isDemoData())
+                || prices.stream().anyMatch(IngredientPriceInfo::isDemoData);
 
         AnalysisReport saved = reportRepository.save(AnalysisReport.builder()
                 .storeId(store.getId())
@@ -75,11 +85,36 @@ public class ReportService {
                 .weeklyWeatherJson(write(weather))
                 .commercialAreaJson(write(area))
                 .festivalJson(write(festivals))
+                .ingredientPricesJson(write(prices))
                 .recommendationsJson(write(new StoredRecommendations(output.topActions(), output.dailyGuides())))
-                .demoData(true)   // 미세먼지가 아직 예시 값이라 리포트에 안내 문구를 남긴다
+                .demoData(anyDemo)   // 어느 한 조각이라도 예시 값이면 리포트 전체에 안내를 남긴다
                 .build());
 
-        return toResponse(saved, StoreResponse.from(store), weather, area, festivals, output.topActions(), output.dailyGuides());
+        return toResponse(saved, StoreResponse.from(store), weather, area, festivals, prices,
+                output.topActions(), output.dailyGuides());
+    }
+
+    /**
+     * 메뉴 카테고리에 대응하는 KAMIS 품목의 가격·급등확률을 조회한다.
+     * 가격·기준일은 요청 시점에 KAMIS 를 실시간으로 조회해 채우고(실패 시 최근 시드 스냅샷으로 대체),
+     * 급등확률은 학습된 모델의 결과라 재계산하지 않고 매일 갱신되는 시드 스냅샷 값을 그대로 쓴다.
+     */
+    private List<IngredientPriceInfo> ingredientPrices(MenuCategory category) {
+        List<String> items = MenuIngredientMap.itemsFor(category);
+        if (items.isEmpty()) return List.of();
+
+        Map<String, LivePrice> live = kamisPriceProvider.fetchLatest(items);
+        return ingredientPriceRepository.findByItemIn(items).stream()
+                .map(p -> {
+                    LivePrice l = live.get(p.getItem());
+                    double price = l != null ? l.price() : p.getPrice();
+                    LocalDate date = l != null ? l.date() : p.getPriceDate();
+                    Double ratio = l != null && l.normalPrice() != null
+                            ? (l.price() / l.normalPrice() - 1) : p.getVsNormalRatio();
+                    return new IngredientPriceInfo(p.getItem(), p.getUnit(), price, date, p.getProbSpike(),
+                            p.isAlert(), ratio, l == null && p.isDemoData(), p.getSourceId());
+                })
+                .toList();
     }
 
     public ReportResponse get(Long reportId) {
@@ -89,43 +124,36 @@ public class ReportService {
         List<WeatherDay> weather = read(report.getWeeklyWeatherJson(), new TypeReference<>() {});
         CommercialArea area = read(report.getCommercialAreaJson(), new TypeReference<>() {});
         List<FestivalInfo> festivals = read(report.getFestivalJson(), new TypeReference<>() {});
+        List<IngredientPriceInfo> prices = read(report.getIngredientPricesJson(), new TypeReference<>() {});
         StoredRecommendations rec = read(report.getRecommendationsJson(), new TypeReference<>() {});
-        return toResponse(report, store, weather, area, festivals, rec.topActions(), rec.dailyGuides());
+        return toResponse(report, store, weather, area, festivals, prices, rec.topActions(), rec.dailyGuides());
     }
 
     /** 리포트에 인용된 모든 출처를 모아서 응답에 함께 실어준다. */
     private ReportResponse toResponse(AnalysisReport report, StoreResponse store, List<WeatherDay> weather,
                                       CommercialArea area, List<FestivalInfo> festivals,
+                                      List<IngredientPriceInfo> prices,
                                       List<Recommendation> topActions, List<DailyGuide> dailyGuides) {
         Set<Long> ids = new LinkedHashSet<>();
         topActions.forEach(r -> ids.addAll(r.sourceIds()));
         dailyGuides.forEach(g -> g.guides().forEach(r -> ids.addAll(r.sourceIds())));
         weather.stream().map(WeatherDay::sourceId).filter(Objects::nonNull).forEach(ids::add);
         festivals.stream().map(FestivalInfo::sourceId).filter(Objects::nonNull).forEach(ids::add);
+        prices.stream().map(IngredientPriceInfo::sourceId).filter(Objects::nonNull).forEach(ids::add);
         if (area != null && area.sourceIds() != null) ids.addAll(area.sourceIds());
 
         List<SourceResponse> sources = sourceRepository.findAllById(ids).stream().map(SourceResponse::from).toList();
 
         return new ReportResponse(report.getId(), store, report.getMainMenu(), report.getMenuCategory(),
                 report.getAnalysisStartDate(), report.getAnalysisEndDate(), report.getSummary(),
-                topActions, weather, area, festivals, dailyGuides, sources,
+                topActions, weather, area, festivals, prices, dailyGuides, sources,
                 report.isDemoData(), report.isDemoData() ? DEMO_NOTICE : null, DISCLAIMER);
     }
 
     private List<WeatherDay> weather(Store store, LocalDate start) {
         double lat = store.getLatitude() == null ? 35.8714 : store.getLatitude();
         double lon = store.getLongitude() == null ? 128.6014 : store.getLongitude();
-        List<WeatherDay> days = weatherProvider.weekly(lat, lon, start, DAYS);
-        List<String> dust = airQualityProvider.pm10Grades(lat, lon, start, DAYS);
-        List<WeatherDay> merged = new ArrayList<>();
-        for (int i = 0; i < days.size(); i++) {
-            WeatherDay d = days.get(i);
-            String grade = i < dust.size() ? dust.get(i) : d.pm10Grade();
-            merged.add(new WeatherDay(d.date(), d.dayOfWeek(), d.condition(), d.tempMax(), d.tempMin(),
-                    d.precipitationProbability(), d.precipitationMm(), d.humidity(), grade,
-                    d.isDemoData(), d.sourceId()));
-        }
-        return merged;
+        return weatherProvider.weekly(lat, lon, start, DAYS);
     }
 
     /** 행사별 거리와 영향 구분(1km/3km)을 채운다. */

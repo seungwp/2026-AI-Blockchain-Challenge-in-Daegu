@@ -26,11 +26,6 @@ public final class Providers {
         List<WeatherDay> weekly(double latitude, double longitude, LocalDate start, int days);
     }
 
-    public interface AirQualityProvider {
-        /** 날짜별 PM10 등급(좋음/보통/나쁨/매우나쁨). */
-        List<String> pm10Grades(double latitude, double longitude, LocalDate start, int days);
-    }
-
     public interface FestivalProvider {
         /** 기간과 겹치는 행사 목록 (거리 계산 전). */
         List<FestivalInfo> findFestivals(LocalDate start, LocalDate end);
