@@ -223,10 +223,8 @@ public class KmaWeatherProvider implements WeatherProvider {
 
         WeatherDay toWeatherDay(LocalDate date, WeatherDay demo) {
             boolean real = hasShortTerm() || wide;
-            Double max = tMax != null ? tMax : temps.stream().mapToDouble(Double::doubleValue).max().stream()
-                    .boxed().findFirst().orElse(null);
-            Double min = tMin != null ? tMin : temps.stream().mapToDouble(Double::doubleValue).min().stream()
-                    .boxed().findFirst().orElse(null);
+            Double max = tMax != null ? tMax : orNull(temps.stream().mapToDouble(Double::doubleValue).max());
+            Double min = tMin != null ? tMin : orNull(temps.stream().mapToDouble(Double::doubleValue).min());
             String cond = pty != null ? pty
                     : condition != null ? condition
                     : skyCounts.entrySet().stream().max(Map.Entry.comparingByValue())
@@ -245,6 +243,10 @@ public class KmaWeatherProvider implements WeatherProvider {
                     !real,                // 실제 예보로 채워졌으면 데모 아님
                     SourceCatalog.WEATHER_API_ID);
         }
+    }
+
+    private static Double orNull(OptionalDouble v) {
+        return v.isPresent() ? v.getAsDouble() : null;
     }
 
     private static String sky(String code) {

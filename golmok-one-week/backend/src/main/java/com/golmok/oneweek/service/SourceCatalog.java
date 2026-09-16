@@ -8,7 +8,7 @@ package com.golmok.oneweek.service;
 public final class SourceCatalog {
     private SourceCatalog() {}
 
-    public static final Long SBIZ_COMMERCIAL_ID = 1L;   // 소상공인시장진흥공단 상가(상권)정보
+    public static final Long STORE_LICENSE_ID = 1L;    // 행정안전부 식품_일반음식점 인허가 정보
     public static final Long WEATHER_API_ID = 6L;       // 기상청 기상자료개방포털
     public static final Long FESTIVAL_TOURAPI_ID = 13L; // 한국관광공사 TourAPI 축제 정보
     public static final Long KAMIS_PRICE_ID = 14L;      // KAMIS 대구 소매가격 및 급등확률 모델

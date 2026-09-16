@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.List;
 
-/** 데모 행사: H2에 seed 된 대구 행사에서 기간이 겹치는 것을 돌려준다. */
+/** H2에 seed 된 대구 축제 실데이터(TourAPI)에서 기간이 겹치는 것을 돌려준다. */
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "golmok.providers.festival", havingValue = "mock", matchIfMissing = true)

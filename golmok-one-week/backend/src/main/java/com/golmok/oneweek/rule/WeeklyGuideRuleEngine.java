@@ -121,17 +121,9 @@ public class WeeklyGuideRuleEngine {
     private static int[] distanceBand(String value) {
         if (value != null && value.contains("-")) {
             String[] p = value.split("-", 2);
-            return new int[]{parseOr(p[0], 0), parseOr(p[1], 3000)};
+            return new int[]{intValue(p[0], 0), intValue(p[1], 3000)};
         }
-        return new int[]{-1, parseOr(value, 1000)};
-    }
-
-    private static int parseOr(String v, int fallback) {
-        try {
-            return Integer.parseInt(v.trim());
-        } catch (Exception e) {
-            return fallback;
-        }
+        return new int[]{-1, intValue(value, 1000)};
     }
 
     /** 행사 근거 문구: "대구메이커페스타 · 9/19(토)~9/20(일) 개최 · 가게에서 1.2km". */
@@ -199,10 +191,6 @@ public class WeeklyGuideRuleEngine {
     }
 
     /**
-     * priority 높은 순 → 가까운 날짜 순으로 고르되, 같은 (조건, 권고유형) 조합은 한 번만 담는다.
-     * (예: '비 예보 · 포장·배달 점검'이 공통 규칙과 메뉴 규칙에서 모두 나와도 Top3를 한 종류로 채우지 않도록)
-     */
-    /**
      * 조건별 정렬 순위. 권태용 외(2018) 랜덤포레스트 변수중요도가 '시간 > 요일 > 월 > 평균온도 > 강수'
      * 순으로 나타나, 요일·시기 조건을 날씨 조건보다 앞에 둔다. docs/coefficients.md 6절 #7.
      */
@@ -219,6 +207,10 @@ public class WeeklyGuideRuleEngine {
         };
     }
 
+    /**
+     * priority 높은 순 → 가까운 날짜 순으로 고르되, 같은 (조건, 권고유형) 조합은 한 번만 담는다.
+     * (예: '비 예보 · 포장·배달 점검'이 공통 규칙과 메뉴 규칙에서 모두 나와도 Top3를 한 종류로 채우지 않도록)
+     */
     private List<Recommendation> topThree(List<Recommendation> all) {
         Map<String, Recommendation> unique = new LinkedHashMap<>();
         all.stream()
@@ -256,7 +248,7 @@ public class WeeklyGuideRuleEngine {
         return d.getDayOfWeek() == DayOfWeek.SATURDAY || d.getDayOfWeek() == DayOfWeek.SUNDAY;
     }
 
-    private int intValue(String v, int fallback) {
+    private static int intValue(String v, int fallback) {
         try { return Integer.parseInt(v.trim()); } catch (Exception e) { return fallback; }
     }
 

@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * 주변 상권 요약. MVP는 seed 된 가게 목록을 반경 500m 기준으로 집계한다.
- * 실제 연동 시 소상공인시장진흥공단 상가(상권)정보로 교체한다.
- */
+/** 주변 상권 요약. 반경 500m 내 실데이터 음식점 목록(행정안전부 인허가 정보)을 집계한다. */
 @Service
 @RequiredArgsConstructor
 public class CommercialAreaService {
@@ -39,7 +36,7 @@ public class CommercialAreaService {
         String note = "반경 %dm 기준 음식점 %d곳, 유사 업종 %d곳으로 경쟁 강도는 '%s' 수준입니다. 운영 참고용 집계입니다."
                 .formatted(RADIUS_METERS, total, same, level);
         return new CommercialArea(store.getDistrict(), dongOf(store), total, same, level, note, false,
-                List.of(SourceCatalog.SBIZ_COMMERCIAL_ID));
+                List.of(SourceCatalog.STORE_LICENSE_ID));
     }
 
     /** 업종 문자열의 마지막 분류가 같으면 유사 업종으로 본다. */

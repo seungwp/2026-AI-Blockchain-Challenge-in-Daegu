@@ -77,11 +77,11 @@ function demoIngredientPrices(category: MenuCategory, priceDate: string): Analys
 export function mockSources(): Source[] {
   return [
     {
-      id: 1, sourceType: "PUBLIC_DATA", title: "소상공인시장진흥공단 상가(상권)정보",
-      organization: "소상공인시장진흥공단", authors: null, publicationYear: null,
-      url: "https://www.data.go.kr/data/15083033/fileData.do",
-      description: "영업 중인 상가업소의 상호명, 업종, 주소, 좌표 등을 제공하는 공공데이터",
-      reliabilityNote: "상권·업종 파악을 위한 참고 데이터이며, 데이터 갱신 시점에 따라 실제 현황과 차이가 있을 수 있음",
+      id: 1, sourceType: "PUBLIC_DATA", title: "행정안전부 식품_일반음식점 인허가 정보",
+      organization: "행정안전부", authors: null, publicationYear: null,
+      url: "https://www.data.go.kr/data/15045016/fileData.do",
+      description: "대구 지역 일반음식점 인허가 현황(상호명, 업태구분, 영업상태, 주소, 좌표 등)을 제공하는 공공데이터",
+      reliabilityNote: "영업 중인 상가업소만 사용하나 데이터 갱신 시점에 따라 실제 현황과 차이가 있을 수 있음",
     },
     {
       id: 6, sourceType: "API", title: "기상청 기상자료개방포털", organization: "기상청",

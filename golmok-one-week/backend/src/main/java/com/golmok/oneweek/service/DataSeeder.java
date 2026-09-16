@@ -69,9 +69,8 @@ public class DataSeeder {
         return v == null || v.isBlank() ? null : v;
     }
 
-    /** 따옴표로 감싼 필드를 고려한 최소 CSV 분리. */
     /**
-     * 대구 음식점 실데이터. 원본은 식품의약품안전처 일반음식점 인허가 자료를
+     * 대구 음식점 실데이터. 원본은 행정안전부 식품_일반음식점 인허가 자료를
      * pipeline/export_golmok_stores.py 로 가공한 resources/data/daegu_stores.csv (영업 중, 좌표 WGS84).
      * 컬럼: name,category,address,roadAddress,district,latitude,longitude
      */

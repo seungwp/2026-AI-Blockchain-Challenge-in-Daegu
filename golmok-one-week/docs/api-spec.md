@@ -31,7 +31,7 @@
   }
 ]
 ```
-가게 데이터는 식품의약품안전처 일반음식점 인허가 실데이터입니다(영업 중인 곳만, 24,079곳). `isDemoData: true`는 사용자가 검색 결과 없이 주소를 직접 입력해 만든 임시 가게뿐입니다.
+가게 데이터는 행정안전부 식품_일반음식점 인허가 실데이터입니다(영업 중인 곳만, 24,079곳). `isDemoData: true`는 사용자가 검색 결과 없이 주소를 직접 입력해 만든 임시 가게뿐입니다.
 
 ## 3. GET `/api/stores/{storeId}`
 가게 단건 조회. 없으면 404 `NOT_FOUND`.
@@ -118,9 +118,9 @@
   ],
   "sources": [
     {
-      "id": 1, "sourceType": "PUBLIC_DATA", "title": "소상공인시장진흥공단 상가(상권)정보",
-      "organization": "소상공인시장진흥공단", "publicationYear": null,
-      "url": "https://www.data.go.kr/data/15083033/fileData.do",
+      "id": 1, "sourceType": "PUBLIC_DATA", "title": "행정안전부 식품_일반음식점 인허가 정보",
+      "organization": "행정안전부", "publicationYear": null,
+      "url": "https://www.data.go.kr/data/15045016/fileData.do",
       "description": "...", "reliabilityNote": "..."
     }
   ],
