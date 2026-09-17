@@ -8,6 +8,7 @@ import WeatherList from "@/components/report/WeatherList";
 import CommercialAreaSummary from "@/components/report/CommercialAreaSummary";
 import FestivalList from "@/components/report/FestivalList";
 import IngredientPriceList from "@/components/report/IngredientPriceList";
+import ChatWidget from "@/components/report/ChatWidget";
 import DailyGuideList from "@/components/report/DailyGuideList";
 import SourceList from "@/components/report/SourceList";
 import Disclaimer from "@/components/common/Disclaimer";
@@ -49,6 +50,8 @@ export default function ReportPage() {
             {/* 공유 기능은 UI만 제공 (MVP 범위에서 제외) */}
             <button type="button" disabled title="MVP에서는 UI만 제공합니다.">분석 결과 공유</button>
           </section>
+
+          <ChatWidget reportId={reportId} />
         </>
       )}
     </main>

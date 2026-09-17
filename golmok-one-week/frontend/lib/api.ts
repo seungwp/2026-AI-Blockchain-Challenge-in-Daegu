@@ -1,6 +1,6 @@
 import axios from "axios";
-import type { AnalysisReport, MenuCategory, MenuClassification, Store } from "@/types";
-import { mockClassify, mockReport, mockReportById, mockStore, mockStores } from "./mock";
+import type { AnalysisReport, ChatMessage, MenuCategory, MenuClassification, Store } from "@/types";
+import { mockChatAnswer, mockClassify, mockReport, mockReportById, mockStore, mockStores } from "./mock";
 
 /** 백엔드 주소. .env.local 의 NEXT_PUBLIC_API_BASE_URL 로 교체한다. */
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
@@ -60,5 +60,16 @@ export async function getReport(reportId: number): Promise<AnalysisReport> {
   return withFallback(
     async () => (await client.get<AnalysisReport>(`/api/reports/${reportId}`)).data,
     () => mockReportById(reportId),
+  );
+}
+
+export async function askReportQuestion(
+  reportId: number,
+  question: string,
+  history: ChatMessage[],
+): Promise<string> {
+  return withFallback(
+    async () => (await client.post<{ answer: string }>(`/api/reports/${reportId}/chat`, { question, history })).data.answer,
+    () => mockChatAnswer(question),
   );
 }

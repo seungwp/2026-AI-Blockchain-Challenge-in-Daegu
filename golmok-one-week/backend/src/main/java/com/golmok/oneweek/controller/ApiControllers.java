@@ -1,5 +1,7 @@
 package com.golmok.oneweek.controller;
 
+import com.golmok.oneweek.dto.ChatDtos.ChatRequest;
+import com.golmok.oneweek.dto.ChatDtos.ChatResponse;
 import com.golmok.oneweek.dto.MenuDtos.ClassifyRequest;
 import com.golmok.oneweek.dto.MenuDtos.ClassifyResponse;
 import com.golmok.oneweek.dto.ReportDtos.CreateRequest;
@@ -100,6 +102,12 @@ public final class ApiControllers {
         @Operation(summary = "리포트 조회 (새로고침 시 동일 결과)")
         public ReportResponse get(@PathVariable Long reportId) {
             return reportService.get(reportId);
+        }
+
+        @PostMapping("/{reportId}/chat")
+        @Operation(summary = "리포트 데이터를 근거로 사장님 질문에 답하는 챗봇")
+        public ChatResponse chat(@PathVariable Long reportId, @Valid @RequestBody ChatRequest request) {
+            return new ChatResponse(reportService.chat(reportId, request));
         }
     }
 

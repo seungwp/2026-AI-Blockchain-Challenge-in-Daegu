@@ -140,6 +140,11 @@ export interface AnalysisReport {
   disclaimer: string;
 }
 
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
 export interface ApiError {
   timestamp: string;
   status: number;
