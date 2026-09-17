@@ -67,6 +67,7 @@
   "analysisStartDate": "2026-09-17",
   "analysisEndDate": "2026-09-23",
   "summary": "이번 주는 경쟁 강도 높음 조건입니다. 아래 점검 항목은 운영 참고용이며 ...",
+  "aiSummary": "이번 주는 토요일 비 예보와 무더운 날씨가 겹쳐 있어요. 포장·배달 준비를 미리 해두시면 좋겠습니다.",
   "topActions": [
     {
       "title": "주말 · 인력·운영 점검",
@@ -136,6 +137,7 @@
 - **`weather[].pm10Grade`는 존재하지 않습니다.** 미세먼지 조건은 근거 부족으로 전면 제거했습니다.
 - **`ingredientPrices`**: 메뉴 카테고리에 대응하는 KAMIS 품목이 없으면 **빈 배열**입니다(냉면류·일식·양식·기타·공통). `price`·`priceDate`는 요청 시점에 KAMIS API를 실시간 조회한 값(실패 시 최근 스냅샷으로 대체), `probSpike`·`alert`는 매일 갱신되는 예측 모델의 배치 스냅샷입니다.
 - **`conditionType`** 가능한 값: `RAIN`, `HOT`, `COLD`, `WEEKEND`, `HOLIDAY`, `FESTIVAL`, `COMPETITION`, `PRICE_SPIKE`. `HOLIDAY`의 `basis`엔 "추석 전날"/"추석 당일"/"추석 연휴 기간"/"추석 연휴 마지막날" 라벨이 들어갑니다.
+- **`aiSummary`**: NVIDIA LLM이 `summary`와 같은 사실을 재료로 다듬은 자연스러운 문장. 항상 **null일 수 있음**(키 없음·API 실패·타임아웃·검증 실패 시). null이어도 `summary`가 있으니 화면은 항상 완전함. 프론트는 `{report.aiSummary && <p className="ai-summary">...}`처럼 있을 때만 보여주면 됨
 - **`isDemoData`(최상위)**: 가게·날씨 각 날짜·축제·상권·식자재 가격 중 **하나라도** `isDemoData: true`면 전체가 `true`입니다. 전부 실데이터면 `false`이고 `demoNotice`는 `null`입니다.
 
 ## 7. GET `/api/reports/{reportId}`

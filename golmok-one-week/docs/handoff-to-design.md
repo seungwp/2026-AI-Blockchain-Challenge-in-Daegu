@@ -22,7 +22,13 @@ UI/UX를 전면 교체해도 비즈니스 로직이 깨지지 않도록 API 타�
 - **외부 라이브러리는 설치하지 않습니다**: Framer Motion·GSAP·AOS 같은 애니메이션 라이브러리, MUI·shadcn·Ant Design 같은 UI 컴포넌트 라이브러리 금지
 - 이유는 라이선스나 취향 문제가 아니라 **번들 크기·의존성 관리**입니다. 순수 CSS로 충분히 화려하게 만들 수 있습니다.
 
-### 3. 건드려도 되는 곳 / 건드리면 안 되는 곳
+### 3. AI 요약(`aiSummary`)은 있어도 없어도 정상입니다
+
+리포트 화면에 `.ai-summary` 클래스로 문장 하나가 더 뜨는 경우가 있습니다. NVIDIA LLM이 만든 자연스러운 요약인데,
+**항상 null일 수 있습니다**(API 실패·무료 등급 과부하·타임아웃 시). null이면 그냥 그 줄이 안 뜨고 기존 `summary`만 보입니다.
+**이 필드가 있다는 가정으로 레이아웃을 짜지 마세요** — 없는 상태가 흔한 정상 상태입니다.
+
+### 4. 건드려도 되는 곳 / 건드리면 안 되는 곳
 
 | 구분 | 경로 | 규칙 |
 |---|---|---|
@@ -31,7 +37,7 @@ UI/UX를 전면 교체해도 비즈니스 로직이 깨지지 않도록 API 타�
 | ⚠️ 주의 | `app/**/page.tsx` | JSX 마크업 구조는 조정 가능하나, API 호출·상태 관리 로직(`useEffect`, `useState`, `useForm`)은 건드리지 않기 |
 | ❌ 금지 | `types/index.ts`, `lib/api.ts` | 필드명·함수 시그니처를 바꾸면 백엔드 연동이 끊깁니다 |
 
-### 4. 그래도 절대 지켜야 하는 것 (아래 6절과 동일, 요약)
+### 5. 그래도 절대 지켜야 하는 것 (아래 6절과 동일, 요약)
 
 매출 예측 표현 금지 · 면책 문구 유지 · `sourceIds`/출처 표시 유지 · `isDemoData` 배지 유지 · 터치 타겟 44px 이상
 
@@ -130,7 +136,7 @@ cd golmok-one-week/frontend && npm run dev          # 3000
 
 - `Store` — 가게 (id, name, category, address, roadAddress, latitude, longitude, city, district, isDemoData)
 - `MenuClassification` — 메뉴 자동 분류 (menuCategory, confidence, matchedKeywords, isDemoData)
-- `AnalysisReport` — 리포트 전체
+- `AnalysisReport` — 리포트 전체. `summary`(항상 있음)와 `aiSummary`(항상 null일 수 있음, 위 3절 참고) 둘 다 있음
 - `Recommendation` — 권고 1건 (title, text, type, priority, confidence, conditionType, basis, date, sourceIds)
 - `Source` — 출처 (id, sourceType, title, organization, publicationYear, url, description, reliabilityNote)
 - `FestivalEvent` — 행사 (distanceMeters, impactLevel, impactNote 포함)
