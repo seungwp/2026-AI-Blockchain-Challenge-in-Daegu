@@ -45,8 +45,9 @@ public final class ReportDtos {
 
     public record ReportResponse(Long reportId, StoreResponse store, String mainMenu, MenuCategory menuCategory,
                                  LocalDate analysisStartDate, LocalDate analysisEndDate, String summary,
-                                 List<Recommendation> topActions, List<WeatherDay> weather, CommercialArea commercialArea,
-                                 List<FestivalInfo> festivals, List<IngredientPriceInfo> ingredientPrices,
-                                 List<DailyGuide> dailyGuides, List<SourceResponse> sources,
+                                 String aiSummary, List<Recommendation> topActions, List<WeatherDay> weather,
+                                 CommercialArea commercialArea, List<FestivalInfo> festivals,
+                                 List<IngredientPriceInfo> ingredientPrices, List<DailyGuide> dailyGuides,
+                                 List<SourceResponse> sources,
                                  boolean isDemoData, String demoNotice, String disclaimer) {}
 }

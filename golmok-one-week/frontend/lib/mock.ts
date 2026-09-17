@@ -153,6 +153,7 @@ export function mockReport(
     analysisStartDate: weather[0].date,
     analysisEndDate: weather[6].date,
     summary: "이번 주는 비 예보 2일, 30℃ 이상 2일 조건입니다. 아래 점검 항목은 운영 참고용이며 수요 변화 가능성에 대비한 준비 권장 사항입니다.",
+    aiSummary: "이번 주는 토요일 비 예보와 무더운 날씨가 겹쳐 있어요. 포장·배달 준비를 미리 해두고, 주말 인력 배치도 한 번 점검해보시면 좋겠습니다.",
     topActions,
     weather,
     commercialArea: {

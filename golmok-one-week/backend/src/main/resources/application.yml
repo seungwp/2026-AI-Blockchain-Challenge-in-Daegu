@@ -25,6 +25,8 @@ golmok:
     data-go-kr: ${DATA_GO_KR_KEY:}
     kamis-cert-key: ${KAMIS_CERT_KEY:}
     kamis-cert-id: ${KAMIS_CERT_ID:}
+    nvidia-api-key: ${NVIDIA_API_KEY:}
+    nvidia-model: ${NVIDIA_MODEL:nvidia/nemotron-3-super-120b-a12b}
   # 외부 API 키는 환경변수로만 주입 (코드·yml에 직접 쓰지 않음)
   providers:
     weather: kma       # mock | kma
@@ -43,3 +45,5 @@ golmok:
     data-go-kr: ${DATA_GO_KR_KEY:}
     kamis-cert-key: ${KAMIS_CERT_KEY:}
     kamis-cert-id: ${KAMIS_CERT_ID:}
+    nvidia-api-key: ${NVIDIA_API_KEY:}
+    nvidia-model: ${NVIDIA_MODEL:nvidia/nemotron-3-super-120b-a12b}

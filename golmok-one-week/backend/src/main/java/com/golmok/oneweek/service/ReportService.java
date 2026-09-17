@@ -46,6 +46,7 @@ public class ReportService {
     private final HolidayProvider holidayProvider;
     private final IngredientPriceRepository ingredientPriceRepository;
     private final KamisPriceProvider kamisPriceProvider;
+    private final LlmAdviceService llmAdviceService;
     private final AnalysisReportRepository reportRepository;
     private final SourceRepository sourceRepository;
     private final ObjectMapper objectMapper;
@@ -68,6 +69,8 @@ public class ReportService {
 
         var output = ruleEngine.evaluate(
                 new WeeklyGuideRuleEngine.Input(category, weather, festivals, area, holidays, prices));
+        String aiSummary = llmAdviceService.summarize(
+                request.mainMenu(), category.label(), output.summary(), output.topActions(), area);
 
         boolean anyDemo = store.isDemoData()
                 || weather.stream().anyMatch(WeatherDay::isDemoData)
@@ -82,6 +85,7 @@ public class ReportService {
                 .analysisStartDate(start)
                 .analysisEndDate(end)
                 .summary(output.summary())
+                .aiSummary(aiSummary)
                 .weeklyWeatherJson(write(weather))
                 .commercialAreaJson(write(area))
                 .festivalJson(write(festivals))
@@ -145,7 +149,7 @@ public class ReportService {
         List<SourceResponse> sources = sourceRepository.findAllById(ids).stream().map(SourceResponse::from).toList();
 
         return new ReportResponse(report.getId(), store, report.getMainMenu(), report.getMenuCategory(),
-                report.getAnalysisStartDate(), report.getAnalysisEndDate(), report.getSummary(),
+                report.getAnalysisStartDate(), report.getAnalysisEndDate(), report.getSummary(), report.getAiSummary(),
                 topActions, weather, area, festivals, prices, dailyGuides, sources,
                 report.isDemoData(), report.isDemoData() ? DEMO_NOTICE : null, DISCLAIMER);
     }

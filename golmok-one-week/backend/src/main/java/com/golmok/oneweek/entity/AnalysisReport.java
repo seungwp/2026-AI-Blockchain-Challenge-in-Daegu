@@ -17,6 +17,7 @@ public class AnalysisReport {
     private LocalDate analysisStartDate;
     private LocalDate analysisEndDate;
     @Column(length = 1000) private String summary;
+    @Column(length = 1000) private String aiSummary;
     @Lob private String weeklyWeatherJson;
     @Lob private String commercialAreaJson;
     @Lob private String festivalJson;

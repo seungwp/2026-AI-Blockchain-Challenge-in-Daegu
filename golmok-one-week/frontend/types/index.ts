@@ -127,6 +127,7 @@ export interface AnalysisReport {
   analysisStartDate: string;
   analysisEndDate: string;
   summary: string;
+  aiSummary: string | null;
   topActions: Recommendation[];
   weather: WeatherDay[];
   commercialArea: CommercialArea | null;

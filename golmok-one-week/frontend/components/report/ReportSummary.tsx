@@ -19,6 +19,7 @@ export default function ReportSummary({ report }: { report: AnalysisReport }) {
         분석 기간: {report.analysisStartDate} ~ {report.analysisEndDate}
       </p>
       <p>{report.summary}</p>
+      {report.aiSummary && <p className="ai-summary">{report.aiSummary}</p>}
       {report.demoNotice && <p className="notice">{report.demoNotice}</p>}
 
       <h2>이번 주 핵심 행동 Top 3</h2>
