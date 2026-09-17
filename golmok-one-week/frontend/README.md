@@ -12,7 +12,29 @@ npm run dev      # http://localhost:3000
 npm run build && npm run start
 ```
 
-`NEXT_PUBLIC_API_BASE_URL` 기본값은 `http://localhost:8080` 입니다.
+`NEXT_PUBLIC_API_BASE_URL` 기본값은 `http://localhost:8080` 입니다. **백엔드를 안 띄워도** `lib/mock.ts` 데모 데이터로 전체 화면이 동작합니다.
+
+## 노트북 켤 때마다 (작업 순서)
+
+**최초 1회만:**
+```bash
+git clone https://github.com/seungwp/2026-AI-Blockchain-Challenge-in-Daegu.git
+cd 2026-AI-Blockchain-Challenge-in-Daegu/golmok-one-week/frontend
+cp .env.local.example .env.local
+npm install
+git checkout -b frontend/design origin/main   # 본인 작업 브랜치 생성
+```
+
+**이후 작업할 때마다:**
+1. `git checkout frontend/design` (없으면 위 최초 1회 과정으로 생성)
+2. `git pull origin main` → 백엔드 쪽 변경사항(API 필드 추가 등)을 받아서 브랜치에 합침 (충돌 나면 해결 후 커밋)
+3. `npm install` — `package.json`이 바뀐 적 있을 때만 (평소엔 생략 가능)
+4. `npm run dev` 로 `http://localhost:3000` 접속해서 작업 (백엔드는 안 띄워도 됨)
+5. 작업한 만큼 커밋: `git add <파일>` → `git commit -m "설명"`
+6. `git push origin frontend/design` (최초 push는 `-u` 옵션 추가: `git push -u origin frontend/design`)
+7. **다 됐다고 main에 반영하고 싶으면**: GitHub에서 이 브랜치로 "Compare & pull request" 클릭 → base가 `main`인지 확인 → PR 생성 → 리뷰·merge는 백엔드 담당이 처리
+
+**주의:** `main`에는 절대 직접 push하지 않습니다(PR로만 반영). 다른 사람 브랜치도 강제로 push(force-push)하지 않습니다.
 
 ## 구조
 
