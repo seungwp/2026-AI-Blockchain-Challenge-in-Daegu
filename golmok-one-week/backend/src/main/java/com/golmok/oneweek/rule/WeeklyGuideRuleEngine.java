@@ -28,8 +28,8 @@ public class WeeklyGuideRuleEngine {
     public record Output(List<Recommendation> topActions, List<DailyGuide> dailyGuides, String summary) {}
 
     public Output evaluate(Input in) {
-        List<MenuRule> rules = menuRuleRepository.findByMenuCategoryIn(
-                List.of(MenuCategory.COMMON, in.menuCategory() == null ? MenuCategory.ETC : in.menuCategory()));
+        MenuCategory category = in.menuCategory() == null ? MenuCategory.ETC : in.menuCategory();
+        List<MenuRule> rules = applicableRules(menuRuleRepository.findByMenuCategoryIn(List.of(MenuCategory.COMMON, category)), category);
 
         List<DailyGuide> daily = new ArrayList<>();
         List<Recommendation> all = new ArrayList<>();
@@ -73,7 +73,24 @@ public class WeeklyGuideRuleEngine {
         }
 
         List<Recommendation> top = topThree(all);
-        return new Output(top, daily, summarize(in, all));
+        return new Output(top, daily, summarize(in));
+    }
+
+    /**
+     * 같은 (조건, 권고유형)에 메뉴 전용 규칙이 있으면 공통 규칙은 뺀다 — 같은 날 비슷한 권고가 두 번 뜨지 않게.
+     * 중식은 강수 규칙을 적용하지 않는다: 권태용 외(2018) "강수여부는 중식을 제외한 배달음식에서 유의".
+     */
+    static List<MenuRule> applicableRules(List<MenuRule> rules, MenuCategory category) {
+        Set<String> specific = new HashSet<>();
+        rules.stream().filter(r -> r.getMenuCategory() != MenuCategory.COMMON).forEach(r -> specific.add(ruleKey(r)));
+        return rules.stream()
+                .filter(r -> r.getMenuCategory() != MenuCategory.COMMON || !specific.contains(ruleKey(r)))
+                .filter(r -> !(category == MenuCategory.CHINESE && r.getConditionType() == ConditionType.RAIN))
+                .toList();
+    }
+
+    private static String ruleKey(MenuRule r) {
+        return r.getConditionType() + "|" + r.getRecommendationType();
     }
 
     /** 날짜별 조건 충족 여부. 충족하면 근거 문구를 담아 돌려준다. */
@@ -209,11 +226,13 @@ public class WeeklyGuideRuleEngine {
 
     /**
      * priority 높은 순 → 가까운 날짜 순으로 고르되, 같은 (조건, 권고유형) 조합은 한 번만 담는다.
-     * (예: '비 예보 · 포장·배달 점검'이 공통 규칙과 메뉴 규칙에서 모두 나와도 Top3를 한 종류로 채우지 않도록)
+     * 주말은 매주 돌아와 매번 핵심에 들면 뻔하므로, 이번 주만의 조건(비·명절·행사·가격 등)이 있으면 핵심에서 뺀다.
      */
-    private List<Recommendation> topThree(List<Recommendation> all) {
+    static List<Recommendation> topThree(List<Recommendation> all) {
+        boolean hasWeekVariable = all.stream().anyMatch(r -> r.conditionType() != ConditionType.WEEKEND);
         Map<String, Recommendation> unique = new LinkedHashMap<>();
         all.stream()
+                .filter(r -> !hasWeekVariable || r.conditionType() != ConditionType.WEEKEND)
                 .sorted(Comparator.<Recommendation>comparingInt(r -> r.priority().ordinal())
                         .thenComparingInt(r -> conditionRank(r.conditionType()))
                         .thenComparing(r -> r.date() == null ? LocalDate.MAX : r.date()))
@@ -221,22 +240,29 @@ public class WeeklyGuideRuleEngine {
         return unique.values().stream().limit(3).toList();
     }
 
-    private String summarize(Input in, List<Recommendation> all) {
+    static String summarize(Input in) {
         long rainDays = in.weather().stream().filter(d -> d.precipitationProbability() != null && d.precipitationProbability() >= 60).count();
         long hotDays = in.weather().stream().filter(d -> d.tempMax() != null && d.tempMax() >= 30).count();
+        long coldDays = in.weather().stream().filter(d -> d.tempMin() != null && d.tempMin() <= 5).count();
+        boolean holiday = in.weather().stream().anyMatch(d -> in.holidays().containsKey(d.date()));
         String fest = in.festivals().stream()
                 .filter(f -> f.distanceMeters() != null && f.distanceMeters() <= 3000)
                 .map(FestivalInfo::name).findFirst().orElse(null);
+        List<String> spikes = in.ingredientPrices().stream().filter(IngredientPriceInfo::alert).map(IngredientPriceInfo::item).toList();
 
-        StringBuilder sb = new StringBuilder("이번 주는 ");
         List<String> parts = new ArrayList<>();
+        if (holiday) parts.add("추석 연휴");
         if (rainDays > 0) parts.add("비 예보 %d일".formatted(rainDays));
         if (hotDays > 0) parts.add("30℃ 이상 %d일".formatted(hotDays));
+        if (coldDays > 0) parts.add("최저 5℃ 이하 %d일".formatted(coldDays));
         if (fest != null) parts.add("인근 행사 '%s'".formatted(fest));
-        if (in.commercialArea() != null) parts.add("경쟁 강도 %s".formatted(in.commercialArea().competitionLevel()));
-        sb.append(parts.isEmpty() ? "특이 조건이 적습니다" : String.join(", ", parts));
-        sb.append(" 조건입니다. 아래 점검 항목은 운영 참고용이며 수요 변화 가능성에 대비한 준비 권장 사항입니다.");
-        return sb.toString();
+        if (!spikes.isEmpty()) parts.add("%s 가격 확인 신호".formatted(String.join("·", spikes)));
+
+        String sb = parts.isEmpty()
+                ? "이번 주는 날씨·명절·행사·식자재 가격에 큰 변수가 없어 평소대로 운영하셔도 됩니다."
+                : "이번 주는 %s 조건이 있습니다. 해당 날짜의 점검 항목을 확인해보세요.".formatted(String.join(", ", parts));
+        if (in.commercialArea() != null) sb += " 주변 경쟁 강도는 '%s'입니다.".formatted(in.commercialArea().competitionLevel());
+        return sb;
     }
 
     private String weatherSummary(WeatherDay d) {

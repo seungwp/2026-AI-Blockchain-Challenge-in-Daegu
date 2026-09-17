@@ -61,7 +61,7 @@ export default function StoreConfirmPage() {
     try {
       const report = await createReport(storeId, values.mainMenu.trim(), values.menuCategory);
       router.push(`/report/${report.reportId}/area`);
-    } catch (e) {
+    } catch {
       setError("분석 요청 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.");
     }
   }

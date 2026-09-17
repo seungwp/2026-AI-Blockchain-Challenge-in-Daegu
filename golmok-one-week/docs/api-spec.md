@@ -66,19 +66,19 @@
   "menuCategory": "치킨",
   "analysisStartDate": "2026-09-17",
   "analysisEndDate": "2026-09-23",
-  "summary": "이번 주는 경쟁 강도 높음 조건입니다. 아래 점검 항목은 운영 참고용이며 ...",
+  "summary": "이번 주는 인근 행사 '대구메이커페스타' 조건이 있습니다. 해당 날짜의 점검 항목을 확인해보세요. 주변 경쟁 강도는 '높음'입니다.",
   "aiSummary": "이번 주는 토요일 비 예보와 무더운 날씨가 겹쳐 있어요. 포장·배달 준비를 미리 해두시면 좋겠습니다.",
   "topActions": [
     {
-      "title": "주말 · 인력·운영 점검",
-      "text": "주말은 피크 시간대 인력과 재료를 사전에 점검하는 것을 권장합니다.",
-      "type": "STAFFING",
-      "priority": "MEDIUM",
-      "confidence": "HIGH",
-      "conditionType": "WEEKEND",
-      "basis": "2026-09-19(토) 주말",
+      "title": "행사 · 고객 안내",
+      "text": "인근 행사 기간에는 행사장 거리와 교통 혼잡을 함께 고려해 매장·배달 운영 계획을 점검해보세요.",
+      "type": "NOTICE",
+      "priority": "LOW",
+      "confidence": "MEDIUM",
+      "conditionType": "FESTIVAL",
+      "basis": "대구메이커페스타 · 9/19(토)~9/20(일) 개최 · 가게에서 1.2km",
       "date": "2026-09-19",
-      "sourceIds": [4]
+      "sourceIds": [5]
     }
   ],
   "weather": [
@@ -103,7 +103,7 @@
       "locationName": "북구 침산2동", "address": "대구광역시 북구 ...",
       "latitude": 35.88, "longitude": 128.59,
       "distanceMeters": 1224, "impactLevel": "간접 영향 가능",
-      "impactNote": "가게에서 다소 떨어진 곳에서 행사가 열립니다. ...",
+      "impactNote": "행사장과 다소 떨어져 있어 간접적인 유동 변화 가능성이 있습니다. (중간 신뢰도)",
       "isDemoData": false, "sourceId": 13
     }
   ],
@@ -136,6 +136,8 @@
 - **`weather[].humidity`**: 0~4일차는 기상청 단기예보(동네 5km 격자) 값, 5~6일차는 중기예보(대구 전역) 구간이라 **`null`**입니다.
 - **`weather[].pm10Grade`는 존재하지 않습니다.** 미세먼지 조건은 근거 부족으로 전면 제거했습니다.
 - **`ingredientPrices`**: 메뉴 카테고리에 대응하는 KAMIS 품목이 없으면 **빈 배열**입니다(냉면류·일식·양식·기타·공통). `price`·`priceDate`는 요청 시점에 KAMIS API를 실시간 조회한 값(실패 시 최근 스냅샷으로 대체), `probSpike`·`alert`는 매일 갱신되는 예측 모델의 배치 스냅샷입니다.
+- **`festivals`**: 가게에서 **3km 이내** 행사만 들어갑니다(1km 이내 `직접 영향 가능`, 3km 이내 `간접 영향 가능`). 가까운 행사가 없으면 빈 배열입니다.
+- **`topActions`**: **최대 3개**. 같은 조건·유형은 한 번만 담고, 비·명절·행사·가격처럼 이번 주만의 조건이 있으면 매주 반복되는 주말 권고는 제외합니다.
 - **`conditionType`** 가능한 값: `RAIN`, `HOT`, `COLD`, `WEEKEND`, `HOLIDAY`, `FESTIVAL`, `COMPETITION`, `PRICE_SPIKE`. `HOLIDAY`의 `basis`엔 "추석 전날"/"추석 당일"/"추석 연휴 기간"/"추석 연휴 마지막날" 라벨이 들어갑니다.
 - **`aiSummary`**: Groq LLM이 `summary`와 같은 사실을 재료로 다듬은 자연스러운 문장. 항상 **null일 수 있음**(키 없음·API 실패·타임아웃·검증 실패 시). null이어도 `summary`가 있으니 화면은 항상 완전함. 프론트는 `{report.aiSummary && <p className="ai-summary">...}`처럼 있을 때만 보여주면 됨
 - **`isDemoData`(최상위)**: 가게·날씨 각 날짜·축제·상권·식자재 가격 중 **하나라도** `isDemoData: true`면 전체가 `true`입니다. 전부 실데이터면 `false`이고 `demoNotice`는 `null`입니다.

@@ -24,7 +24,7 @@ export default function SearchPage() {
       const result = await searchStores(value);
       setStores(result);
       setState(result.length ? "success" : "empty");
-    } catch (e) {
+    } catch {
       setError("검색 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.");
       setState("error");
     }
@@ -36,7 +36,7 @@ export default function SearchPage() {
     try {
       const store = await createStoreFromAddress(manualAddress.trim());
       router.push(`/store/${store.id}/confirm`);
-    } catch (e) {
+    } catch {
       setError("주소 등록 중 문제가 발생했습니다.");
       setState("error");
     }

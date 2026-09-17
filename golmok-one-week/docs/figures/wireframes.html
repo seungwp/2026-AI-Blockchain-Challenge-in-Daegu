@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>골목 한 주 와이어프레임</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #22262c;
+    --mid: #7b838e;
+    --soft: #a9b0b9;
+    --line: #cdd2d8;
+    --fill: #e9ecef;
+    --fill2: #f4f5f7;
+    --paper: #ffffff;
+    --bg: #eef0f3;
+    --new: #1f6feb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { width: 1640px; background: var(--bg); color: var(--ink); font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; padding: 40px 48px 48px; }
+
+  .top { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 26px; }
+  .top h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.4px; }
+  .top p { font-size: 15px; color: var(--mid); margin-top: 4px; }
+  .legend { display: flex; gap: 18px; font-size: 13.5px; color: var(--mid); align-items: center; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+  .grid { display: grid; grid-template-columns: repeat(4, 350px); column-gap: 40px; row-gap: 34px; align-items: start; }
+  .cell.tall { grid-row: span 2; }
+
+  .cap { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .no { width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: none; }
+  .cap b { white-space: nowrap; font-size: 16px; font-weight: 700; }
+  .cap code { font-size: 12px; color: var(--mid); font-family: Consolas, monospace; }
+  .tag { flex: none; white-space: nowrap; font-size: 11px; font-weight: 700; border-radius: 5px; padding: 1px 6px; margin-left: auto; }
+  .tag.new { color: var(--new); border: 1px solid var(--new); }
+  .tag.old { color: var(--mid); border: 1px solid var(--soft); }
+  .memo { font-size: 12.5px; color: var(--mid); margin-top: 9px; line-height: 1.5; }
+
+  .phone { background: var(--paper); border: 2px solid var(--ink); border-radius: 26px; padding: 12px 14px 16px; position: relative; overflow: hidden; }
+  .status { height: 8px; width: 60px; border-radius: 4px; background: var(--fill); margin: 0 auto 10px; }
+  .hdr { display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--line); margin-bottom: 14px; font-size: 13px; }
+  .hdr .logo { font-weight: 800; font-size: 14px; }
+  .hdr .back { font-weight: 700; }
+  .hdr .link { font-size: 12px; color: var(--mid); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; }
+
+  h4 { font-size: 17px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.3px; }
+  h5 { font-size: 13px; font-weight: 700; margin: 14px 0 7px; }
+  .sub { font-size: 12px; color: var(--mid); margin-bottom: 12px; line-height: 1.45; }
+  .ln { height: 8px; border-radius: 4px; background: var(--fill); margin: 6px 0; }
+  .w90 { width: 90%; } .w70 { width: 70%; } .w50 { width: 50%; } .w35 { width: 35%; }
+  .img { height: 110px; border: 1.5px solid var(--line); border-radius: 10px; background:
+        linear-gradient(to top right, transparent calc(50% - 1px), var(--line) 50%, transparent calc(50% + 1px)),
+        linear-gradient(to top left, transparent calc(50% - 1px), var(--line) 50%, transparent calc(50% + 1px)), var(--fill2); margin: 10px 0 14px; }
+  .img.sm { height: 64px; }
+
+  .btn { display: block; text-align: center; font-size: 13px; font-weight: 700; border-radius: 9px; padding: 10px 0; margin-top: 8px; background: var(--ink); color: #fff; }
+  .btn.ghost { background: var(--paper); color: var(--ink); border: 1.5px solid var(--ink); }
+  .btn.off { background: var(--fill); color: var(--soft); }
+  .btn.sm { display: inline-block; padding: 5px 10px; font-size: 12px; margin-top: 0; }
+  .textlink { display: block; text-align: center; font-size: 12.5px; color: var(--mid); margin-top: 12px; text-decoration: underline; }
+
+  .label { font-size: 12px; font-weight: 700; margin: 10px 0 4px; }
+  .input { border: 1.5px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 12px; color: var(--soft); }
+  .input.err { border-color: var(--ink); border-style: dashed; }
+  .errmsg { font-size: 11.5px; color: var(--ink); margin-top: 4px; }
+  .check { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-top: 12px; }
+  .box { width: 15px; height: 15px; border: 1.5px solid var(--ink); border-radius: 3px; flex: none; }
+
+  .card { border: 1.5px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+  .card.pick { border: 2px solid var(--ink); }
+  .card.soon { border: 1.5px dashed var(--soft); background: var(--fill2); }
+  .card b { font-size: 13.5px; display: block; }
+  .card small { font-size: 11.5px; color: var(--mid); display: block; margin-top: 3px; line-height: 1.45; }
+  .badge { display: inline-block; font-size: 10.5px; font-weight: 700; border: 1px solid var(--ink); border-radius: 5px; padding: 0 5px; margin-left: 4px; vertical-align: 1px; }
+  .badge.soon { border-style: dashed; color: var(--mid); border-color: var(--mid); }
+  .chip { display: inline-block; font-size: 11px; border: 1px solid var(--line); border-radius: 12px; padding: 2px 8px; margin: 3px 3px 0 0; }
+  .chip.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .row { display: flex; align-items: center; gap: 8px; }
+  .between { justify-content: space-between; }
+  .ico { width: 30px; height: 30px; border-radius: 8px; background: var(--fill); flex: none; }
+  .item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--fill); }
+  .item:last-child { border-bottom: 0; }
+  .item b { font-size: 13px; display: block; }
+  .item small { font-size: 11px; color: var(--mid); }
+  .chev { margin-left: auto; color: var(--soft); font-weight: 700; }
+  .divider { text-align: center; font-size: 11.5px; color: var(--mid); margin: 14px 0 4px; }
+
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tile { border: 1.5px solid var(--line); border-radius: 10px; padding: 10px; }
+  .tile small { font-size: 11px; color: var(--mid); display: block; }
+  .tile b { font-size: 18px; font-weight: 800; }
+  .tile.wide { grid-column: span 2; }
+  .meter { height: 8px; border-radius: 4px; background: var(--fill); margin-top: 6px; position: relative; }
+  .meter::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 25%; background: var(--ink); border-radius: 4px; }
+  .note { border-left: 3px solid var(--ink); background: var(--fill2); padding: 8px 10px; font-size: 11.5px; color: var(--mid); line-height: 1.5; margin-top: 10px; }
+
+  .ai { border: 1.5px dashed var(--ink); border-radius: 10px; padding: 10px; }
+  .ai .t { font-size: 11px; font-weight: 700; margin-bottom: 2px; }
+  .act { border: 1.5px solid var(--line); border-radius: 10px; padding: 9px 10px; margin-bottom: 7px; }
+  .act .row { font-size: 12.5px; font-weight: 700; }
+  .act small { font-size: 10.5px; color: var(--mid); display: block; margin-top: 4px; }
+  .days { display: flex; gap: 4px; }
+  .day { flex: 1; text-align: center; font-size: 11px; border: 1px solid var(--line); border-radius: 7px; padding: 5px 0; }
+  .day.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .wx { display: flex; gap: 4px; }
+  .wx div { flex: 1; border: 1px solid var(--line); border-radius: 7px; padding: 5px 0; text-align: center; font-size: 10px; color: var(--mid); }
+  .wx div i { display: block; width: 14px; height: 14px; border-radius: 50%; background: var(--fill); margin: 3px auto; }
+  .banner { border: 2px solid var(--ink); border-radius: 12px; padding: 10px 12px; margin-top: 14px; display: flex; align-items: center; gap: 10px; }
+  .banner b { font-size: 12.5px; }
+  .banner small { font-size: 11px; color: var(--mid); display: block; }
+  .banner .btn { margin: 0 0 0 auto; white-space: nowrap; }
+  .disc { font-size: 10.5px; color: var(--soft); margin-top: 12px; line-height: 1.5; }
+  .fab { position: absolute; right: 14px; bottom: 14px; width: 52px; height: 52px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 4px var(--paper); }
+  .demo { font-size: 10px; font-weight: 700; border: 1px dashed var(--mid); color: var(--mid); border-radius: 5px; padding: 0 5px; }
+
+  .dim { position: absolute; inset: 0; background: rgba(34,38,44,.42); }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--paper); border-radius: 18px 18px 0 0; padding: 16px 16px 18px; }
+  .grab { width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 12px; }
+  .x { position: absolute; right: 14px; top: 14px; font-size: 16px; color: var(--mid); }
+  .bullets div { font-size: 12px; padding: 5px 0; display: flex; gap: 8px; align-items: center; }
+  .bullets div::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ink); flex: none; }
+
+  .chat { position: absolute; right: 12px; bottom: 76px; left: 34px; background: var(--paper); border: 2px solid var(--ink); border-radius: 14px; padding: 12px; }
+  .bubble { font-size: 11.5px; border-radius: 10px; padding: 7px 9px; margin: 6px 0; max-width: 85%; line-height: 1.45; }
+  .bubble.me { background: var(--ink); color: #fff; margin-left: auto; }
+  .bubble.bot { background: var(--fill); }
+  .typing { font-size: 11px; color: var(--mid); }
+
+  .sheetbox { background: var(--paper); border: 2px solid var(--ink); border-radius: 18px; padding: 16px; }
+  .sheetbox h5:first-child { margin-top: 0; }
+  .sheetbox .sample { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .sheetbox .sample .btn { margin: 0; padding: 7px 12px; }
+  .state { border: 1.5px solid var(--line); border-radius: 10px; padding: 10px; text-align: center; font-size: 11.5px; color: var(--mid); flex: 1; }
+  .state i { display: block; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--soft); margin: 0 auto 5px; }
+  .hdrdemo { border: 1.5px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; }
+  .hdrdemo .hdr { border: 0; padding: 0; margin: 0; }
+  .hdrdemo small { font-size: 10.5px; color: var(--mid); display: block; margin-bottom: 4px; }
+
+  .order { margin-top: 30px; background: var(--paper); border-radius: 14px; padding: 16px 20px; display: flex; gap: 26px; align-items: center; font-size: 13.5px; }
+  .order b { font-size: 14px; white-space: nowrap; }
+  .order ol { display: flex; gap: 8px; list-style: none; flex-wrap: wrap; }
+  .order li { border: 1.5px solid var(--ink); border-radius: 18px; padding: 3px 12px; font-weight: 700; }
+  .order li span { color: var(--mid); font-weight: 400; margin-right: 4px; }
+  .rules { color: var(--mid); font-size: 12.5px; margin-left: auto; text-align: right; line-height: 1.5; }
+</style>
+</head>
+<body>
+  <div class="top">
+    <div>
+      <h1>골목 한 주 — 화면 와이어프레임</h1>
+      <p>모바일 390px 기준 · 화면 구성과 요소 배치만 표시 (색·폰트·아이콘은 디자인팀 재량)</p>
+    </div>
+    <div class="legend">
+      <span><em class="tag new">신규</em>새로 만들 화면</span>
+      <span><em class="tag old">기존</em>코드 있음 · 디자인 적용</span>
+      <span><em class="badge soon">준비 중</em>막아둔 기능</span>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- 1 첫 화면 -->
+    <div class="cell">
+      <div class="cap"><span class="no">1</span><b>첫 화면</b><code>/</code><em class="tag new">신규</em></div>
+      <div class="phone">
+        <div class="status"></div>
+        <div class="hdr"><span class="logo">골목 한 주</span><span class="link">로그인</span></div>
+        <h4>이번 주, 우리 가게는<br>뭘 준비하면 될까요?</h4>
+        <div class="sub">대구 공공데이터로 사장님 가게의<br>이번 주 운영 포인트를 알려드려요</div>
+        <div class="img"></div>
+        <div class="item"><span class="ico"></span><div><b>날씨 · 명절</b><small>비 오는 날, 연휴에 미리 준비</small></div></div>
+        <div class="item"><span class="ico"></span><div><b>주변 행사 · 상권</b><small>가까운 축제와 동네 경쟁 현황</small></div></div>
+        <div class="item"><span class="ico"></span><div><b>식자재 가격</b><small>대표 메뉴 재료 가격·급등 신호</small></div></div>
+        <span class="btn">회원가입</span>
+        <span class="btn ghost">로그인</span>
+        <span class="textlink">로그인 없이 시작하기 →</span>
+      </div>
+      <div class="memo">로그인 상태면 버튼 대신 "내 가게 분석 바로가기"</div>
+    </div>
+
+    <!-- 2 로그인 -->
+    <div class="cell">
+      <div class="cap"><span class="no">2</span><b>로그인</b><code>/login</code><em class="tag new">신규</em></div>
+      <div class="phone">
+        <div class="status"></div>
+        <div class="hdr"><span class="back">← 로그인</span><span></span></div>
+        <h4>다시 오셨네요</h4>
+        <div class="sub">저장한 가게와 지난 컨설팅을 볼 수 있어요</div>
+        <div class="label">이메일</div>
+        <div class="input">example@email.com</div>
+        <div class="label">비밀번호</div>
+        <div class="input err">••••••••</div>
+        <div class="errmsg">! 이메일 또는 비밀번호가 맞지 않습니다</div>
+        <span class="btn" style="margin-top:16px">로그인</span>
+        <span class="textlink">계정이 없나요? 회원가입</span>
+        <span class="textlink" style="margin-top:6px">로그인 없이 시작하기</span>
+      </div>
+      <div class="memo">상태: 입력 오류 · 로그인 실패(예시 표시) · 처리 중</div>
+    </div>
+
+    <!-- 3 회원가입 -->
+    <div class="cell">
+      <div class="cap"><span class="no">3</span><b>회원가입</b><code>/signup</code><em class="tag new">신규</em></div>
+      <div class="phone">
+        <div class="status"></div>
+        <div class="hdr"><span class="back">← 회원가입</span><span></span></div>
+        <h4>매주 컨설팅 받기</h4>
+        <div class="sub">가입하면 가게를 저장하고 매주 새 분석을 받아요</div>
+        <div class="label">이메일</div>
+        <div class="input">example@email.com</div>
+        <div class="label">비밀번호</div>
+        <div class="input">8자 이상</div>
+        <div class="label">비밀번호 확인</div>
+        <div class="input">비밀번호 다시 입력</div>
+        <div class="check"><span class="box"></span>[필수] 개인정보 수집·이용 동의<span style="margin-left:auto;color:var(--mid);text-decoration:underline">보기</span></div>
+        <span class="btn off" style="margin-top:16px">가입하기</span>
+        <span class="textlink">이미 계정이 있어요 · 로그인</span>
+      </div>
+      <div class="memo">동의 체크 전에는 가입 버튼 비활성 · 상태: 형식 오류, 비밀번호 불일치, 이미 가입된 이메일</div>
+    </div>
+
+    <!-- 4 분석 방식 선택 -->
+    <div class="cell">
+      <div class="cap"><span class="no">4</span><b>분석 방식 선택</b><code>/start</code><em class="tag new">신규</em></div>
+      <div class="phone">
+        <div class="status"></div>
+        <div class="hdr"><span class="logo">골목 한 주</span><span class="link">내 가게</span></div>
+        <h4>어떻게 분석할까요?</h4>
+        <div class="sub">지금은 공공데이터 분석을 이용할 수 있어요</div>
+        <div class="card soon">
+          <div class="row between"><b>내 가게 데이터 연동 분석</b><em class="badge soon">준비 중</em></div>
+          <small>카드매출 · POS · 배달앱 주문을 본인 동의로 연결하면, 동네 평균이 아니라 내 가게 실적 기준으로 분석해요</small>
+          <span class="btn ghost" style="margin-top:10px">출시 알림 받기</span>
+        </div>
+        <div class="card pick">
+          <div class="row between"><b>연동 없이 분석</b><em class="badge">지금 가능</em></div>
+          <small>가게명과 대표 메뉴만 입력하면 날씨·명절·행사·상권·식자재 가격으로 이번 주 운영 포인트를 알려드려요</small>
+          <span class="btn" style="margin-top:10px">시작하기</span>
+        </div>
+      </div>
+      <div class="memo">"준비 중" 카드는 회색 비활성 버튼이 아니라 <b>설명 + 출시 알림</b>으로 (미완성처럼 보이지 않게)</div>
+    </div>
+
+    <!-- 5 출시 알림 모달 -->
+    <div class="cell">
+      <div class="cap"><span class="no">5</span><b>출시 알림 신청</b><code>모달</code><em class="tag new">신규</em></div>
+      <div class="phone" style="height:560px">
+        <div class="status"></div>
+        <div class="hdr"><span class="logo">골목 한 주</span><span class="link">내 가게</span></div>
+        <div class="ln w70"></div><div class="ln w50"></div>
+        <div class="card soon" style="height:120px"></div>
+        <div class="card" style="height:120px"></div>
+        <div class="dim"></div>
+        <div class="sheet">
+          <div class="grab"></div>
+          <span class="x">✕</span>
+          <h4>출시되면 알려드릴게요</h4>
+          <div class="sub">내 가게 데이터 연동 분석에서 연결할 수 있는 데이터</div>
+          <div class="bullets">
+            <div>카드매출</div><div>POS 판매 내역</div><div>배달앱 주문 내역</div>
+          </div>
+          <div class="note" style="margin-top:8px">모든 연동은 사장님 본인 동의 후에만 진행됩니다</div>
+          <div class="label">알림 받을 이메일 <span style="color:var(--mid);font-weight:400">(비로그인 시)</span></div>
+          <div class="input">example@email.com</div>
+          <span class="btn">알림 신청</span>
+        </div>
+      </div>
+      <div class="memo">신청 완료 상태 필요 · 신청 수는 제안서 수요 근거로 활용 가능</div>
+    </div>
+
+    <!-- 6 가게 검색 -->
+    <div class="cell">
+      <div class="cap"><span class="no">6</span><b>가게 검색</b><code>/search</code><em class="tag old">기존</em></div>
+      <div class="phone">
+        <div class="status"></div>
+        <div class="hdr"><span class="back">← 가게 찾기</span><span></span></div>
+        <h4>우리 가게를 찾아주세요</h4>
+        <div class="row" style="margin-top:8px"><div class="input" style="flex:1">상호명 또는 주소</div><span class="btn sm">검색</span></div>
+        <h5>검색 결과 3곳</h5>
+        <div class="item"><div><b>꾸띵피자치킨</b><small>패스트푸드 · 군위군 군위읍 중앙길 46</small></div><span class="chev">›</span></div>
+        <div class="item"><div><b>맥시칸치킨</b><small>통닭(치킨) · 군위군 군위읍 중앙길 61</small></div><span class="chev">›</span></div>
+        <div class="item"><div><b>성연이치킨</b><small>통닭(치킨) · 군위군 군위읍 동서길 63</small></div><span class="chev">›</span></div>
+        <div class="divider">찾는 가게가 없나요?</div>
+        <span class="btn ghost">주소 직접 입력</span>
+      </div>
+      <div class="memo">상태: 검색 중 · 결과 없음 · 오류 · 직접 입력한 가게는 데모 배지</div>
+    </div>
+
+    <!-- 7 가게 확인 · 대표 메뉴 -->
+    <div class="cell">
+      <div class="cap"><span class="no">7</span><b>가게 확인·메뉴</b><code>/store/[id]/confirm</code><em class="tag old">기존</em></div>
+      <div class="phone">
+        <div class="status"></div>
+        <div class="hdr"><span class="back">← 가게 확인</span><span></span></div>
+        <div class="card">
+          <b>꾸띵피자치킨</b>
+          <small>패스트푸드 · 대구광역시 군위군 군위읍 중앙길 46</small>
+          <div class="img sm" style="margin:8px 0 0"></div>
+        </div>
+        <div class="label">대표 메뉴</div>
+        <div class="input" style="color:var(--ink)">후라이드치킨</div>
+        <div class="label">메뉴 분류 <span style="color:var(--mid);font-weight:400">· 자동 분류됨, 바꿀 수 있어요</span></div>
+        <div>
+          <span class="chip on">치킨</span><span class="chip">구이</span><span class="chip">국물</span><span class="chip">분식</span><span class="chip">중식</span><span class="chip">일식</span><span class="chip">양식</span><span class="chip">냉면류</span><span class="chip">보양식</span><span class="chip">기타</span>
+        </div>
+        <span class="btn" style="margin-top:18px">이번 주 분석 시작</span>
+      </div>
+      <div class="memo">상태: 분류 중 · 리포트 생성 중(몇 초 걸림 → 로딩 화면 필요)</div>
+    </div>
+
+    <!-- 8 생활권 -->
+    <div class="cell">
+      <div class="cap"><span class="no">8</span><b>주변 생활권 분석</b><code>/report/[id]/area</code><em class="tag old">기존</em></div>
+      <div class="phone">
+        <div class="status"></div>
+        <div class="hdr"><span class="back">← 주변 생활권</span><span class="demo">데모 데이터</span></div>
+        <h4>군위군 군위읍</h4>
+        <div class="sub">꾸띵피자치킨 기준 반경 500m</div>
+        <div class="tiles">
+          <div class="tile"><small>음식점</small><b>52곳</b></div>
+          <div class="tile"><small>유사 업종</small><b>0곳</b></div>
+          <div class="tile wide"><div class="row between"><small>경쟁 강도</small><b style="font-size:14px">낮음</b></div><div class="meter"></div></div>
+        </div>
+        <div class="note">음식점이 모인 곳은 매출도 함께 높다는 연구가 있어, 경쟁점 수만으로 불리하다고 판단하지 않습니다. [출처]</div>
+        <span class="btn" style="margin-top:16px">이번 주 운영 컨설팅 보기</span>
+      </div>
+      <div class="memo">데모 배지는 해당 데이터가 대체값일 때만 표시</div>
+    </div>
+
+    <!-- 9 이번 주 컨설팅 -->
+    <div class="cell tall">
+      <div class="cap"><span class="no">9</span><b>이번 주 운영 컨설팅</b><code>/report/[id]</code><em class="tag old">기존</em></div>
+      <div class="phone" style="padding-bottom:78px">
+        <div class="status"></div>
+        <div class="hdr"><span class="back">← 이번 주 컨설팅</span><span class="demo">데모 데이터</span></div>
+        <h4>꾸띵피자치킨 · 치킨</h4>
+        <div class="sub">9/17(목) ~ 9/23(수)</div>
+        <div class="ai"><div class="t">AI 요약</div><div class="ln w90"></div><div class="ln"></div><div class="ln w70"></div></div>
+        <h5>핵심 점검 항목</h5>
+        <div class="act"><div class="row"><span class="chip on" style="margin:0">중요</span>주말 · 인력·운영 점검</div><div class="ln w90"></div><small>근거: 9/19(토) 주말 · 출처 [4]</small></div>
+        <div class="act"><div class="row"><span class="chip" style="margin:0">보통</span>식자재 가격 · 재료 점검</div><div class="ln w70"></div><small>근거: 닭 급등 확률 · 출처 [14]</small></div>
+        <h5>날짜별 가이드</h5>
+        <div class="days"><div class="day">목</div><div class="day">금</div><div class="day on">토</div><div class="day">일</div><div class="day">월</div><div class="day">화</div><div class="day">수</div></div>
+        <div class="card" style="margin-top:7px"><div class="ln w90"></div><div class="ln w70"></div></div>
+        <h5>이번 주 날씨</h5>
+        <div class="wx"><div>목<i></i>26°</div><div>금<i></i>25°</div><div>토<i></i>27°</div><div>일<i></i>28°</div><div>월<i></i>17°</div><div>화<i></i>28°</div><div>수<i></i>28°</div></div>
+        <h5>주변 행사</h5>
+        <div class="item" style="padding:6px 0"><div><b style="font-size:12px">대구메이커페스타</b><small>9/19~9/20 · 38.9km · 영향 제한적</small></div></div>
+        <h5>식자재 가격</h5>
+        <div class="item" style="padding:6px 0"><div><b style="font-size:12px">닭 1kg 4,269원</b><small>9/16 기준 · 특별한 확인 필요 없음</small></div></div>
+        <h5>근거 출처</h5>
+        <div class="ln w90"></div><div class="ln w70"></div><div class="ln w50"></div>
+        <div class="banner">
+          <div><b>매주 월요일, 이번 주 컨설팅 받기</b><small>가게를 저장하고 알림으로 받아보세요</small></div>
+          <span class="btn sm">가입하기</span>
+        </div>
+        <div class="disc">본 결과는 공공데이터 및 연구자료 기반 운영 참고용 제안이며, 실제 매출을 보장하지 않습니다.</div>
+        <span class="fab">챗봇</span>
+      </div>
+      <div class="memo"><b>가입 유도 배너(⑪)</b>는 비로그인일 때만, 결과를 본 뒤 하단에 · AI 요약이 없으면 그 칸 자체를 숨김 · 식자재·행사가 없으면 빈 상태 문구 · 출처·면책 문구 삭제 불가</div>
+    </div>
+
+    <!-- 10 챗봇 -->
+    <div class="cell">
+      <div class="cap"><span class="no">10</span><b>AI 챗봇 (열림)</b><code>리포트 위</code><em class="tag old">기존</em></div>
+      <div class="phone" style="height:600px">
+        <div class="status"></div>
+        <div class="hdr"><span class="back">← 이번 주 컨설팅</span><span></span></div>
+        <div class="ln w70"></div><div class="ln w50"></div>
+        <div class="card" style="height:90px"></div><div class="card" style="height:90px"></div>
+        <div class="dim" style="background:rgba(34,38,44,.18)"></div>
+        <div class="chat">
+          <div class="row between"><b style="font-size:13px">이번 주 리포트에 물어보세요</b><span style="color:var(--mid)">✕</span></div>
+          <div class="note" style="margin-top:6px">리포트에 있는 사실만 근거로 답해요 · 매출 예측은 하지 않아요</div>
+          <div class="bubble me">이번 주 비 오는 날 언제예요?</div>
+          <div class="bubble bot">9월 17일(목)과 18일(금)이 강수확률 30%로 가장 높아요.</div>
+          <div class="bubble me">이번 주 매출 몇 % 오를까요?</div>
+          <div class="bubble bot">정확한 매출 예측은 어렵습니다. 대신 날씨·행사 항목을 참고해주세요.</div>
+          <div class="typing">답변을 준비하고 있습니다…</div>
+          <div class="row" style="margin-top:8px"><div class="input" style="flex:1">질문을 입력해주세요</div><span class="btn sm">전송</span></div>
+        </div>
+        <span class="fab">닫기</span>
+      </div>
+      <div class="memo">위치는 우측 하단 고정 · 상태: 첫 진입(예시 질문 표시), 답변 대기, 실패 메시지</div>
+    </div>
+
+    <!-- 12 내 가게 -->
+    <div class="cell">
+      <div class="cap"><span class="no">12</span><b>내 가게</b><code>/me</code><em class="tag new">신규</em></div>
+      <div class="phone">
+        <div class="status"></div>
+        <div class="hdr"><span class="logo">골목 한 주</span><span class="link">로그아웃</span></div>
+        <h4>내 가게</h4>
+        <div class="card pick">
+          <div class="row between"><b>꾸띵피자치킨</b><span class="chip" style="margin:0">치킨</span></div>
+          <small>대구광역시 군위군 군위읍 중앙길 46</small>
+          <span class="btn" style="margin-top:10px">이번 주 새로 분석하기</span>
+        </div>
+        <h5>지난 컨설팅</h5>
+        <div class="item"><div><b>9/17 ~ 9/23</b><small>핵심 점검 2건</small></div><span class="chev">›</span></div>
+        <div class="item"><div><b>9/10 ~ 9/16</b><small>핵심 점검 3건</small></div><span class="chev">›</span></div>
+        <div class="card soon" style="margin-top:10px">
+          <div class="row between"><b>내 가게 데이터 연동</b><em class="badge soon">준비 중</em></div>
+          <small>카드매출·POS 연동은 출시되면 알려드려요</small>
+        </div>
+        <div class="divider" style="text-align:left">계정 · example@email.com</div>
+      </div>
+      <div class="memo">저장한 가게가 없으면 "가게 등록하기" 빈 상태</div>
+    </div>
+
+    <!-- 공통 -->
+    <div class="cell tall">
+      <div class="cap"><span class="no">13</span><b>공통 요소 · 상태</b><code>전체 화면</code><em class="tag new">신규+기존</em></div>
+      <div class="sheetbox">
+        <h5>헤더 (로그인 상태별)</h5>
+        <div class="hdrdemo"><small>비로그인</small><div class="hdr"><span class="logo">골목 한 주</span><span class="link">로그인</span></div></div>
+        <div class="hdrdemo"><small>로그인</small><div class="hdr"><span class="logo">골목 한 주</span><span class="row"><span class="link">내 가게</span><span class="link">로그아웃</span></span></div></div>
+
+        <h5>버튼</h5>
+        <div class="sample"><span class="btn">기본</span><span class="btn ghost">보조</span><span class="btn off">비활성</span></div>
+
+        <h5>입력창</h5>
+        <div class="input">기본</div>
+        <div class="input err" style="margin-top:6px">오류</div>
+        <div class="errmsg">! 오류 안내 문구</div>
+        <div class="check" style="margin-top:8px"><span class="box"></span>체크박스</div>
+
+        <h5>배지</h5>
+        <div class="sample"><span class="badge soon" style="margin:0">준비 중</span><span class="demo">데모 데이터</span><span class="chip on" style="margin:0">중요</span><span class="chip" style="margin:0">보통</span></div>
+
+        <h5>화면 상태</h5>
+        <div class="row" style="gap:6px;align-items:stretch">
+          <div class="state"><i></i>불러오는 중</div>
+          <div class="state"><i></i>오류<br>다시 시도</div>
+          <div class="state"><i></i>결과 없음</div>
+        </div>
+
+        <h5>항상 유지</h5>
+        <div class="note" style="margin-top:0">근거 출처 표시 · 면책 문구 · 데모 데이터 배지 · 터치 영역 44px 이상 · 390px 가로 스크롤 없음</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="order">
+    <b>디자인 우선순위</b>
+    <ol>
+      <li><span>1</span>첫 화면</li>
+      <li><span>4</span>분석 방식 선택</li>
+      <li><span>9</span>이번 주 컨설팅</li>
+      <li><span>8</span>생활권</li>
+      <li><span>2·3</span>로그인·가입</li>
+      <li><span>6·7</span>검색·메뉴</li>
+      <li><span>나머지</span></li>
+    </ol>
+    <div class="rules">UI·애니메이션 라이브러리 금지 (순수 CSS는 자유)<br>상세 규칙: docs/handoff-to-design.md</div>
+  </div>
+</body>
+</html>

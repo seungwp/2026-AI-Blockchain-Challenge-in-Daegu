@@ -1,6 +1,10 @@
 spring:
   application:
     name: golmok-one-week
+  # 저장소 루트 .env 를 읽어 API 키를 채운다 (IntelliJ 실행처럼 환경변수를 안 넘겨도 동작하게).
+  # 작업 폴더가 backend 일 때 기준이며, 파일이 없으면 무시한다. 실제 환경변수가 있으면 그쪽이 우선한다.
+  config:
+    import: optional:file:../../.env[.properties]
   profiles:
     default: local
   jpa:
@@ -29,10 +33,10 @@ golmok:
     groq-model: ${GROQ_MODEL:openai/gpt-oss-120b}
   # 외부 API 키는 환경변수로만 주입 (코드·yml에 직접 쓰지 않음)
   providers:
-    weather: kma       # mock | kma
-    festival: mock     # mock | tourapi
-    holiday: kasi      # mock | kasi
-    store-search: mock # mock | sbiz
+    weather: kma       # kma(기상청) | mock(예시 값)
+    festival: mock     # mock = DbFestivalProvider (H2 시드 실데이터, 대체 구현 없음)
+    holiday: kasi      # kasi(천문연) | mock(명절 없음)
+    store-search: mock # mock = DbStoreSearchProvider (H2 시드 실데이터, 대체 구현 없음)
 
 ---
 # 실제 API 연동 시 사용할 키 자리 (값은 환경변수)

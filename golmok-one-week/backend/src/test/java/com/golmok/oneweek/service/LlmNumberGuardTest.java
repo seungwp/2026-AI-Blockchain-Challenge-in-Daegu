@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * LLM 응답에 입력 JSON에 없는 숫자가 있으면 지어낸 값으로 간주해 버려야 한다(원칙 6).
  * 네트워크 호출 없이 순수 검증 로직({@link LlmNumberGuard})만 테스트한다.
  */
-class LlmAdviceServiceTest {
+class LlmNumberGuardTest {
 
     private static final String FACTS =
             "{\"이번주요약\":\"이번 주는 비 예보 2일 조건입니다\",\"핵심점검항목\":[" +

@@ -31,6 +31,7 @@ public class LlmAdviceService {
             반드시 아래 JSON에 있는 사실과 숫자만 사용하세요. 새로운 숫자·퍼센트·날짜·매출액을 만들지 마세요.
             매출을 예측하거나 보장하는 표현("매출이 오릅니다", "얼마 벌 것으로 예상") 대신
             "점검을 권장합니다", "준비해두면 좋습니다"처럼 참고용 표현만 쓰세요.
+            연구·분석 결과를 "이 가게 매출이 늘 수 있다"처럼 이 가게의 매출 전망으로 바꿔 말하지 마세요.
             JSON 키 이름이나 id를 문장에 그대로 쓰지 말고, 자연스러운 한국어 문장으로만 답하세요.
             설명 없이 요약 문장만 출력하세요.
             """;
@@ -50,7 +51,7 @@ public class LlmAdviceService {
             List<Map<String, String>> messages = List.of(
                     Map.of("role", "system", "content", SYSTEM_PROMPT),
                     Map.of("role", "user", "content", factsJson));
-            String text = client.complete(messages, 0.2, 300, TIMEOUT);
+            String text = client.complete(messages, 0.2, 600, TIMEOUT);
             if (text == null || text.isBlank()) return null;
             text = text.strip();
             return LlmNumberGuard.hasInventedNumber(factsJson, text) ? null : text;
