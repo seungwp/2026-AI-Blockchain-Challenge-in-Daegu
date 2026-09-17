@@ -3,6 +3,7 @@ package com.golmok.oneweek.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.golmok.oneweek.dto.ReportDtos.*;
+import com.golmok.oneweek.dto.ChatDtos.*;
 import com.golmok.oneweek.dto.SourceResponse;
 import com.golmok.oneweek.dto.StoreResponse;
 import com.golmok.oneweek.entity.AnalysisReport;
@@ -47,6 +48,7 @@ public class ReportService {
     private final IngredientPriceRepository ingredientPriceRepository;
     private final KamisPriceProvider kamisPriceProvider;
     private final LlmAdviceService llmAdviceService;
+    private final ReportChatService reportChatService;
     private final AnalysisReportRepository reportRepository;
     private final SourceRepository sourceRepository;
     private final ObjectMapper objectMapper;
@@ -119,6 +121,11 @@ public class ReportService {
                             p.isAlert(), ratio, l == null && p.isDemoData(), p.getSourceId());
                 })
                 .toList();
+    }
+
+    public String chat(Long reportId, ChatRequest request) {
+        ReportResponse report = get(reportId);
+        return reportChatService.ask(report, request.question(), request.history());
     }
 
     public ReportResponse get(Long reportId) {

@@ -137,7 +137,7 @@
 - **`weather[].pm10Grade`는 존재하지 않습니다.** 미세먼지 조건은 근거 부족으로 전면 제거했습니다.
 - **`ingredientPrices`**: 메뉴 카테고리에 대응하는 KAMIS 품목이 없으면 **빈 배열**입니다(냉면류·일식·양식·기타·공통). `price`·`priceDate`는 요청 시점에 KAMIS API를 실시간 조회한 값(실패 시 최근 스냅샷으로 대체), `probSpike`·`alert`는 매일 갱신되는 예측 모델의 배치 스냅샷입니다.
 - **`conditionType`** 가능한 값: `RAIN`, `HOT`, `COLD`, `WEEKEND`, `HOLIDAY`, `FESTIVAL`, `COMPETITION`, `PRICE_SPIKE`. `HOLIDAY`의 `basis`엔 "추석 전날"/"추석 당일"/"추석 연휴 기간"/"추석 연휴 마지막날" 라벨이 들어갑니다.
-- **`aiSummary`**: NVIDIA LLM이 `summary`와 같은 사실을 재료로 다듬은 자연스러운 문장. 항상 **null일 수 있음**(키 없음·API 실패·타임아웃·검증 실패 시). null이어도 `summary`가 있으니 화면은 항상 완전함. 프론트는 `{report.aiSummary && <p className="ai-summary">...}`처럼 있을 때만 보여주면 됨
+- **`aiSummary`**: Groq LLM이 `summary`와 같은 사실을 재료로 다듬은 자연스러운 문장. 항상 **null일 수 있음**(키 없음·API 실패·타임아웃·검증 실패 시). null이어도 `summary`가 있으니 화면은 항상 완전함. 프론트는 `{report.aiSummary && <p className="ai-summary">...}`처럼 있을 때만 보여주면 됨
 - **`isDemoData`(최상위)**: 가게·날씨 각 날짜·축제·상권·식자재 가격 중 **하나라도** `isDemoData: true`면 전체가 `true`입니다. 전부 실데이터면 `false`이고 `demoNotice`는 `null`입니다.
 
 ## 7. GET `/api/reports/{reportId}`
@@ -145,6 +145,23 @@
 
 ## 8. GET `/api/sources`, GET `/api/sources/{sourceId}`
 출처 전체(14건)/단건 조회. ID는 `docs/coefficients.md`의 출처 번호와 1:1로 고정되어 있습니다.
+
+## 9. POST `/api/reports/{reportId}/chat`
+리포트 화면 우측 하단 챗봇. **이 리포트에 있는 사실만** 근거로 답하는 Q&A이며, 대구 상권 전반을 다루는 일반 챗봇이 아닙니다.
+
+요청:
+```json
+{ "question": "이번 주에 비 오는 날이 언제예요?", "history": [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}] }
+```
+- `question`: 필수, 최대 300자
+- `history`: 선택, 이전 대화(최근 6개만 사용). `role`은 `user`/`assistant`만 신뢰하고 그 외 값은 서버에서 `user`로 강등함
+
+응답:
+```json
+{ "answer": "이번 주에는 9월 17일(목)과 9월 18일(금)에 비가 올 확률이 30%로 흐린 날씨가 예상됩니다..." }
+```
+
+**절대 규칙**: 매출 증감을 퍼센트·금액으로 확정해 말하지 않습니다. 매출 예측을 요청받으면 "정확한 매출 예측은 어렵습니다"라고 답하고 리포트의 참고 자료를 안내합니다. 리포트 데이터에 없는 숫자·날짜·사실은 만들어내지 않으며, 검증에 실패하면 한 번 재시도 후에도 실패하면 "답변을 가져오지 못했습니다" 메시지를 돌려줍니다. LLM 키가 없으면(`GROQ_API_KEY` 미설정) 항상 안내 문구만 돌려줍니다.
 
 ## 에러 응답
 ```json

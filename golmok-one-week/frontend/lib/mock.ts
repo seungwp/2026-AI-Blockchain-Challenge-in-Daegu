@@ -74,6 +74,14 @@ function demoIngredientPrices(category: MenuCategory, priceDate: string): Analys
   }));
 }
 
+/** 백엔드 없이도 챗봇 버튼이 동작하는 것을 보여주기 위한 아주 단순한 대체 응답. */
+export function mockChatAnswer(question: string): string {
+  if (/매출|얼마.*벌|퍼센트|%.*(늘|줄)/.test(question)) {
+    return "죄송합니다. 정확한 매출 예측은 어렵습니다. 대신 리포트의 날씨·행사·경쟁 상황 항목을 참고해주세요. (데모 응답)";
+  }
+  return "지금은 데모 모드라 실제 챗봇 대신 예시 응답을 보여드리고 있습니다. 백엔드를 연결하면 리포트 데이터를 근거로 답변합니다.";
+}
+
 export function mockSources(): Source[] {
   return [
     {
