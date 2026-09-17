@@ -8,7 +8,7 @@
 
 제출용 본체는 **`golmok-one-week/` (골목 한 주)** 풀스택 MVP입니다. 상호명·주소 + 대표 메뉴를 입력하면
 상권·이번 주 날씨·대구 축제·메뉴 특성을 결합해 **이번 주 운영 가이드**를 돌려줍니다.
-디자인팀에 넘길 **개발용 MVP**이므로 디자인·브랜딩·애니메이션은 넣지 않습니다.
+디자인팀에 넘길 **개발용 MVP**이므로 디자인·브랜딩은 넣지 않습니다. (디자인팀 단계부터의 규칙은 golmok-one-week/docs/handoff-to-design.md 행동강령 참고)
 
 ## 역할 분담 (폴더 단위, 서로의 폴더는 수정 금지)
 | 담당 | 노트북 | 폴더 | 할 일 |
@@ -30,7 +30,7 @@
 - HTTP는 **Axios** (`lib/api.ts` 한 곳에서만 호출, 실패 시 `lib/mock.ts` 데모 데이터로 폴백)
 - 폼은 **React Hook Form + Zod** (`zodResolver`). 검색 폼·대표 메뉴 폼 모두 적용
 - CSS는 `app/globals.css` 또는 CSS Module 위주. **Tailwind는 선택사항이고 현재 미사용**, 쓰더라도 최소 레이아웃 클래스만
-- **UI 컴포넌트 라이브러리·애니메이션 라이브러리 사용 금지** (색 테마·그라데이션·아이콘 중심 디자인도 금지)
+- **UI 컴포넌트 라이브러리·애니메이션 라이브러리 사용 금지** (MUI·shadcn·Framer Motion·GSAP 등). 라이브러리 없는 순수 CSS 스타일·애니메이션(transition, @keyframes)은 디자인팀 단계부터 허용
 - 시맨틱 HTML + 컴포넌트 책임 분리. 디자인 교체가 비즈니스 로직 변경을 요구하면 안 됨
 
 **Backend — `golmok-one-week/backend/`**
