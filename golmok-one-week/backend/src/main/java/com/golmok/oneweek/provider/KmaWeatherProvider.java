@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.golmok.oneweek.dto.ReportDtos.WeatherDay;
 import com.golmok.oneweek.provider.Providers.WeatherProvider;
-import com.golmok.oneweek.service.SourceCatalog;
+import com.golmok.oneweek.entity.SourceCatalog;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

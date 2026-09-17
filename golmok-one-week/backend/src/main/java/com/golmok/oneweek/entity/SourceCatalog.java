@@ -1,4 +1,4 @@
-package com.golmok.oneweek.service;
+package com.golmok.oneweek.entity;
 
 /**
  * Java 코드에서 직접 참조하는 출처 ID.

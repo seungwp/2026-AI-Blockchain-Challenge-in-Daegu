@@ -8,8 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 외부 데이터 연동 지점. MVP는 Mock 구현을 쓰고, 실제 API는 Adapter 클래스를 추가해
- * application.yml 의 golmok.providers.* 값으로 교체한다 (키는 환경변수로만 주입).
+ * 외부 데이터 연동 지점. 구현은 application.yml 의 golmok.providers.* 값으로 고른다 (키는 환경변수로만 주입).
+ * 현재: 날씨 KmaWeatherProvider(kma)·MockWeatherProvider(mock), 명절 KasiHolidayProvider(kasi)·MockHolidayProvider(mock),
+ * 축제 DbFestivalProvider, 가게 검색 DbStoreSearchProvider (뒤의 두 개는 H2 시드 실데이터, 설정값은 mock 유지).
  */
 public final class Providers {
     private Providers() {}

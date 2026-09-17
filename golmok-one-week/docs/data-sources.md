@@ -11,7 +11,7 @@
 | 가게·상권 | 행정안전부 식품_일반음식점 인허가 정보 | https://www.data.go.kr/data/15045016/fileData.do | `StoreSearchProvider`, `CommercialAreaService` | **연동 완료 ✅** (24,079곳 실데이터, `pipeline/export_golmok_stores.py`로 시드) |
 | 날씨 예보 | 기상청 단기예보·중기예보 | https://data.kma.go.kr/ | `KmaWeatherProvider` | **연동 완료 ✅** (0~4일 동네 5km 격자, 5~6일 대구 전역) |
 | 명절 | 한국천문연구원 특일 정보 | https://www.data.go.kr/data/15012690/openapi.do | `KasiHolidayProvider` | **연동 완료 ✅** (추석 전날·당일·연휴기간·마지막날만, 설날 등은 계수 없어 미분류) |
-| 축제·행사 | 한국관광공사 TourAPI | https://api.visitkorea.or.kr/ | `MockFestivalProvider` (실데이터를 CSV로 시드) | **실데이터 ✅** (`pipeline/fetch_festival.py`로 수집한 17건, 요청 시 실시간 호출은 아님) |
+| 축제·행사 | 한국관광공사 TourAPI | https://api.visitkorea.or.kr/ | `DbFestivalProvider` (실데이터를 CSV로 시드) | **실데이터 ✅** (`pipeline/fetch_festival.py`로 수집한 17건, 요청 시 실시간 호출은 아님) |
 | 식자재 가격 | KAMIS 농산물유통정보 | https://www.kamis.or.kr/ | `KamisPriceProvider` | **연동 완료 ✅** (가격은 요청 시 실시간 조회, 급등확률은 `pipeline/price_spike_model.py`의 배치 스냅샷) |
 | 미세먼지 | ~~에어코리아~~ | — | — | **제거됨** — 미세먼지가 매출과 유의한 관계가 없다는 근거(성은영 2017, `docs/coefficients.md`)로 조건·필드 전체 삭제 |
 

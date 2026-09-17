@@ -89,7 +89,7 @@ public class ReportChatService {
             messages.add(Map.of("role", "user", "content", question));
             if (correction != null) messages.add(Map.of("role", "system", "content", correction));
 
-            String text = client.complete(messages, 0.3, 400, TIMEOUT);
+            String text = client.complete(messages, 0.3, 800, TIMEOUT);
             if (text == null || text.isBlank()) return null;
             text = text.strip();
             return LlmNumberGuard.hasInventedNumber(allowedText, text) ? null : text;

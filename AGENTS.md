@@ -77,6 +77,7 @@
 
 ## 참고 문서
 - **골목 한 주 인수인계**: `golmok-one-week/docs/handoff-to-design.md` (디자인팀), `golmok-one-week/docs/api-spec.md`, `golmok-one-week/docs/architecture.md`
+- **골목 한 주 코드 지도 (코드 수정 전 먼저 확인)**: `golmok-one-week/docs/code-map.md` — 기능별 핵심 파일·API·의존관계. 그래프는 `golmok-one-week/graphify-out/`
 - 화면 명세: `docs/design/screens.md`
 - 데이터 형식: `contracts/README.md`
 - 데이터 출처·실행 방법: `README.md`

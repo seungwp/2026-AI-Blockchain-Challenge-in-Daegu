@@ -10,11 +10,14 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-/** 데모 가게 검색: H2 seed 데이터에서 상호명·주소 부분일치로 찾는다. */
+/**
+ * 가게 검색: H2에 seed 된 행정안전부 인허가 실데이터(24,079곳)에서 상호명·주소 부분일치로 찾는다.
+ * 설정값은 호환을 위해 {@code golmok.providers.store-search=mock}을 그대로 쓴다(대체 구현 없음).
+ */
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "golmok.providers.store-search", havingValue = "mock", matchIfMissing = true)
-public class MockStoreSearchProvider implements StoreSearchProvider {
+public class DbStoreSearchProvider implements StoreSearchProvider {
 
     /** 대구 음식점이 2만 건대라 검색 결과를 화면에서 다룰 수 있는 개수로 제한한다. */
     private static final int MAX_RESULTS = 20;

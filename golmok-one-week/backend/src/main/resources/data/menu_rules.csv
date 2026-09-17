@@ -1,31 +1,31 @@
 menuCategory,conditionType,conditionValue,recommendationType,recommendationText,sourceId,confidence
-COMMON,RAIN,60,DELIVERY,비 예보일에는 홀 방문보다 포장·배달 주문이 늘어나는 경향이 보고됩니다. 포장·배달 가능 여부와 포장 용기 재고를 점검하는 것을 권장합니다.,4,HIGH
-COMMON,RAIN,60,NOTICE,"우산 보관, 바닥 미끄럼 주의, 실내 대기 공간 상태를 점검하는 것을 권장합니다.",1,MEDIUM
+COMMON,RAIN,60,DELIVERY,비 예보일에는 배달 주문이 늘어난다는 분석이 있습니다(다만 폭우 때는 증가 폭이 줄어듭니다). 포장·배달 가능 여부와 포장 용기 재고를 점검하는 것을 권장합니다.,11,HIGH
 COMMON,HOT,33,INVENTORY,폭염이 예보된 날은 냉방 상태와 음료·식자재 보관 온도를 점검하는 것을 권장합니다.,2,HIGH
-COMMON,COLD,5,NOTICE,"기온이 낮은 날은 매장 난방과 대기 공간, 배달 지연 안내를 점검하는 것을 권장합니다.",2,MEDIUM
-COMMON,WEEKEND,,STAFFING,주말은 피크 시간대 인력과 재료를 사전에 점검하는 것을 권장합니다.,4,HIGH
+COMMON,HOT,33,DELIVERY,아주 더운 날에도 배달 주문이 늘어난다는 분석이 있습니다. 배달 음식의 온도 유지와 포장 상태를 점검하는 것을 권장합니다.,11,MEDIUM
+COMMON,COLD,5,DELIVERY,기온이 크게 떨어지는 날은 배달 주문이 늘어난다는 분석이 있습니다. 포장 보온 상태와 배달 지연 안내를 점검하는 것을 권장합니다.,11,MEDIUM
+COMMON,WEEKEND,,STAFFING,배달 주문은 평일보다 금·토·일에 많다는 분석이 있습니다. 주말 피크 시간대의 배달 대기 시간과 인력 배치를 점검하는 것을 권장합니다.,11,MEDIUM
 COMMON,COMPETITION,3,MARKETING,"반경 500m 내 유사 업종이 많습니다. 대표 메뉴, 포장 품질, 대기 시간, 응대 속도의 차별화 점검을 권장합니다. 다만 음식점이 많은 지역일수록 매출도 함께 증가한다는 분석이 있어, 경쟁점 수만으로 상권을 낮게 평가하지는 않습니다.",1,MEDIUM
 COMMON,FESTIVAL,1000,NOTICE,인근 행사로 방문객 유입 가능성이 있습니다. 교통·주차 혼잡 안내와 매장 동선 점검을 권장합니다.,5,MEDIUM
 COMMON,FESTIVAL,1000-3000,NOTICE,가게에서 다소 떨어진 곳에서 행사가 열립니다. 직접적인 방문객 유입은 제한적일 수 있으나 주변 통행·주차 상황이 달라질 수 있어 재료 준비와 영업시간을 여유 있게 점검하는 것을 권장합니다.,7,LOW
 SOUP,RAIN,60,INVENTORY,비 예보일에는 국물 메뉴 재료와 포장 용기 준비 우선순위를 높이는 것을 권장합니다.,2,MEDIUM
 SOUP,COLD,5,INVENTORY,기온이 낮은 날은 국물 메뉴 재료 수급과 보온 포장 상태를 점검하는 것을 권장합니다.,2,MEDIUM
 SOUP,HOT,30,MENU,기온이 높은 날은 시원한 곁들임이나 음료 노출을 고려해보세요.,2,LOW
-GRILL,WEEKEND,,STAFFING,"주말 저녁은 테이블 회전, 대기 동선, 환기 상태 점검을 권장합니다.",4,MEDIUM
-GRILL,RAIN,60,DELIVERY,비 예보일에는 실내 좌석 운영과 포장·배달 대응 상태 점검을 권장합니다.,4,MEDIUM
+GRILL,WEEKEND,,STAFFING,"매출이 가장 높은 요일은 매장 규모에 따라 다르다는 분석이 있습니다(작은 매장은 일요일, 큰 매장은 금·토요일). 가게 규모에 맞춰 주말 테이블 회전과 환기 상태를 점검해보세요.",4,MEDIUM
+GRILL,RAIN,60,DELIVERY,비 예보일에는 배달 주문이 늘어난다는 분석이 있습니다. 실내 좌석 운영과 포장·배달 대응 상태를 점검하는 것을 권장합니다.,12,MEDIUM
 GRILL,HOT,33,MENU,폭염일에는 냉방과 차가운 사이드·음료 구성을 고려해보세요.,2,LOW
 COLD_NOODLE,HOT,30,INVENTORY,기온이 높은 날은 면·육수·얼음과 냉장 보관 상태를 사전 점검하는 것을 권장합니다.,2,HIGH
 COLD_NOODLE,RAIN,60,MENU,비 예보일에는 따뜻한 보조 메뉴 노출이나 세트 구성을 고려해보세요.,2,LOW
 COLD_NOODLE,COLD,10,MENU,기온이 낮은 날은 온메뉴 구성이나 세트 안내를 고려해보세요.,2,LOW
-SNACK,RAIN,60,DELIVERY,"비 예보일에는 포장·배달 주문 대응(포장재, 조리 순서)을 점검하는 것을 권장합니다.",4,MEDIUM
-SNACK,COLD,10,DELIVERY,기온이 낮은 날은 포장 보온과 배달 시간 안내를 점검하는 것을 권장합니다.,4,LOW
-CHICKEN,RAIN,60,DELIVERY,"비 예보일에는 배달 포장재, 조리 피크 시간, 배달 플랫폼 노출 상태를 점검하는 것을 권장합니다.",3,HIGH
-CHICKEN,FESTIVAL,3000,NOTICE,치맥 관련 지역 행사 기간에는 행사장 거리와 교통 혼잡을 함께 고려해 운영 계획을 점검해보세요.,5,MEDIUM
+SNACK,RAIN,60,DELIVERY,"비 오는 날 배달 주문이 크게 늘었다는 배달앱 분석이 있습니다. 포장·배달 주문 대응(포장재, 조리 순서)을 점검하는 것을 권장합니다.",9,MEDIUM
+SNACK,COLD,10,DELIVERY,기온이 낮은 날은 배달 주문이 늘어난다는 분석이 있습니다. 포장 보온과 배달 시간 안내를 점검하는 것을 권장합니다.,11,LOW
+CHICKEN,RAIN,60,DELIVERY,"비 예보일에는 치킨 배달 주문이 늘어난다는 분석이 있습니다. 배달 포장재, 조리 피크 시간, 배달 플랫폼 노출 상태를 점검하는 것을 권장합니다.",11,HIGH
+CHICKEN,FESTIVAL,3000,NOTICE,인근 행사 기간에는 행사장 거리와 교통 혼잡을 함께 고려해 매장·배달 운영 계획을 점검해보세요.,5,MEDIUM
 CHICKEN,WEEKEND,,STAFFING,주말 저녁 피크에는 조리 인력과 배달 대기 시간을 점검하는 것을 권장합니다.,3,MEDIUM
 JAPANESE,HOT,30,INVENTORY,기온이 높은 날은 회·초밥 등 신선 재료의 보관 온도와 회전율을 점검하는 것을 권장합니다.,2,MEDIUM
-JAPANESE,RAIN,60,DELIVERY,비 예보일에는 포장 품질(온도·습기)과 배달 대응을 점검하는 것을 권장합니다.,4,MEDIUM
-WESTERN,WEEKEND,,STAFFING,"주말에는 예약 현황, 테이블 회전, 세트 메뉴 안내를 점검하는 것을 권장합니다.",4,MEDIUM
+JAPANESE,RAIN,60,DELIVERY,비 오는 날 배달 주문이 늘었다는 배달앱 분석이 있습니다. 포장 품질(온도·습기)과 배달 대응을 점검하는 것을 권장합니다.,9,MEDIUM
+WESTERN,WEEKEND,,STAFFING,"매출이 가장 높은 요일은 매장 규모에 따라 다르다는 분석이 있습니다(작은 매장은 일요일, 큰 매장은 금·토요일). 주말 예약 현황, 테이블 회전, 세트 메뉴 안내를 점검해보세요.",4,MEDIUM
 HEALTH,HOT,30,INVENTORY,기온이 높은 시기에는 보양 메뉴 노출과 재료 준비 여부를 점검하는 것을 권장합니다.,2,MEDIUM
-ETC,RAIN,60,DELIVERY,비 예보일에는 포장·배달 대응과 재료 준비 상태를 점검하는 것을 권장합니다.,4,LOW
+ETC,RAIN,60,DELIVERY,비 오는 날 배달 주문이 늘었다는 배달앱 분석이 있습니다. 포장·배달 대응과 재료 준비 상태를 점검하는 것을 권장합니다.,9,LOW
 COMMON,HOLIDAY,CHUSEOK_EVE,INVENTORY,추석 전날에는 서울 3개 구 음식점 카드매출 분석에서 매출이 낮아지는 경향이 나타났습니다. 재료 발주량과 인력 배치를 여유 있게 조정하는 것을 권장합니다.,4,HIGH
 COMMON,HOLIDAY,CHUSEOK_DAY,STAFFING,추석 당일에는 서울 3개 구 음식점 카드매출 분석에서 매출이 큰 폭으로 낮아지는 것으로 나타났습니다(전 면적 유형에서 유의). 휴무 또는 단축영업 여부와 재료 발주량을 미리 점검하는 것을 권장합니다.,4,HIGH
 COMMON,HOLIDAY,CHUSEOK_PERIOD,INVENTORY,추석 연휴 기간에는 음식점 매출이 낮아지는 경향이 나타났습니다. 연휴 중 영업 여부와 재료 재고 수준을 점검하는 것을 권장합니다.,4,HIGH

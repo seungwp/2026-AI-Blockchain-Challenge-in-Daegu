@@ -16,8 +16,6 @@ public class FestivalEvent {
     private String address;
     private Double latitude;
     private Double longitude;
-    @Column(length = 1000) private String description;
-    @Column(length = 1000) private String impactNote;
     private Long sourceId;
     @Column(name = "is_demo_data") private boolean demoData;
 }

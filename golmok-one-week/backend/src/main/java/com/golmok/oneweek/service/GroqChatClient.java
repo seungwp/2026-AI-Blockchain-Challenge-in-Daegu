@@ -35,10 +35,12 @@ class GroqChatClient {
 
     String complete(List<Map<String, String>> messages, double temperature, int maxTokens, Duration timeout)
             throws Exception {
+        // gpt-oss는 추론 모델이라 기본 추론량이면 max_tokens를 추론에 다 써서 답이 잘린다 → low로 제한
         Map<String, Object> body = Map.of(
                 "model", model,
                 "temperature", temperature,
                 "max_tokens", maxTokens,
+                "reasoning_effort", "low",
                 "messages", messages);
 
         HttpRequest req = HttpRequest.newBuilder(URI.create(URL))
@@ -50,8 +52,10 @@ class GroqChatClient {
         HttpResponse<String> res = http.send(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         if (res.statusCode() != 200) throw new IllegalStateException("Groq API HTTP " + res.statusCode());
 
-        JsonNode root = mapper.readTree(res.body());
-        JsonNode content = root.path("choices").path(0).path("message").path("content");
+        JsonNode choice = mapper.readTree(res.body()).path("choices").path(0);
+        // 토큰 한도로 잘린 문장("이번 주 인근 대구메이커페스타(")을 화면에 내보내지 않는다
+        if (!"stop".equals(choice.path("finish_reason").asText())) return null;
+        JsonNode content = choice.path("message").path("content");
         return content.isMissingNode() ? null : content.asText();
     }
 }

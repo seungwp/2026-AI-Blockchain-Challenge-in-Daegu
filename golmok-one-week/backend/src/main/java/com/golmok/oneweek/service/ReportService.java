@@ -10,17 +10,12 @@ import com.golmok.oneweek.entity.AnalysisReport;
 import com.golmok.oneweek.entity.Enums.MenuCategory;
 import com.golmok.oneweek.entity.Store;
 import com.golmok.oneweek.exception.NotFoundException;
-import com.golmok.oneweek.provider.Providers.FestivalProvider;
 import com.golmok.oneweek.provider.Providers.HolidayProvider;
-import com.golmok.oneweek.repository.IngredientPriceRepository;
-import com.golmok.oneweek.provider.KamisPriceProvider;
-import com.golmok.oneweek.provider.KamisPriceProvider.LivePrice;
 import com.golmok.oneweek.provider.Providers.WeatherProvider;
 import com.golmok.oneweek.repository.AnalysisReportRepository;
 import com.golmok.oneweek.repository.SourceRepository;
 import com.golmok.oneweek.rule.WeeklyGuideRuleEngine;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +24,6 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class ReportService {
 
     public static final String DISCLAIMER =
@@ -41,12 +35,11 @@ public class ReportService {
     private final StoreService storeService;
     private final MenuClassificationService menuClassificationService;
     private final CommercialAreaService commercialAreaService;
+    private final FestivalService festivalService;
+    private final IngredientPriceService ingredientPriceService;
     private final WeeklyGuideRuleEngine ruleEngine;
     private final WeatherProvider weatherProvider;
-    private final FestivalProvider festivalProvider;
     private final HolidayProvider holidayProvider;
-    private final IngredientPriceRepository ingredientPriceRepository;
-    private final KamisPriceProvider kamisPriceProvider;
     private final LlmAdviceService llmAdviceService;
     private final ReportChatService reportChatService;
     private final AnalysisReportRepository reportRepository;
@@ -64,10 +57,10 @@ public class ReportService {
         LocalDate end = start.plusDays(DAYS - 1L);
 
         List<WeatherDay> weather = weather(store, start);
-        List<FestivalInfo> festivals = festivals(store, start, end);
+        List<FestivalInfo> festivals = festivalService.nearby(store, start, end);
         CommercialArea area = commercialAreaService.summarize(store);
         Map<LocalDate, String> holidays = holidayProvider.classify(start, end);
-        List<IngredientPriceInfo> prices = ingredientPrices(category);
+        List<IngredientPriceInfo> prices = ingredientPriceService.forCategory(category);
 
         var output = ruleEngine.evaluate(
                 new WeeklyGuideRuleEngine.Input(category, weather, festivals, area, holidays, prices));
@@ -98,29 +91,6 @@ public class ReportService {
 
         return toResponse(saved, StoreResponse.from(store), weather, area, festivals, prices,
                 output.topActions(), output.dailyGuides());
-    }
-
-    /**
-     * 메뉴 카테고리에 대응하는 KAMIS 품목의 가격·급등확률을 조회한다.
-     * 가격·기준일은 요청 시점에 KAMIS 를 실시간으로 조회해 채우고(실패 시 최근 시드 스냅샷으로 대체),
-     * 급등확률은 학습된 모델의 결과라 재계산하지 않고 매일 갱신되는 시드 스냅샷 값을 그대로 쓴다.
-     */
-    private List<IngredientPriceInfo> ingredientPrices(MenuCategory category) {
-        List<String> items = MenuIngredientMap.itemsFor(category);
-        if (items.isEmpty()) return List.of();
-
-        Map<String, LivePrice> live = kamisPriceProvider.fetchLatest(items);
-        return ingredientPriceRepository.findByItemIn(items).stream()
-                .map(p -> {
-                    LivePrice l = live.get(p.getItem());
-                    double price = l != null ? l.price() : p.getPrice();
-                    LocalDate date = l != null ? l.date() : p.getPriceDate();
-                    Double ratio = l != null && l.normalPrice() != null
-                            ? (l.price() / l.normalPrice() - 1) : p.getVsNormalRatio();
-                    return new IngredientPriceInfo(p.getItem(), p.getUnit(), price, date, p.getProbSpike(),
-                            p.isAlert(), ratio, l == null && p.isDemoData(), p.getSourceId());
-                })
-                .toList();
     }
 
     public String chat(Long reportId, ChatRequest request) {
@@ -165,30 +135,6 @@ public class ReportService {
         double lat = store.getLatitude() == null ? 35.8714 : store.getLatitude();
         double lon = store.getLongitude() == null ? 128.6014 : store.getLongitude();
         return weatherProvider.weekly(lat, lon, start, DAYS);
-    }
-
-    /** 행사별 거리와 영향 구분(1km/3km)을 채운다. */
-    private List<FestivalInfo> festivals(Store store, LocalDate start, LocalDate end) {
-        List<FestivalInfo> out = new ArrayList<>();
-        for (FestivalInfo f : festivalProvider.findFestivals(start, end)) {
-            Integer distance = null;
-            String impact = "거리 정보 없음";
-            if (store.getLatitude() != null && f.latitude() != null && f.longitude() != null) {
-                distance = (int) Math.round(CommercialAreaService.distanceMeters(
-                        store.getLatitude(), store.getLongitude(), f.latitude(), f.longitude()));
-                impact = distance <= 1000 ? "직접 영향 가능" : distance <= 3000 ? "간접 영향 가능" : "영향 제한적";
-            }
-            String note = switch (impact) {
-                case "직접 영향 가능" -> "행사장과 가까워 방문객 유입 가능성이 있으며, 교통·주차 혼잡도 함께 고려가 필요합니다.";
-                case "간접 영향 가능" -> "행사장과 다소 떨어져 있어 간접적인 유동 변화 가능성이 있습니다. (중간 신뢰도)";
-                case "영향 제한적" -> "행사장과 거리가 멀어 직접적인 영향은 제한적일 수 있습니다.";
-                default -> f.impactNote();
-            };
-            out.add(new FestivalInfo(f.id(), f.name(), f.startDate(), f.endDate(), f.locationName(), f.address(),
-                    f.latitude(), f.longitude(), distance, impact, note, f.isDemoData(), f.sourceId()));
-        }
-        out.sort(Comparator.comparing(f -> f.distanceMeters() == null ? Integer.MAX_VALUE : f.distanceMeters()));
-        return out;
     }
 
     private String write(Object value) {

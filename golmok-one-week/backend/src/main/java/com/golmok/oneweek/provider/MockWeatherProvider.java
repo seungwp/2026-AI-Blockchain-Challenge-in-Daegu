@@ -2,7 +2,7 @@ package com.golmok.oneweek.provider;
 
 import com.golmok.oneweek.dto.ReportDtos.WeatherDay;
 import com.golmok.oneweek.provider.Providers.WeatherProvider;
-import com.golmok.oneweek.service.SourceCatalog;
+import com.golmok.oneweek.entity.SourceCatalog;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 

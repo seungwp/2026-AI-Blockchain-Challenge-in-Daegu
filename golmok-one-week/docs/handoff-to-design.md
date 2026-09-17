@@ -104,7 +104,7 @@ cd golmok-one-week/frontend && npm run dev          # 3000
 
 ### `/report/[reportId]`
 - 가게 정보 / 대표 메뉴 / 메뉴 카테고리 / 분석 기간 / 요약
-- 이번 주 핵심 행동 Top 3 (각 항목: 제목, 본문, 근거, 우선순위, 신뢰도, 출처 ID)
+- 이번 주 핵심 행동 Top 3 (**최대** 3개, 이번 주 변수가 적으면 1~2개일 수 있음. 각 항목: 제목, 본문, 근거, 우선순위, 신뢰도, 출처 ID)
 - 7일 날씨 표 (기온·강수·**습도**. 미세먼지 열은 없음 — 아래 3절 참고)
 - 주변 생활권 요약 (area 페이지와 같은 컴포넌트 재사용)
 - 축제·행사 목록 (거리, 영향 구분)
@@ -160,7 +160,7 @@ cd golmok-one-week/frontend && npm run dev          # 3000
 - `type`: INVENTORY(재료·재고) / STAFFING(인력) / MENU(메뉴) / DELIVERY(포장·배달) / MARKETING(노출) / NOTICE(안내)
 - `conditionType`: RAIN / HOT / COLD / WEEKEND / **HOLIDAY**(신규, 추석 전날·당일·연휴기간·마지막날) / FESTIVAL / COMPETITION / **PRICE_SPIKE**(신규)
   - ~~DUST~~ 는 삭제됐습니다. 코드에 이 값이 나올 일이 없습니다.
-- `impactLevel`: 직접 영향 가능 / 간접 영향 가능 / 영향 제한적 / 거리 정보 없음
+- `impactLevel`: 직접 영향 가능(1km 이내) / 간접 영향 가능(3km 이내). **3km보다 먼 행사는 목록에 아예 포함되지 않아** 주변 행사가 빈 배열인 주가 흔합니다.
 
 ## 5. 상태 정의
 

@@ -103,8 +103,6 @@ public class DataSeeder {
                     .longitude(Double.parseDouble(c[5]))
                     .latitude(Double.parseDouble(c[6]))
                     .locationName(c[9])
-                    .description("한국관광공사 TourAPI 축제 정보")
-                    .impactNote("행사 기간 인근 방문객·교통 변화 가능성을 함께 고려")
                     .sourceId(SourceCatalog.FESTIVAL_TOURAPI_ID)
                     .demoData(false).build());
         }

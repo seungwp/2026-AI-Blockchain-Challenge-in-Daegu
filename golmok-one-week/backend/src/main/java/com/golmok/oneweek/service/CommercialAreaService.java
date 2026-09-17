@@ -1,6 +1,7 @@
 package com.golmok.oneweek.service;
 
 import com.golmok.oneweek.dto.ReportDtos.CommercialArea;
+import com.golmok.oneweek.entity.SourceCatalog;
 import com.golmok.oneweek.entity.Store;
 import com.golmok.oneweek.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
