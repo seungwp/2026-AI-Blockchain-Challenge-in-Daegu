@@ -2,8 +2,8 @@
 
 > 2026-09-18 추가: `scripts/collect_public_data.py` → `resources/data/*{enrichment,details,history}.json`
 > → `service/PublicDataSnapshots.java` → DataSeeder(상가 업종·행사) / IngredientPriceService(가격 이력).
-> 주소 직접 입력은 `provider/JusoAddressProvider.java`의 도로명주소 검색을 거친다.
-> 좌표 미확인은 거리 분석 생략. API 추가 필드·갱신 명령은 [공공데이터 연결 현황](public-data-integration.md) 참고.
+> 주소 직접 입력은 `provider/NaverGeocodingProvider.java`의 네이버 지오코딩(WGS84 좌표)을 거친다.
+> API 추가 필드·갱신 명령은 [공공데이터 연결 현황](public-data-integration.md) 참고.
 
 *생성: 2026-09-17 · 같은 날 리팩토링 반영(FestivalService·IngredientPriceService 분리, SourceCatalog→entity, Mock→Db 이름 변경) · Graphify 그래프(`golmok-one-week/graphify-out/`) + 실제 파일 확인 기반*
 
@@ -117,7 +117,7 @@ CreateRequest(storeId, mainMenu, menuCategory?)
 
 ### 7-1. 가게 검색 · 주소 직접 입력
 - 디렉터리: `B:service`, `B:provider`, `F:app/search`, `F:components/search`
-- 핵심 파일: `B:service/StoreService.java`, `B:provider/DbStoreSearchProvider.java`(최대 20건, 직접입력 좌표=대구시청 임시값), `B:repository/StoreRepository.java`, `F:app/search/page.tsx`, `F:components/search/StoreSearchForm.tsx`, `StoreResultList.tsx`
+- 핵심 파일: `B:service/StoreService.java`, `B:provider/DbStoreSearchProvider.java`(최대 20건, 직접입력은 `NaverGeocodingProvider`의 좌표 저장), `B:repository/StoreRepository.java`, `F:app/search/page.tsx`, `F:components/search/StoreSearchForm.tsx`, `StoreResultList.tsx`
 - 진입점: `StoreController.search` / `manual`
 - API: `GET /api/stores/search`, `POST /api/stores/manual`, `GET /api/stores/{id}`
 - 의존: StoreService → `Providers.StoreSearchProvider`, StoreRepository, `dto/StoreResponse`
