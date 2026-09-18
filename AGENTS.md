@@ -18,6 +18,7 @@
 | **Claude** | 내 노트북 | `pipeline/`, `data/`, `contracts/`, `docs/figures/` | 데이터 수집·모델·LLM 조언 → 화면용 JSON 내보내기 |
 | 공통(읽기) | | `docs/design/`, `contracts/README.md`, `README.md` | 변경은 PR로 합의 |
 
+- **2026-09-17 역할 변경 (사용자 결정):** Claude Code 세션 종료로 `golmok-one-week/` 작업은 **Codex CLI가 이어받습니다.** Codex는 이 폴더를 수정할 수 있으며, 시작 전 `golmok-one-week/docs/handoff-codex.md`를 반드시 먼저 읽습니다.
 - 두 영역은 **`contracts/` JSON 형식으로만 연결**됩니다. 형식을 바꿔야 하면 코드부터 고치지 말고 PR로 `contracts/README.md` 변경을 먼저 제안합니다.
 - web은 `contracts/sample/`을 읽기만 하고 수정하지 않습니다. 데이터가 틀리면 이슈로 알립니다.
 
