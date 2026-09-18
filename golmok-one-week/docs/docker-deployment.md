@@ -40,7 +40,7 @@ docker compose -f compose.golmok.yaml down
 
 ## 도메인과 HTTPS
 
-도메인의 A 레코드를 서버 공인 IP로 연결한 뒤 `golmok-one-week/Caddyfile` 첫 줄의 `:80`을 실제 도메인으로 바꾼다. 이후 다시 `up -d --build`를 실행하면 Caddy가 HTTPS 인증서를 관리한다. HTTPS 운영에서는 80과 443 포트를 모두 연다.
+운영 도메인 `blackapple.store`와 `www.blackapple.store`의 A 레코드를 서버 공인 IP로 연결한다. `golmok-one-week/Caddyfile`은 루트 도메인을 `https://www.blackapple.store`로 리다이렉트하고 Caddy가 HTTPS 인증서를 자동 발급·갱신한다. Compose는 80과 443 포트를 모두 공개해야 하며, NCP ACG와 NACL에서도 두 TCP 포트를 허용한다.
 
 ## 주의
 
