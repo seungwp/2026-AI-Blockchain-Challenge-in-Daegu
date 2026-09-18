@@ -7,15 +7,15 @@
 
 1. NCP 서버 보안 그룹에서 TCP 80을 연다.
 2. 저장소를 서버에 내려받고, 저장소 루트에 `.env`를 만든다. 이 파일은 커밋하지 않는다.
-3. `.env`에는 API 키를 넣는다. 좌표 API 키를 발급받았다면 `JUSO_COORD_API_KEY`도 추가한다.
+3. `.env`에는 API 키를 넣는다. 주소 직접 입력을 쓰려면 네이버 Maps Geocoding 키를 추가한다.
 
 ```env
 DATA_GO_KR_KEY=
 KAMIS_CERT_KEY=
 KAMIS_CERT_ID=
 GROQ_API_KEY=
-JUSO_SEARCH_API_KEY=
-JUSO_COORD_API_KEY=
+NAVER_MAP_CLIENT_ID=
+NAVER_MAP_CLIENT_SECRET=
 ```
 
 `NEXT_PUBLIC_API_BASE_URL`은 비워 둔다. 그러면 프론트는 현재 접속한 주소의 `/api`를 호출하며, API 키가 브라우저로 노출되지 않는다.

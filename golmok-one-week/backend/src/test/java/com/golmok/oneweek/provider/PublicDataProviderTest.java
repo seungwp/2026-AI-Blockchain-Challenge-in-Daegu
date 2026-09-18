@@ -30,36 +30,40 @@ class PublicDataProviderTest {
         assertEquals(1, result.history().size());
     }
 
-    @Test void 주소검색은_대구만_반환하고_인증실패를_빈결과로_위장하지않음() throws Exception {
+    @Test void 지오코딩은_대구좌표만_반환하고_실패를_빈결과로_위장하지않음() throws Exception {
         var root = mapper.readTree("""
-                {"results":{"common":{"errorCode":"0"},"juso":[
-                  {"siNm":"서울특별시","roadAddrPart1":"서울 주소"},
-                  {"siNm":"대구광역시","roadAddrPart1":"대구광역시 중구 공평로 88","jibunAddr":"동인동","sggNm":"중구"}
-                ]}}
+                {"status":"OK","addresses":[
+                  {"roadAddress":"서울 주소","x":"126.9","y":"37.5"},
+                  {"roadAddress":"대구광역시 중구 공평로 88","jibunAddress":"대구광역시 중구 동인동","x":"128.6","y":"35.8",
+                   "addressElements":[{"types":["SIGUGUN"],"longName":"중구"}]}
+                ]}
                 """);
-        assertEquals(1, JusoAddressProvider.parse(root).size());
-        var error = mapper.readTree("{\"results\":{\"common\":{\"errorCode\":\"E0001\"}}}");
-        assertThrows(IllegalArgumentException.class, () -> JusoAddressProvider.parse(error));
+        var addresses = NaverGeocodingProvider.parse(root);
+        assertEquals(1, addresses.size());
+        assertEquals(35.8, addresses.getFirst().latitude());
+        assertEquals(128.6, addresses.getFirst().longitude());
+        assertEquals("중구", addresses.getFirst().district());
+        var error = mapper.readTree("{\"status\":\"INVALID_REQUEST\"}");
+        assertThrows(IllegalArgumentException.class, () -> NaverGeocodingProvider.parse(error));
     }
 
-    @Test void 좌표없는_직접입력은_시청좌표를_만들지않음() {
+    @Test void 직접입력은_지오코딩_좌표를_저장함() {
         var repo = mock(StoreRepository.class);
-        var juso = mock(JusoAddressProvider.class);
-        when(juso.search("새 주소")).thenReturn(List.of(new JusoAddressProvider.Address("대구광역시 중구 새길 1", "새동", "중구")));
-        when(repo.findByCityAndRoadAddressStartingWith(anyString(), anyString())).thenReturn(List.of());
+        var geocoding = mock(NaverGeocodingProvider.class);
+        when(geocoding.search("새 주소")).thenReturn(List.of(new NaverGeocodingProvider.Address("대구광역시 중구 새길 1", "새동", "중구", 35.87, 128.6)));
         when(repo.save(any(Store.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        var result = new DbStoreSearchProvider(repo, juso).fromAddress("새 주소", "대구광역시");
-        assertNull(result.getLatitude());
-        assertNull(result.getLongitude());
+        var result = new DbStoreSearchProvider(repo, geocoding).fromAddress("새 주소", "대구광역시");
+        assertEquals(35.87, result.getLatitude());
+        assertEquals(128.6, result.getLongitude());
         assertEquals("대구광역시 중구 새길 1", result.getRoadAddress());
     }
 
     @Test void 주소가_여러개면_임의선택하지않음() {
         var repo = mock(StoreRepository.class);
-        var juso = mock(JusoAddressProvider.class);
-        when(juso.search("넓은 주소")).thenReturn(List.of(
-                new JusoAddressProvider.Address("주소1", "", ""), new JusoAddressProvider.Address("주소2", "", "")));
-        assertThrows(IllegalArgumentException.class, () -> new DbStoreSearchProvider(repo, juso).fromAddress("넓은 주소", "대구광역시"));
+        var geocoding = mock(NaverGeocodingProvider.class);
+        when(geocoding.search("넓은 주소")).thenReturn(List.of(
+                new NaverGeocodingProvider.Address("주소1", "", "", 35.8, 128.5), new NaverGeocodingProvider.Address("주소2", "", "", 35.9, 128.6)));
+        assertThrows(IllegalArgumentException.class, () -> new DbStoreSearchProvider(repo, geocoding).fromAddress("넓은 주소", "대구광역시"));
         verify(repo, never()).save(any());
     }
 }

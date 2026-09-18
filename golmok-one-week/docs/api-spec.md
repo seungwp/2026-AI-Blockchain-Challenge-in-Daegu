@@ -6,10 +6,10 @@
 
 기존 필드는 유지한다. 수집·갱신 방법은 [공공데이터 연결 현황](public-data-integration.md) 참고.
 
-- `GET /api/addresses/search?keyword=대구광역시 중구 공평로 88`: `[{roadAddress,address,district}]`.
-  도로명주소 검색 API의 대구 결과만 반환하며 좌표·건물 관리번호는 제공하지 않는다.
+- `GET /api/addresses/search?keyword=대구광역시 중구 공평로 88`: `[{roadAddress,address,district,latitude,longitude}]`.
+  네이버 Maps Geocoding API의 대구 결과만 반환하며, 좌표는 WGS84 위도·경도다.
 - `POST /api/stores/manual`: 실제 주소를 확인한 뒤 생성한다. 모호하거나 없는 주소는 400.
-  좌표가 미확인일 수 있으며 이 경우 리포트의 `commercialArea=null`, `festivals=[]`이다.
+  네이버 지오코딩으로 주소 좌표를 확인한 뒤 생성한다.
 - `commercialArea.note`: 세부 업종이 연결된 경우 기준월·분류 확인 수를 표시하고 `sourceIds`에 15를 추가한다.
   주변 점포의 세부 분류가 불완전하면 `competitionLevel="판단 보류"`이다.
 - `festivals[]` 추가: `playTime`, `fee`, `contact`(문자열 또는 null), `fetchedAt`(확인일 또는 null).

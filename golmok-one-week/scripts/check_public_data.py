@@ -37,9 +37,8 @@ print(json.dumps({'reportId': report['reportId'], 'storeId': stores[0]['id'], 'p
                   'predictionDate': price['predictionDate'], 'areaSources': report['commercialArea']['sourceIds'],
                   'festivals': len(report['festivals'])}, ensure_ascii=False), flush=True)
 manual = call('/api/stores/manual', {'address': '대구광역시 중구 공평로 88'})
-if manual['latitude'] is None:
-    report = call('/api/reports', {'storeId': manual['id'], 'mainMenu': '국밥', 'menuCategory': '국물요리'})
-    assert report['commercialArea'] is None and report['festivals'] == []
-    assert all(w['isDemoData'] for w in report['weather'])
-    print('좌표 미확인 주소: 상권·행사 거리 분석 미제공 확인', flush=True)
+assert manual['latitude'] is not None and manual['longitude'] is not None
+manual_report = call('/api/reports', {'storeId': manual['id'], 'mainMenu': '국밥', 'menuCategory': '국물요리'})
+assert manual_report['commercialArea'] is not None
+print('네이버 지오코딩 직접 입력 주소: 좌표·상권 분석 확인', flush=True)
 print('실제 연동 검증 통과', flush=True)
