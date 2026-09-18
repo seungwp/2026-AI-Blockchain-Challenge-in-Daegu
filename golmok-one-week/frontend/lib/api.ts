@@ -56,7 +56,9 @@ export async function createReport(
   menuCategory: MenuCategory,
 ): Promise<AnalysisReport> {
   return withFallback(
-    async () => (await client.post<AnalysisReport>("/api/reports", { storeId, mainMenu, menuCategory }, { timeout: 60000 })).data,
+    // 백엔드가 없는 데모 환경에서는 공통 API 제한 시간 뒤 곧바로 예시 리포트로 전환한다.
+    // 60초를 기다리면 버튼이 멈춘 것처럼 보여 전체 흐름을 확인할 수 없다.
+    async () => (await client.post<AnalysisReport>("/api/reports", { storeId, mainMenu, menuCategory })).data,
     () => mockReport(storeId, mainMenu, menuCategory),
   );
 }
