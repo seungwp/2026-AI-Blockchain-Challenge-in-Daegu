@@ -32,6 +32,6 @@ public class DbFestivalProvider implements FestivalProvider {
         // 거리·영향 구분·영향 문구는 가게 좌표를 아는 FestivalService 에서 채운다.
         return new FestivalInfo(f.getId(), f.getName(), f.getStartDate(), f.getEndDate(), f.getLocationName(),
                 f.getAddress(), f.getLatitude(), f.getLongitude(), null, null, null,
-                f.isDemoData(), f.getSourceId());
+                f.isDemoData(), f.getSourceId(), f.getPlayTime(), f.getFee(), f.getContact(), f.getFetchedAt());
     }
 }

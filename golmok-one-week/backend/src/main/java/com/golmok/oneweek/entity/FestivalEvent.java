@@ -17,5 +17,9 @@ public class FestivalEvent {
     private Double latitude;
     private Double longitude;
     private Long sourceId;
+    @Column(length = 2000) private String playTime;
+    @Column(length = 2000) private String fee;
+    @Column(length = 1000) private String contact;
+    private LocalDate fetchedAt;
     @Column(name = "is_demo_data") private boolean demoData;
 }

@@ -33,6 +33,25 @@ export default function IngredientPriceList({ prices }: { prices: IngredientPric
                     ` · 향후 7일 내 급등 가능성 모델 추정치 ${Math.round(p.probSpike * 100)}%`}
                 </p>
                 <p className="muted">출처 ID: {p.sourceId ?? "-"}</p>
+                {p.priceBasis && <p className="muted">{p.priceBasis}</p>}
+                {p.vsPreviousWeekRatio != null && p.comparisonDate && (
+                  <p>일주일 전 참고가격 대비 {p.vsPreviousWeekRatio >= 0 ? "+" : ""}
+                    {(p.vsPreviousWeekRatio * 100).toFixed(1)}% ({p.comparisonDate}와 비교)</p>
+                )}
+                {p.predictionStale && (
+                  <p className="muted">가격 예측은 갱신 대기 중입니다.
+                    {p.predictionDate ? ` 마지막 예측 기준일: ${p.predictionDate}` : ""}</p>
+                )}
+                {!!p.history?.length && (
+                  <details>
+                    <summary>최근 가격 이력 보기</summary>
+                    <ul>
+                      {p.history.map((point) => (
+                        <li key={point.date}>{point.date}: {point.price.toLocaleString()}원</li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
               </li>
             ))}
           </ul>

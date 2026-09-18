@@ -19,6 +19,7 @@ public class CommercialAreaService {
     private final StoreRepository storeRepository;
 
     public CommercialArea summarize(Store store) {
+        if (store.getLatitude() == null || store.getLongitude() == null) return null;
         String city = store.getCity() == null ? "대구광역시" : store.getCity();
         // 반경 500m 를 덮는 경계상자로 먼저 좁힌다 (distanceMeters 와 같은 도-미터 환산 사용)
         double dLat = RADIUS_METERS / 111_000.0;
@@ -26,18 +27,26 @@ public class CommercialAreaService {
         List<Store> all = storeRepository.findByCityAndLatitudeBetweenAndLongitudeBetween(
                 city, store.getLatitude() - dLat, store.getLatitude() + dLat,
                 store.getLongitude() - dLon, store.getLongitude() + dLon);
-        int total = 0, same = 0;
+        int total = 0, same = 0, classified = 0;
+        boolean detailed = store.getDetailCategoryCode() != null;
         for (Store s : all) {
+            if (s.isDemoData()) continue; // 직접 입력한 임시 가게로 주변 업소 수를 부풀리지 않는다.
             if (s.getId().equals(store.getId())) continue;
             if (distanceMeters(store, s) > RADIUS_METERS) continue;
             total++;
-            if (sameKind(store.getCategory(), s.getCategory())) same++;
+            if (detailed) {
+                if (s.getDetailCategoryCode() != null) classified++;
+                if (store.getDetailCategoryCode().equals(s.getDetailCategoryCode())) same++;
+            } else if (sameKind(store.getCategory(), s.getCategory())) same++;
         }
-        String level = same >= 3 ? "높음" : same >= 1 ? "보통" : "낮음";
+        String level = detailed && classified < total ? "판단 보류" : same >= 3 ? "높음" : same >= 1 ? "보통" : "낮음";
         String note = "반경 %dm 기준 음식점 %d곳, 유사 업종 %d곳으로 경쟁 강도는 '%s' 수준입니다. 운영 참고용 집계입니다."
                 .formatted(RADIUS_METERS, total, same, level);
+        if (detailed) note += " 세부 업종 '%s' 기준이며 주변 %d곳 중 %d곳만 분류가 확인되었습니다. 미분류 점포는 유사 업종 수에서 제외됩니다. 상가정보 기준월: %s."
+                .formatted(store.getDetailCategoryName(), total, classified, store.getCategoryAsOf());
         return new CommercialArea(store.getDistrict(), dongOf(store), total, same, level, note, false,
-                List.of(SourceCatalog.STORE_LICENSE_ID));
+                detailed ? List.of(SourceCatalog.STORE_LICENSE_ID, SourceCatalog.SBIZ_STORE_ID)
+                        : List.of(SourceCatalog.STORE_LICENSE_ID));
     }
 
     /** 업종 문자열의 마지막 분류가 같으면 유사 업종으로 본다. */
@@ -68,7 +77,7 @@ public class CommercialAreaService {
 
     /** 위·경도 간 대략 거리(m). 대구 위도 기준 단순 환산. */
     public static double distanceMeters(Store a, Store b) {
-        if (a.getLatitude() == null || b.getLatitude() == null) return Double.MAX_VALUE;
+        if (a.getLatitude() == null || b.getLatitude() == null || a.getLongitude() == null || b.getLongitude() == null) return Double.MAX_VALUE;
         return distanceMeters(a.getLatitude(), a.getLongitude(), b.getLatitude(), b.getLongitude());
     }
 

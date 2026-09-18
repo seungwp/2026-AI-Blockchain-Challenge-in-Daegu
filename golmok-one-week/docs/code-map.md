@@ -1,5 +1,10 @@
 # 골목 한 주 코드 지도 (Claude Code용)
 
+> 2026-09-18 추가: `scripts/collect_public_data.py` → `resources/data/*{enrichment,details,history}.json`
+> → `service/PublicDataSnapshots.java` → DataSeeder(상가 업종·행사) / IngredientPriceService(가격 이력).
+> 주소 직접 입력은 `provider/JusoAddressProvider.java`의 도로명주소 검색을 거친다.
+> 좌표 미확인은 거리 분석 생략. API 추가 필드·갱신 명령은 [공공데이터 연결 현황](public-data-integration.md) 참고.
+
 *생성: 2026-09-17 · 같은 날 리팩토링 반영(FestivalService·IngredientPriceService 분리, SourceCatalog→entity, Mock→Db 이름 변경) · Graphify 그래프(`golmok-one-week/graphify-out/`) + 실제 파일 확인 기반*
 
 **사용법:** 기능을 고칠 때 이 문서의 "기능별 지도"에서 핵심 파일만 먼저 연다. 전체 탐색은 하지 않는다.

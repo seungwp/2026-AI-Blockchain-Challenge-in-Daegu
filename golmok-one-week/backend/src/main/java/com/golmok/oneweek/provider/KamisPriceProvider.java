@@ -2,6 +2,7 @@ package com.golmok.oneweek.provider;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.golmok.oneweek.dto.ReportDtos.PricePoint;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,9 +15,14 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * KAMIS 소매가격을 요청 시점에 실시간으로 조회한다(pipeline/fetch_kamis.py 와 같은 API·코드 사용).
@@ -29,9 +35,9 @@ import java.util.Map;
 @Slf4j
 public class KamisPriceProvider {
 
-    private static final String URL = "http://www.kamis.or.kr/service/price/xml.do";
+    private static final String URL = "https://www.kamis.or.kr/service/price/xml.do";
     private static final DateTimeFormatter YMD = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final int LOOKBACK_DAYS = 5;
+    private static final int LOOKBACK_DAYS = 30;
 
     /** item -> (부류코드, 품목코드, 품종코드, 등급코드). pipeline/fetch_kamis.py 의 ITEMS 와 동일. */
     private static final Map<String, String[]> CODES = new LinkedHashMap<>();
@@ -46,7 +52,9 @@ public class KamisPriceProvider {
         CODES.put("계란", new String[]{"500", "9903", "23", "71"});
     }
 
-    public record LivePrice(double price, Double normalPrice, LocalDate date) {}
+    public record LivePrice(double price, Double normalPrice, LocalDate date, List<PricePoint> history) {}
+    private record Cached(LivePrice price, Instant until) {}
+    private final Map<String, Cached> cache = new ConcurrentHashMap<>();
 
     private final HttpClient http = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5)).followRedirects(HttpClient.Redirect.NORMAL).build();
@@ -67,18 +75,25 @@ public class KamisPriceProvider {
         for (String item : items) {
             String[] codes = CODES.get(item);
             if (codes == null) continue;
+            Cached cached = cache.get(item);
+            if (cached != null && cached.until().isAfter(Instant.now())) {
+                if (cached.price() != null) out.put(item, cached.price());
+                continue;
+            }
             try {
                 LivePrice p = fetchOne(codes);
+                cache.put(item, new Cached(p, Instant.now().plusSeconds(p == null ? 60 : 21600)));
                 if (p != null) out.put(item, p);
             } catch (Exception e) {
-                log.warn("KAMIS 실시간 조회 실패 ({}): {}", item, e.toString());
+                cache.put(item, new Cached(null, Instant.now().plusSeconds(60)));
+                log.warn("KAMIS 실시간 조회 실패 ({}): {}", item, e.getClass().getSimpleName());
             }
         }
         return out;
     }
 
     private LivePrice fetchOne(String[] codes) throws Exception {
-        LocalDate end = LocalDate.now();
+        LocalDate end = LocalDate.now(ZoneId.of("Asia/Seoul"));
         LocalDate start = end.minusDays(LOOKBACK_DAYS);
 
         StringBuilder q = new StringBuilder(URL)
@@ -100,25 +115,31 @@ public class KamisPriceProvider {
         HttpResponse<String> res = http.send(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         if (res.statusCode() != 200) throw new IllegalStateException("HTTP " + res.statusCode());
 
-        JsonNode data = mapper.readTree(res.body()).path("data");
+        return parse(mapper.readTree(res.body()));
+    }
+
+    static LivePrice parse(JsonNode response) {
+        JsonNode data = response.path("data");
         JsonNode items = data.path("item");
         if (!items.isArray()) return null;
 
-        LocalDate latestDate = null;
-        Double avg = null, normal = null;
+        Map<LocalDate, Double> averages = new TreeMap<>();
+        Map<LocalDate, Double> normals = new TreeMap<>();
         for (JsonNode it : items) {
             String county = it.path("countyname").asText();
             if (!"평균".equals(county) && !"평년".equals(county)) continue;
-            LocalDate d = LocalDate.parse(it.path("yyyy").asText() + "-" + it.path("regday").asText().replace("/", "-"));
-            if (latestDate == null || d.isAfter(latestDate)) {
-                latestDate = d;
-                avg = null;
-                normal = null;
+            try {
+                LocalDate d = LocalDate.parse(it.path("yyyy").asText() + "-" + it.path("regday").asText().replace("/", "-"));
+                double price = Double.parseDouble(it.path("price").asText().replace(",", ""));
+                if (!Double.isFinite(price) || price <= 0) continue;
+                ("평균".equals(county) ? averages : normals).put(d, price);
+            } catch (RuntimeException ignored) {
+                // 휴장일 '-' / 결측 행은 관측값이 아니다.
             }
-            if (!d.equals(latestDate)) continue;
-            double price = Double.parseDouble(it.path("price").asText().replace(",", ""));
-            if ("평균".equals(county)) avg = price; else normal = price;
         }
-        return avg == null ? null : new LivePrice(avg, normal, latestDate);
+        if (averages.isEmpty()) return null;
+        LocalDate latest = averages.keySet().stream().max(LocalDate::compareTo).orElseThrow();
+        return new LivePrice(averages.get(latest), normals.get(latest), latest,
+                averages.entrySet().stream().map(e -> new PricePoint(e.getKey(), e.getValue())).toList());
     }
 }

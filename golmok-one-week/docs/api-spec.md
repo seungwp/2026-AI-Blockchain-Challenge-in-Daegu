@@ -1,6 +1,23 @@
 # API 명세
 
-*최종 갱신: 2026-09-17*
+*최종 갱신: 2026-09-18*
+
+## 2026-09-18 추가 필드 및 주소 검색
+
+기존 필드는 유지한다. 수집·갱신 방법은 [공공데이터 연결 현황](public-data-integration.md) 참고.
+
+- `GET /api/addresses/search?keyword=대구광역시 중구 공평로 88`: `[{roadAddress,address,district}]`.
+  도로명주소 검색 API의 대구 결과만 반환하며 좌표·건물 관리번호는 제공하지 않는다.
+- `POST /api/stores/manual`: 실제 주소를 확인한 뒤 생성한다. 모호하거나 없는 주소는 400.
+  좌표가 미확인일 수 있으며 이 경우 리포트의 `commercialArea=null`, `festivals=[]`이다.
+- `commercialArea.note`: 세부 업종이 연결된 경우 기준월·분류 확인 수를 표시하고 `sourceIds`에 15를 추가한다.
+  주변 점포의 세부 분류가 불완전하면 `competitionLevel="판단 보류"`이다.
+- `festivals[]` 추가: `playTime`, `fee`, `contact`(문자열 또는 null), `fetchedAt`(확인일 또는 null).
+- `ingredientPrices[]` 추가: `history: [{date,price}]`, `comparisonDate`, `vsPreviousWeekRatio`,
+  `predictionDate`, `predictionStale`, `priceBasis`. 비교 비율 0.1은 +10%이며 계산은 서버에서 한다.
+  예측이 오래되면 `probSpike=null`, `alert=false`; 이는 가격 안정 판정이 아닌 예측 갱신 대기다.
+- 출처는 기존 14건에서 15건으로 늘었다. 출처 15는 상가정보이며 관리번호를 응답하지 않는다.
+- 프론트는 4xx 오류를 데모로 대체하지 않는다. 기존 데모 폴백은 연결/서버 실패 시 유지한다.
 
 - Base URL: `http://localhost:8080`
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
@@ -135,7 +152,7 @@
 
 - **`weather[].humidity`**: 0~4일차는 기상청 단기예보(동네 5km 격자) 값, 5~6일차는 중기예보(대구 전역) 구간이라 **`null`**입니다.
 - **`weather[].pm10Grade`는 존재하지 않습니다.** 미세먼지 조건은 근거 부족으로 전면 제거했습니다.
-- **`ingredientPrices`**: 메뉴 카테고리에 대응하는 KAMIS 품목이 없으면 **빈 배열**입니다(냉면류·일식·양식·기타·공통). `price`·`priceDate`는 요청 시점에 KAMIS API를 실시간 조회한 값(실패 시 최근 스냅샷으로 대체), `probSpike`·`alert`는 매일 갱신되는 예측 모델의 배치 스냅샷입니다.
+- **`ingredientPrices`**: 메뉴에 연결된 품목이 없으면 빈 배열입니다. 수집 당일은 검증된 가격 스냅샷, 이후는 실 API(실패 시 스냅샷)를 사용합니다. 예측 모델은 별도 배치 스냅샷이며 자동 갱신되지 않습니다. 가격·예측 기준일과 오래된 예측 숨김 정책은 위 추가 필드를 참고하세요.
 - **`festivals`**: 가게에서 **3km 이내** 행사만 들어갑니다(1km 이내 `직접 영향 가능`, 3km 이내 `간접 영향 가능`). 가까운 행사가 없으면 빈 배열입니다.
 - **`topActions`**: **최대 3개**. 같은 조건·유형은 한 번만 담고, 비·명절·행사·가격처럼 이번 주만의 조건이 있으면 매주 반복되는 주말 권고는 제외합니다.
 - **`conditionType`** 가능한 값: `RAIN`, `HOT`, `COLD`, `WEEKEND`, `HOLIDAY`, `FESTIVAL`, `COMPETITION`, `PRICE_SPIKE`. `HOLIDAY`의 `basis`엔 "추석 전날"/"추석 당일"/"추석 연휴 기간"/"추석 연휴 마지막날" 라벨이 들어갑니다.

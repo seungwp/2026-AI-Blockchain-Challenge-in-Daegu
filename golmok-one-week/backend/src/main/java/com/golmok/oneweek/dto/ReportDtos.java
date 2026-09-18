@@ -28,7 +28,15 @@ public final class ReportDtos {
     /** 행사 정보 + 가게와의 거리·영향 구분. */
     public record FestivalInfo(Long id, String name, LocalDate startDate, LocalDate endDate, String locationName,
                                String address, Double latitude, Double longitude, Integer distanceMeters,
-                               String impactLevel, String impactNote, boolean isDemoData, Long sourceId) {}
+                               String impactLevel, String impactNote, boolean isDemoData, Long sourceId,
+                               String playTime, String fee, String contact, LocalDate fetchedAt) {
+        public FestivalInfo(Long id, String name, LocalDate startDate, LocalDate endDate, String locationName,
+                            String address, Double latitude, Double longitude, Integer distanceMeters,
+                            String impactLevel, String impactNote, boolean isDemoData, Long sourceId) {
+            this(id, name, startDate, endDate, locationName, address, latitude, longitude, distanceMeters,
+                    impactLevel, impactNote, isDemoData, sourceId, null, null, null, null);
+        }
+    }
 
     /** 운영 권고 1건. 매출 수치가 아니라 '점검/준비/고려' 수준의 행동. */
     public record Recommendation(String title, String text, RecommendationType type, Priority priority,
@@ -39,9 +47,20 @@ public final class ReportDtos {
     public record DailyGuide(LocalDate date, String dayOfWeek, String weatherSummary, List<Recommendation> guides) {}
 
     /** 식자재 참고 가격 1건. price·vsNormalRatio 는 실측치, probSpike 는 모델 추정값(정밀도 낮음, 확인용). */
+    public record PricePoint(LocalDate date, Double price) {}
+
     public record IngredientPriceInfo(String item, String unit, Double price, LocalDate priceDate,
                                       Double probSpike, boolean alert, Double vsNormalRatio,
-                                      boolean isDemoData, Long sourceId) {}
+                                      boolean isDemoData, Long sourceId, List<PricePoint> history,
+                                      LocalDate comparisonDate, Double vsPreviousWeekRatio,
+                                      LocalDate predictionDate, boolean predictionStale, String priceBasis) {
+        public IngredientPriceInfo(String item, String unit, Double price, LocalDate priceDate,
+                                   Double probSpike, boolean alert, Double vsNormalRatio,
+                                   boolean isDemoData, Long sourceId) {
+            this(item, unit, price, priceDate, probSpike, alert, vsNormalRatio, isDemoData, sourceId,
+                    List.of(), null, null, null, true, null);
+        }
+    }
 
     public record ReportResponse(Long reportId, StoreResponse store, String mainMenu, MenuCategory menuCategory,
                                  LocalDate analysisStartDate, LocalDate analysisEndDate, String summary,

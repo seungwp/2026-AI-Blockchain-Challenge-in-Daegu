@@ -13,6 +13,7 @@ import com.golmok.oneweek.repository.SourceRepository;
 import com.golmok.oneweek.service.MenuClassificationService;
 import com.golmok.oneweek.service.ReportService;
 import com.golmok.oneweek.service.StoreService;
+import com.golmok.oneweek.provider.JusoAddressProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -26,6 +27,19 @@ import java.util.Map;
 
 /** REST 컨트롤러 모음. */
 public final class ApiControllers {
+    @RestController
+    @RequestMapping("/api/addresses")
+    @RequiredArgsConstructor
+    @Tag(name = "Address")
+    public static class AddressController {
+        private final JusoAddressProvider provider;
+
+        @GetMapping("/search")
+        @Operation(summary = "대구 도로명주소 검색 (좌표제공 API 승인 전에는 좌표 미제공)")
+        public List<JusoAddressProvider.Address> search(@RequestParam String keyword) {
+            return provider.search(keyword);
+        }
+    }
     private ApiControllers() {}
 
     @RestController
