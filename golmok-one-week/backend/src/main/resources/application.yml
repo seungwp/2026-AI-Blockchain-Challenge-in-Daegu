@@ -31,6 +31,7 @@ golmok:
     kamis-cert-id: ${KAMIS_CERT_ID:}
     groq-api-key: ${GROQ_API_KEY:}
     groq-model: ${GROQ_MODEL:openai/gpt-oss-120b}
+    juso-search-api-key: ${JUSO_SEARCH_API_KEY:}
   # 외부 API 키는 환경변수로만 주입 (코드·yml에 직접 쓰지 않음)
   providers:
     weather: kma       # kma(기상청) | mock(예시 값)

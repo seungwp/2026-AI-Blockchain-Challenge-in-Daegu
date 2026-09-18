@@ -24,7 +24,7 @@ public class FestivalService {
      */
     public List<FestivalInfo> nearby(Store store, LocalDate start, LocalDate end) {
         List<FestivalInfo> out = new ArrayList<>();
-        if (store.getLatitude() == null) return out;
+        if (store.getLatitude() == null || store.getLongitude() == null) return out;
         for (FestivalInfo f : festivalProvider.findFestivals(start, end)) {
             if (f.latitude() == null || f.longitude() == null) continue;
             int distance = (int) Math.round(CommercialAreaService.distanceMeters(
@@ -35,7 +35,8 @@ public class FestivalService {
                     ? "행사장과 가까워 방문객 유입 가능성이 있으며, 교통·주차 혼잡도 함께 고려가 필요합니다."
                     : "행사장과 다소 떨어져 있어 간접적인 유동 변화 가능성이 있습니다. (중간 신뢰도)";
             out.add(new FestivalInfo(f.id(), f.name(), f.startDate(), f.endDate(), f.locationName(), f.address(),
-                    f.latitude(), f.longitude(), distance, impact, note, f.isDemoData(), f.sourceId()));
+                    f.latitude(), f.longitude(), distance, impact, note, f.isDemoData(), f.sourceId(),
+                    f.playTime(), f.fee(), f.contact(), f.fetchedAt()));
         }
         out.sort(Comparator.comparing(FestivalInfo::distanceMeters));
         return out;

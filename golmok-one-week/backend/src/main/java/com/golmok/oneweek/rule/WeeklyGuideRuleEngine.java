@@ -58,7 +58,11 @@ public class WeeklyGuideRuleEngine {
             Integer same = in.commercialArea() == null ? null : in.commercialArea().sameCategoryStores();
             if (same != null && same >= threshold) {
                 String basis = "반경 500m 내 유사 업종 %d곳 (경쟁 강도 %s)".formatted(same, in.commercialArea().competitionLevel());
-                all.add(toRecommendation(rule, null, basis, false));
+                Recommendation r = toRecommendation(rule, null, basis, false);
+                List<Long> sources = new ArrayList<>(r.sourceIds());
+                in.commercialArea().sourceIds().forEach(id -> { if (!sources.contains(id)) sources.add(id); });
+                all.add(new Recommendation(r.title(), r.text(), r.type(), r.priority(), r.confidence(),
+                        r.conditionType(), r.basis(), r.date(), sources));
             }
         }
 
@@ -66,8 +70,8 @@ public class WeeklyGuideRuleEngine {
         for (MenuRule rule : rules) {
             if (rule.getConditionType() != ConditionType.PRICE_SPIKE) continue;
             in.ingredientPrices().stream().filter(IngredientPriceInfo::alert).findFirst().ifPresent(p -> {
-                String basis = "%s 급등확률 %.0f%% (평년 대비 %+.0f%%)"
-                        .formatted(p.item(), p.probSpike() * 100, p.vsNormalRatio() * 100);
+                String basis = "%s 급등확률 %.0f%%".formatted(p.item(), p.probSpike() * 100);
+                if (p.vsNormalRatio() != null) basis += " (평년 대비 %+.0f%%)".formatted(p.vsNormalRatio() * 100);
                 all.add(toRecommendation(rule, null, basis, false));
             });
         }

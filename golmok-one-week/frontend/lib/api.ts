@@ -12,6 +12,11 @@ async function withFallback<T>(request: () => Promise<T>, fallback: () => T): Pr
   try {
     return await request();
   } catch (error) {
+    // 주소 모호함·유효하지 않은 입력·없는 리포트는 예시 성공으로 바꾸지 않는다.
+    if (axios.isAxiosError(error) && error.response && error.response.status < 500) {
+      throw new Error(typeof error.response.data?.message === "string"
+        ? error.response.data.message : "입력한 정보를 확인해주세요.");
+    }
     console.warn("[golmok] API 호출 실패 → 데모 데이터로 대체합니다.", error);
     return fallback();
   }
@@ -51,7 +56,7 @@ export async function createReport(
   menuCategory: MenuCategory,
 ): Promise<AnalysisReport> {
   return withFallback(
-    async () => (await client.post<AnalysisReport>("/api/reports", { storeId, mainMenu, menuCategory })).data,
+    async () => (await client.post<AnalysisReport>("/api/reports", { storeId, mainMenu, menuCategory }, { timeout: 60000 })).data,
     () => mockReport(storeId, mainMenu, menuCategory),
   );
 }
@@ -69,7 +74,7 @@ export async function askReportQuestion(
   history: ChatMessage[],
 ): Promise<string> {
   return withFallback(
-    async () => (await client.post<{ answer: string }>(`/api/reports/${reportId}/chat`, { question, history })).data.answer,
+    async () => (await client.post<{ answer: string }>(`/api/reports/${reportId}/chat`, { question, history }, { timeout: 45000 })).data.answer,
     () => mockChatAnswer(question),
   );
 }

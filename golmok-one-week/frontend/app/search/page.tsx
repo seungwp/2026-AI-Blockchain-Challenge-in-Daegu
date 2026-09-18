@@ -36,8 +36,8 @@ export default function SearchPage() {
     try {
       const store = await createStoreFromAddress(manualAddress.trim());
       router.push(`/store/${store.id}/confirm`);
-    } catch {
-      setError("주소 등록 중 문제가 발생했습니다.");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "주소 등록 중 문제가 발생했습니다.");
       setState("error");
     }
   }

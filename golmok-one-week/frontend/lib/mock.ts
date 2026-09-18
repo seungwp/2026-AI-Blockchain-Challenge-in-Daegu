@@ -71,6 +71,10 @@ const MENU_INGREDIENTS: Partial<Record<MenuCategory, string[]>> = {
 function demoIngredientPrices(category: MenuCategory, priceDate: string): AnalysisReport["ingredientPrices"] {
   return (MENU_INGREDIENTS[category] ?? []).map((item) => ({
     item, priceDate, isDemoData: true, sourceId: 14, ...INGREDIENT_PRICES[item],
+    history: [{ date: priceDate, price: INGREDIENT_PRICES[item].price }],
+    comparisonDate: null, vsPreviousWeekRatio: null,
+    probSpike: null, predictionDate: null, predictionStale: true,
+    priceBasis: "화면 체험용 예시 가격 · 실제 매입가가 아닙니다",
   }));
 }
 
@@ -84,6 +88,12 @@ export function mockChatAnswer(question: string): string {
 
 export function mockSources(): Source[] {
   return [
+    {
+      id: 14, sourceType: "DEMO", title: "식자재 참고 가격 화면 예시",
+      organization: null, authors: null, publicationYear: null, url: null,
+      description: "백엔드 연결 없이 가격 표시와 이력 화면을 체험하기 위한 예시입니다.",
+      reliabilityNote: "현재 실측 가격이나 실제 매입가로 사용하지 마세요.",
+    },
     {
       id: 1, sourceType: "PUBLIC_DATA", title: "행정안전부 식품_일반음식점 인허가 정보",
       organization: "행정안전부", authors: null, publicationYear: null,

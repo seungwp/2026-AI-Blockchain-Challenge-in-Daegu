@@ -134,7 +134,12 @@ public class ReportService {
     private List<WeatherDay> weather(Store store, LocalDate start) {
         double lat = store.getLatitude() == null ? 35.8714 : store.getLatitude();
         double lon = store.getLongitude() == null ? 128.6014 : store.getLongitude();
-        return weatherProvider.weekly(lat, lon, start, DAYS);
+        var result = weatherProvider.weekly(lat, lon, start, DAYS);
+        if (store.getLatitude() != null && store.getLongitude() != null) return result;
+        // 가게 위치가 미확인인 경우 시청 기준 예보를 실제 가게 예보로 표시하지 않는다.
+        return result.stream().map(w -> new WeatherDay(w.date(), w.dayOfWeek(), w.condition(),
+                w.tempMax(), w.tempMin(), w.precipitationProbability(), w.precipitationMm(), w.humidity(),
+                true, w.sourceId())).toList();
     }
 
     private String write(Object value) {

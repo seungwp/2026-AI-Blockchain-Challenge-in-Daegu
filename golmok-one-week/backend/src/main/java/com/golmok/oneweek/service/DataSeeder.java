@@ -25,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class DataSeeder {
+    private final PublicDataSnapshots snapshots;
 
     @Bean
     public ApplicationRunner seedData(SourceRepository sources, StoreRepository stores,
@@ -83,8 +84,10 @@ public class DataSeeder {
                     .latitude(Double.parseDouble(c[5])).longitude(Double.parseDouble(c[6]))
                     .demoData(false).build());
         }
+        out.forEach(snapshots::enrich);
         repo.saveAll(out);
-        log.info("음식점 {}곳 seed 완료", out.size());
+        log.info("음식점 {}곳 seed 완료, 세부업종 보강 {}곳", out.size(),
+                out.stream().filter(s -> s.getDetailCategoryCode() != null).count());
     }
 
     /**
@@ -94,6 +97,23 @@ public class DataSeeder {
      */
     private void seedFestivals(FestivalEventRepository repo) {
         List<FestivalEvent> out = new ArrayList<>();
+        var snapshot = snapshots.festivals();
+        if (snapshot.path("items").isArray() && !snapshot.path("items").isEmpty()) {
+            for (var f : snapshot.path("items")) {
+                out.add(FestivalEvent.builder().name(f.path("name").asText())
+                        .startDate(LocalDate.parse(f.path("startDate").asText()))
+                        .endDate(LocalDate.parse(f.path("endDate").asText()))
+                        .address(f.path("address").asText()).locationName(f.path("locationName").asText())
+                        .latitude(f.hasNonNull("latitude") ? f.get("latitude").asDouble() : null)
+                        .longitude(f.hasNonNull("longitude") ? f.get("longitude").asDouble() : null)
+                        .playTime(f.path("playTime").asText()).fee(f.path("fee").asText())
+                        .contact(f.path("contact").asText())
+                        .fetchedAt(LocalDate.parse(snapshot.path("fetchedAt").asText()))
+                        .sourceId(SourceCatalog.FESTIVAL_TOURAPI_ID).demoData(false).build());
+            }
+            repo.saveAll(out);
+            return;
+        }
         for (String[] c : readCsv("/data/daegu_festivals.csv", 10)) {
             out.add(FestivalEvent.builder()
                     .name(c[1])

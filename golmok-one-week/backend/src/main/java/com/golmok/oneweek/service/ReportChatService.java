@@ -127,11 +127,17 @@ public class ReportChatService {
         facts.put("행사", r.festivals().stream()
                 .map(f -> Map.of("이름", f.name(), "기간", f.startDate() + "~" + f.endDate(),
                         "거리", f.distanceMeters() == null ? "정보없음" : f.distanceMeters() + "m",
-                        "영향구분", String.valueOf(f.impactLevel())))
+                        "영향구분", String.valueOf(f.impactLevel()), "행사시간", String.valueOf(f.playTime()),
+                        "이용요금", String.valueOf(f.fee()), "확인일", String.valueOf(f.fetchedAt())))
                 .toList());
         facts.put("식자재가격", r.ingredientPrices().stream()
                 .map(p -> Map.of("품목", p.item(), "단위", String.valueOf(p.unit()), "가격", String.valueOf(p.price()),
-                        "상태", p.alert() ? "향후 급등 가능성이 있어 확인 필요" : "특별한 확인 필요 없음"))
+                        "가격기준일", String.valueOf(p.priceDate()),
+                        "일주일전비교일", String.valueOf(p.comparisonDate()),
+                        "일주일전대비퍼센트", p.vsPreviousWeekRatio() == null ? "정보없음" : String.format(java.util.Locale.ROOT, "%.1f", p.vsPreviousWeekRatio() * 100),
+                        "예측기준일", String.valueOf(p.predictionDate()),
+                        "상태", p.predictionStale() ? "예측 갱신 대기: 현재 급등 여부 판단 불가"
+                                : p.alert() ? "향후 급등 가능성이 있어 확인 필요" : "급등 알림 없음"))
                 .toList());
         return mapper.writeValueAsString(facts);
     }

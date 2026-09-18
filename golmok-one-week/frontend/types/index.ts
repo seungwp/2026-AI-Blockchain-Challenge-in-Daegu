@@ -74,6 +74,10 @@ export interface FestivalEvent {
   impactNote: string | null;
   isDemoData: boolean;
   sourceId: number | null;
+  playTime?: string | null;
+  fee?: string | null;
+  contact?: string | null;
+  fetchedAt?: string | null;
 }
 
 export interface IngredientPrice {
@@ -86,6 +90,12 @@ export interface IngredientPrice {
   vsNormalRatio: number | null;
   isDemoData: boolean;
   sourceId: number | null;
+  history?: { date: string; price: number }[];
+  comparisonDate?: string | null;
+  vsPreviousWeekRatio?: number | null;
+  predictionDate?: string | null;
+  predictionStale?: boolean;
+  priceBasis?: string | null;
 }
 
 export interface Recommendation {
