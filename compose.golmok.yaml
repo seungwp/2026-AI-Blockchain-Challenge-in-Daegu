@@ -29,6 +29,7 @@ services:
     image: caddy:2.10-alpine
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./golmok-one-week/Caddyfile:/etc/caddy/Caddyfile:ro
     depends_on:

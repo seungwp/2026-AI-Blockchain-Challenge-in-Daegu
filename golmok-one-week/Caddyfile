@@ -1,6 +1,9 @@
-# 도메인을 연결하면 첫 줄을 example.com처럼 실제 도메인으로 바꾸면 Caddy가 HTTPS를 관리한다.
-# 도메인 또는 HTTPS 설정 전에는 공인 IP의 http:// 접속을 지원한다.
-:80 {
+# 루트 도메인은 대표 주소(www)로 통일한다.
+blackapple.store {
+    redir https://www.blackapple.store{uri} permanent
+}
+
+www.blackapple.store {
     encode zstd gzip
 
     @backend path /api/* /swagger-ui* /v3/api-docs*
