@@ -52,7 +52,7 @@ public class KamisPriceProvider {
         CODES.put("계란", new String[]{"500", "9903", "23", "71"});
     }
 
-    public record LivePrice(double price, Double normalPrice, LocalDate date, List<PricePoint> history) {}
+    public record LivePrice(double price, Double normalPrice, LocalDate date, List<PricePoint> history, boolean live) {}
     private record Cached(LivePrice price, Instant until) {}
     private final Map<String, Cached> cache = new ConcurrentHashMap<>();
 
@@ -140,6 +140,6 @@ public class KamisPriceProvider {
         if (averages.isEmpty()) return null;
         LocalDate latest = averages.lastKey();
         return new LivePrice(averages.get(latest), normals.get(latest), latest,
-                averages.entrySet().stream().map(e -> new PricePoint(e.getKey(), e.getValue())).toList());
+                averages.entrySet().stream().map(e -> new PricePoint(e.getKey(), e.getValue())).toList(), true);
     }
 }

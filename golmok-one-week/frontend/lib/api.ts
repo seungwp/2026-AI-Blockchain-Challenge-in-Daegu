@@ -65,6 +65,22 @@ export async function createReport(
   );
 }
 
+/** 기존 리포트를 오늘 기준으로 다시 만든다. 이 동작은 데모로 대체하지 않아 실제 갱신 실패를 숨기지 않는다. */
+export async function refreshReport(
+  storeId: number,
+  mainMenu: string,
+  menuCategory: MenuCategory,
+): Promise<AnalysisReport> {
+  try {
+    return (await client.post<AnalysisReport>("/api/reports", { storeId, mainMenu, menuCategory })).data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && typeof error.response?.data?.message === "string") {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error("실데이터 분석을 다시 불러오지 못했어요. 잠시 후 다시 시도해주세요.");
+  }
+}
+
 export async function getReport(reportId: number): Promise<AnalysisReport> {
   if (!Number.isSafeInteger(reportId) || reportId <= 0) throw new Error("올바른 리포트 주소가 아닙니다.");
   const cached = reports.get(reportId);

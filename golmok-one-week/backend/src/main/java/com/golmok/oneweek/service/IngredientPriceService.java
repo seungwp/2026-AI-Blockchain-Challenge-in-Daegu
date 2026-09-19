@@ -3,6 +3,7 @@ package com.golmok.oneweek.service;
 import com.golmok.oneweek.dto.ReportDtos.IngredientPriceInfo;
 import com.golmok.oneweek.dto.ReportDtos.PricePoint;
 import com.golmok.oneweek.entity.Enums.MenuCategory;
+import com.golmok.oneweek.entity.Enums.DataStatus;
 import com.golmok.oneweek.provider.KamisPriceProvider;
 import com.golmok.oneweek.provider.KamisPriceProvider.LivePrice;
 import com.golmok.oneweek.repository.IngredientPriceRepository;
@@ -49,10 +50,13 @@ public class IngredientPriceService {
                     List<PricePoint> history = l == null ? List.of() : l.history();
                     PricePoint previous = comparison(history, date);
                     boolean stale = p.getPriceDate() == null || p.getPriceDate().isBefore(today.minusDays(1));
+                    DataStatus status = l != null ? (l.live() ? DataStatus.LIVE : DataStatus.SNAPSHOT)
+                            : p.isDemoData() ? DataStatus.DEMO : DataStatus.SNAPSHOT;
                     return new IngredientPriceInfo(p.getItem(), p.getUnit(), price, date, stale ? null : p.getProbSpike(),
-                            !stale && p.isAlert(), ratio, l == null && p.isDemoData(), p.getSourceId(), history,
+                            !stale && p.isAlert(), ratio, status == DataStatus.DEMO, p.getSourceId(), history,
                             previous == null ? null : previous.date(), previous == null ? null : price / previous.price() - 1,
-                            p.getPriceDate(), stale, "KAMIS 대구 소매 참고가격 · 실제 매입가와 다를 수 있음");
+                            p.getPriceDate(), stale, "KAMIS 대구 소매 참고가격 · 실제 매입가와 다를 수 있음",
+                            status, date == null ? null : date.toString());
                 })
                 .toList();
     }
@@ -65,7 +69,7 @@ public class IngredientPriceService {
                     LocalDate.parse(point.path("date").asText()), point.path("price").asDouble()));
             return new LivePrice(p.path("price").asDouble(),
                     p.hasNonNull("normalPrice") ? p.get("normalPrice").asDouble() : null,
-                    LocalDate.parse(p.path("priceDate").asText()), List.copyOf(history));
+                    LocalDate.parse(p.path("priceDate").asText()), List.copyOf(history), false);
         }
         return null;
     }

@@ -1,11 +1,19 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { ActionList } from "./ActionCard";
 import type { AnalysisReport } from "@/types";
+import { refreshReport } from "@/lib/api";
 import styles from "./main-dashboard.module.css";
 
 /** 홈 탭 (Figma 1차 › 홈화면 73:241) */
 export default function MainDashboard({ report, reportId }: { report: AnalysisReport; reportId: number }) {
+  const router = useRouter();
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshError, setRefreshError] = useState("");
   const count = report.topActions.length;
   // 기존에 저장된 리포트의 상권 등급 문장도 화면에서는 숨긴다.
   const summary = report.summary.replace(/ 주변 경쟁[^.]*입니다\./g, "");
@@ -18,6 +26,19 @@ export default function MainDashboard({ report, reportId }: { report: AnalysisRe
     const rain = weather.precipitationProbability !== null ? `, 강수확률 ${weather.precipitationProbability}%` : "";
     return `${weather.date} ${weather.condition} 예보(${temperature}${rain})를 포함해 이번 주 운영 준비 항목을 정리했어요.`;
   })();
+  async function refresh() {
+    if (refreshing) return;
+    setRefreshing(true);
+    setRefreshError("");
+    try {
+      const next = await refreshReport(report.store.id, report.mainMenu, report.menuCategory);
+      router.replace(`/report/${next.reportId}`);
+    } catch (error) {
+      setRefreshError(error instanceof Error ? error.message : "실데이터 분석을 다시 불러오지 못했어요.");
+    } finally {
+      setRefreshing(false);
+    }
+  }
   return <main className={styles.main}>
     <header className={styles.header}>
       <Link href={`/report/${reportId}/my`} className={styles.storeName} aria-label={`${report.store.name} · 내 페이지`}>
@@ -41,6 +62,13 @@ export default function MainDashboard({ report, reportId }: { report: AnalysisRe
     <section className={styles.card} aria-label="AI 요약">
       <p className={styles.aiLabel}>AI 요약</p>
       <p className={styles.aiText}>{summary || fallbackSummary}</p>
+    </section>
+    <section className={styles.refreshCard} aria-label="오늘 기준으로 다시 분석">
+      <div><strong>오늘 기준으로 다시 분석</strong><p>날씨·식자재 가격·주변 행사 정보를 새로 확인해요.</p></div>
+      <button type="button" onClick={() => void refresh()} disabled={refreshing}>
+        {refreshing ? "분석 중…" : "다시 분석"}
+      </button>
+      {refreshError && <p className={styles.refreshError} role="alert">{refreshError}</p>}
     </section>
     <ActionList report={report} />
     <p className={styles.disclaimer}>{report.disclaimer}</p>

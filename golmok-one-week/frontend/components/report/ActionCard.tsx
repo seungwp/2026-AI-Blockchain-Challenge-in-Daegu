@@ -4,6 +4,7 @@ import { useRef } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import type { AnalysisReport, IngredientPrice, Recommendation, Source } from "@/types";
 import styles from "./main-dashboard.module.css";
+import DataStatusNote, { type DataStatusItem } from "./DataStatusNote";
 
 const WEATHER = ["RAIN", "HOT", "COLD"];
 function kind(item: Recommendation) {
@@ -140,10 +141,25 @@ function PriceTrend({ item }: { item: IngredientPrice }) {
 }
 
 /** 처방이 없어도 가격 정보가 있으면 보여주는 식자재 참고 카드. */
-export function IngredientCard({ prices }: { prices: IngredientPrice[] }) {
+export function IngredientCard({ prices, sources }: { prices: IngredientPrice[]; sources: Source[] }) {
+  const sheet = useRef<HTMLDialogElement>(null);
   if (!prices.length) return null;
   return <CardFrame label="식자재" icon="cart" badge={<span className={`${styles.badge} ${styles.badgeMuted}`}>참고</span>}>
     <PriceRows prices={prices} />
+    <button type="button" className={styles.evidenceButton} onClick={() => sheet.current?.showModal()}>데이터 확인 ›</button>
+    <dialog ref={sheet} className={styles.sheet} aria-label="식자재 가격 데이터 확인"
+      onClick={(e) => { if (e.target === e.currentTarget) e.currentTarget.close(); }}>
+      <div className={styles.sheetHandle} aria-hidden="true" />
+      <h2>식자재 가격 데이터 확인</h2>
+      <DataStatusNote items={prices.map((price) => ({
+        label: `${price.item} ${price.unit ?? ""}`.trim(), status: price.dataStatus, asOf: price.dataAsOf ?? price.priceDate,
+        source: sources.find((source) => source.id === price.sourceId),
+        note: price.dataStatus === "LIVE" ? "KAMIS에서 조회한 대구 소매 참고가격입니다. 실제 매입가와 다를 수 있어요."
+          : price.dataStatus === "SNAPSHOT" ? "저장된 KAMIS 수집값입니다. 실제 매입가와 다를 수 있어요."
+            : "예시 가격입니다. 실제 운영 판단에는 사용하지 마세요.",
+      }))} />
+      <form method="dialog"><button className={styles.sheetClose}>닫기</button></form>
+    </dialog>
   </CardFrame>;
 }
 
@@ -162,13 +178,22 @@ function WeatherCard({ report }: { report: AnalysisReport }) {
   </CardFrame>;
 }
 
+/** 행사가 없다는 것도 조회 결과임을 알려주되, 처방보다 눈에 띄지 않게 표시한다. */
+function FestivalEmptyCard() {
+  return <CardFrame label="행사" icon="calendar" badge={<span className={`${styles.badge} ${styles.badgeMuted}`}>주변 행사 없음</span>}>
+    <p className={styles.body}>주변 3km 내 예정된 축제 정보가 없어요.</p>
+    <p className={styles.priceNote}>TourAPI 수집 기준 · 행사 일정은 변경될 수 있어요.</p>
+  </CardFrame>;
+}
+
 /** 홈·지난 주 상세 공통 카드 목록. 식자재 처방이 없으면 가격 참고 카드를 끝에 붙인다. */
 export function ActionList({ report }: { report: AnalysisReport }) {
   return <>
     {!report.topActions.length && <p className={styles.empty}>이번 주 특별히 강조할 점검 항목이 없어요.</p>}
     {!report.topActions.some((item) => WEATHER.includes(item.conditionType)) && <WeatherCard report={report} />}
     {report.topActions.map((item, i) => <ActionCard key={item.title + i} item={item} report={report} />)}
-    {!report.topActions.some((a) => a.conditionType === "PRICE_SPIKE") && <IngredientCard prices={report.ingredientPrices} />}
+    {!report.isDemoData && !report.festivals.length && <FestivalEmptyCard />}
+    {!report.topActions.some((a) => a.conditionType === "PRICE_SPIKE") && <IngredientCard prices={report.ingredientPrices} sources={report.sources} />}
   </>;
 }
 
@@ -184,6 +209,27 @@ export default function ActionCard({ item, report }: { item: Recommendation; rep
   const festival = label === "행사"
     ? report.festivals.find((event) => item.basis?.includes(event.name))
     : undefined;
+  const dataItems: DataStatusItem[] = day ? [{
+    label: "날씨 예보", status: day.dataStatus, asOf: day.dataAsOf,
+    source: report.sources.find((source) => source.id === day.sourceId),
+    note: day.dataStatus === "LIVE" ? "기상청 예보는 변경될 수 있어요."
+      : "예보 정보를 불러오지 못해 예시 값이 포함되어 있어요.",
+  }] : festival ? [{
+    label: "행사 정보", status: festival.dataStatus, asOf: festival.dataAsOf ?? festival.fetchedAt,
+    source: report.sources.find((source) => source.id === festival.sourceId),
+    note: festival.dataStatus === "SNAPSHOT" ? "TourAPI에서 수집한 정보이며 주최 측 사정으로 일정·장소가 바뀔 수 있어요."
+      : "예시 행사 정보입니다.",
+  }] : item.conditionType === "PRICE_SPIKE" ? report.ingredientPrices.map((price) => ({
+    label: `${price.item} ${price.unit ?? ""}`.trim(), status: price.dataStatus, asOf: price.dataAsOf ?? price.priceDate,
+    source: report.sources.find((source) => source.id === price.sourceId),
+    note: price.dataStatus === "LIVE" ? "KAMIS에서 조회한 대구 소매 참고가격입니다. 실제 매입가와 다를 수 있어요."
+      : price.dataStatus === "SNAPSHOT" ? "저장된 KAMIS 수집값입니다. 실제 매입가와 다를 수 있어요."
+        : "예시 가격입니다.",
+  })) : item.conditionType === "COMPETITION" && report.commercialArea ? [{
+    label: "주변 상권", status: report.commercialArea.dataStatus, asOf: report.commercialArea.dataAsOf,
+    source: report.sources.find((source) => report.commercialArea?.sourceIds.includes(source.id)),
+    note: "인허가·상가정보 수집본으로 집계한 값이며 실제 영업 현황과 차이가 있을 수 있어요.",
+  }] : [];
 
   return <CardFrame label={label} icon={icon} badge={<Priority item={item} />}>
     {day ? <p className={styles.condition}>{day.condition} · 최고 {day.tempMax ?? "-"}° / 최저 {day.tempMin ?? "-"}° · 강수확률 {day.precipitationProbability ?? "-"}%</p>
@@ -208,6 +254,7 @@ export default function ActionCard({ item, report }: { item: Recommendation; rep
         {main && <p className={styles.sheetWhy}>참고 자료: {explain(main)}
           {main.url && <> <a href={main.url} target="_blank" rel="noreferrer">원문 보기 ↗</a></>}</p>}
       </div>
+      <DataStatusNote items={dataItems} />
       <p className={styles.sheetNote}>운영 참고용 안내이며, 실제 매출을 예측하거나 보장하지 않습니다.</p>
       <form method="dialog"><button className={styles.sheetClose}>닫기</button></form>
     </dialog>

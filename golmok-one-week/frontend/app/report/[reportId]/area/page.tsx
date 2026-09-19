@@ -17,6 +17,6 @@ export default function AreaPage() {
       <div><h1>주변 생활권</h1>{report && <p>{report.store.name} · {report.store.address ?? ""}</p>}</div>
     </header>
     {!report ? <StateMessage state={state} message={state === "error" ? "생활권 정보를 불러오지 못했습니다." : undefined} />
-      : <div className={styles.panel}><CommercialAreaSummary area={report.commercialArea} /></div>}
+      : <div className={styles.panel}><CommercialAreaSummary area={report.commercialArea} sources={report.sources} /></div>}
   </main>;
 }

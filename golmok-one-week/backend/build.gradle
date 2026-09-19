@@ -12,6 +12,10 @@ java {
 	sourceCompatibility = JavaVersion.VERSION_21
 	targetCompatibility = JavaVersion.VERSION_21
 }
+// IDE·실행 중인 서버가 기본 build 폴더를 잠가도 -PbuildDir=build-alt 로 분리 실행할 수 있다.
+if (providers.gradleProperty('buildDir').isPresent()) {
+	layout.buildDirectory = layout.projectDirectory.dir(providers.gradleProperty('buildDir').get())
+}
 tasks.withType(JavaCompile).configureEach { options.release = 21; options.encoding = 'UTF-8' }
 
 repositories {

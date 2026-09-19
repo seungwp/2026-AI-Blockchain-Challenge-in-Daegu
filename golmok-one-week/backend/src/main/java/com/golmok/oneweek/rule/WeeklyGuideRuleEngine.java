@@ -265,7 +265,8 @@ public class WeeklyGuideRuleEngine {
 
         String sb = parts.isEmpty()
                 ? "이번 주는 날씨·명절·행사·식자재 가격에 큰 변수가 없어 평소대로 운영하셔도 됩니다."
-                : "이번 주는 %s 조건이 있습니다. 해당 날짜의 점검 항목을 확인해보세요.".formatted(String.join(", ", parts));
+                : "이번 주에는 %s에 맞춰 운영 준비를 해보세요. 날짜별 처방에서 자세한 내용을 확인할 수 있어요."
+                .formatted(String.join(", ", parts));
         return sb;
     }
 
