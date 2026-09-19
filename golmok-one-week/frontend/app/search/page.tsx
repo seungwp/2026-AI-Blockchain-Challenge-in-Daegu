@@ -66,7 +66,6 @@ export default function SearchPage() {
   const results = stores ?? (draft.store ? [draft.store] : []);
   const busy = state === "loading" || manual.formState.isSubmitting;
   return <OnboardingShell step={2} back="/" title={<>가게 위치를<br />검색해주세요</>}
-    description="인허가 정보로 정확한 가게를 찾아드려요"
     action={<button className={styles.primary} disabled={!draft.store || busy}
       onClick={() => draft.store && router.push(`/store/${draft.store.id}/confirm`)}>다음</button>}>
     <form onSubmit={(event) => void form.handleSubmit(search)(event)} noValidate>
