@@ -114,6 +114,22 @@ export function mockSources(): Source[] {
       description: "대구 지역 일반음식점 인허가 현황(상호명, 업태구분, 영업상태, 주소, 좌표 등)을 제공하는 공공데이터",
       reliabilityNote: "영업 중인 상가업소만 사용하나 데이터 갱신 시점에 따라 실제 현황과 차이가 있을 수 있음",
     },
+    // 4·5번은 backend/src/main/resources/data/sources.csv와 같은 내용 (데모 처방·행사가 인용)
+    {
+      id: 4, sourceType: "PAPER",
+      title: "The Impact of Autumn Weather, Weekdays, and Public Holiday on Restaurants Sales by Area in Seoul",
+      organization: "한국자료분석학회", authors: null, publicationYear: 2019,
+      url: "https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArticleSearchBean.artiId=ART002440339",
+      description: "서울 음식점 카드매출과 날씨·요일·공휴일의 관계를 분석한 연구",
+      reliabilityNote: "특정 지역과 기간의 분석 결과이므로 운영 참고용으로만 활용",
+    },
+    {
+      id: 5, sourceType: "FESTIVAL", title: "SNS 빅데이터 활용, 축제 효과 정밀 분석",
+      organization: "대구광역시", authors: null, publicationYear: 2025,
+      url: "https://info.daegu.go.kr/newshome/mtnmain.php?mtnkey=articleview&mkey=scatelist&mkey2=2&aid=274465",
+      description: "대구치맥페스티벌 관련 방문인구와 카드매출 변화를 분석한 대구광역시 자료",
+      reliabilityNote: "특정 행사·상권 사례이므로 모든 축제의 효과를 단정하지 않음",
+    },
     {
       id: 6, sourceType: "API", title: "기상청 기상자료개방포털", organization: "기상청",
       authors: null, publicationYear: null, url: "https://data.kma.go.kr/",
