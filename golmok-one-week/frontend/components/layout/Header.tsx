@@ -5,7 +5,7 @@ export default function Header() {
   return (
     <header>
       <nav className="row">
-        <Link href="/"><strong>골목 한 주</strong></Link>
+        <Link href="/"><strong>장사메이트</strong></Link>
         <Link href="/search">가게 검색</Link>
       </nav>
     </header>

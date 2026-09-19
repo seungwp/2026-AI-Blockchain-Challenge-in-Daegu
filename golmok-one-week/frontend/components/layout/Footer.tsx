@@ -3,7 +3,7 @@ export default function Footer() {
   return (
     <footer>
       <p className="muted">
-        골목 한 주 · 개발용 MVP · 본 서비스의 결과는 운영 참고용이며 실제 매출을 보장하지 않습니다.
+        장사메이트 · 개발용 MVP · 본 서비스의 결과는 운영 참고용이며 실제 매출을 보장하지 않습니다.
       </p>
     </footer>
   );

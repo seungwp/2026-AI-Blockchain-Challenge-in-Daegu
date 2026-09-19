@@ -3,7 +3,7 @@ import "./globals.css";
 import AppChrome from "@/components/layout/AppChrome";
 
 export const metadata: Metadata = {
-  title: "골목 한 주",
+  title: "장사메이트",
   description: "대구 골목상권 음식점 사장님을 위한 이번 주 운영 가이드 (운영 참고용)",
 };
 
