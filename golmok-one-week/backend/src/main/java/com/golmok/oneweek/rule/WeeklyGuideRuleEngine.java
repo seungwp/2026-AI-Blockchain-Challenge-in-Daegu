@@ -56,8 +56,9 @@ public class WeeklyGuideRuleEngine {
             if (rule.getConditionType() != ConditionType.COMPETITION) continue;
             int threshold = intValue(rule.getConditionValue(), 3);
             Integer same = in.commercialArea() == null ? null : in.commercialArea().sameCategoryStores();
-            if (same != null && same >= threshold) {
-                String basis = "반경 500m 내 유사 업종 %d곳 (경쟁 강도 %s)".formatted(same, in.commercialArea().competitionLevel());
+            if (same != null && same >= threshold
+                    && "COMPLETE".equals(in.commercialArea().competitionLevel())) {
+                String basis = "반경 500m 내 유사 업종 %d곳".formatted(same);
                 Recommendation r = toRecommendation(rule, null, basis, false);
                 List<Long> sources = new ArrayList<>(r.sourceIds());
                 in.commercialArea().sourceIds().forEach(id -> { if (!sources.contains(id)) sources.add(id); });
@@ -205,7 +206,7 @@ public class WeeklyGuideRuleEngine {
             case WEEKEND -> "주말";
             case HOLIDAY -> "명절";
             case FESTIVAL -> "행사";
-            case COMPETITION -> "경쟁 상권";
+            case COMPETITION -> "주변 상권";
             case PRICE_SPIKE -> "식자재 가격";
         };
         return "%s · %s".formatted(when, what);
@@ -265,7 +266,6 @@ public class WeeklyGuideRuleEngine {
         String sb = parts.isEmpty()
                 ? "이번 주는 날씨·명절·행사·식자재 가격에 큰 변수가 없어 평소대로 운영하셔도 됩니다."
                 : "이번 주는 %s 조건이 있습니다. 해당 날짜의 점검 항목을 확인해보세요.".formatted(String.join(", ", parts));
-        if (in.commercialArea() != null) sb += " 주변 경쟁 강도는 '%s'입니다.".formatted(in.commercialArea().competitionLevel());
         return sb;
     }
 

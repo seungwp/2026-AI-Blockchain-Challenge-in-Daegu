@@ -19,6 +19,7 @@ export default function SearchPage() {
   const draft = useOnboardingDraft();
   const [state, setState] = useState<ViewState>("initial");
   const [stores, setStores] = useState<Store[] | null>(null);
+  const [showManual, setShowManual] = useState(false);
   const [error, setError] = useState("");
   const request = useRef(0);
   const manualLock = useRef(false);
@@ -65,10 +66,9 @@ export default function SearchPage() {
 
   const results = stores ?? (draft.store ? [draft.store] : []);
   const busy = state === "loading" || manual.formState.isSubmitting;
-  return <OnboardingShell step={2} back="/" title={<>가게 위치를<br />검색해주세요</>}
-    description="인허가 정보로 정확한 가게를 찾아드려요"
+  return <OnboardingShell step={2} back="/" eyebrow="우리 가게부터 찾아볼까요?" title="가게 위치를 검색해주세요"
     action={<button className={styles.primary} disabled={!draft.store || busy}
-      onClick={() => draft.store && router.push(`/store/${draft.store.id}/confirm`)}>다음</button>}>
+      onClick={() => draft.store && router.push(`/store/${draft.store.id}/confirm`)}>우리 가게가 맞아요!</button>}>
     <form onSubmit={(event) => void form.handleSubmit(search)(event)} noValidate>
       <label className={styles.visuallyHidden} htmlFor="keyword">상호명 또는 주소</label>
       <div className={styles.search}>
@@ -87,23 +87,24 @@ export default function SearchPage() {
     </form>
     <div id="search-message" aria-live="polite">
       {state === "loading" && <p className={styles.status} role="status">가게를 찾고 있어요…</p>}
-      {state === "initial" && !draft.store && <p className={styles.status}>상호명이나 주소로 내 가게를 찾아보세요.</p>}
       {state === "empty" && <p className={styles.status}>검색 결과가 없어요. 주소를 직접 입력할 수 있어요.</p>}
     </div>
     {error && <p role="alert" className={styles.error}>{error}</p>}
+    {results.length > 0 && <p className={styles.resultCount}>검색 결과 {results.length}곳</p>}
     <ul className={styles.results} aria-label="가게 검색 결과">
       {results.map((store) => <li key={store.id}>
         <button className={`${styles.store} ${draft.store?.id === store.id ? styles.selected : ""}`}
           type="button" aria-pressed={draft.store?.id === store.id} onClick={() => selectStore(store)}>
-          <span className={styles.pin}><Icon name="location" /></span>
           <span className={styles.storeText}>{store.name}
             <small>{store.roadAddress ?? store.address} · {store.category ?? "업종 정보 없음"}</small>
             {store.isDemoData && <span className={styles.demo}>데모 데이터</span>}
-          </span>
+          </span><span className={styles.radio} aria-hidden="true" />
         </button>
       </li>)}
     </ul>
-    {(state === "empty" || state === "error") && <form className={styles.manual} onSubmit={(event) => void manual.handleSubmit(registerAddress)(event)} noValidate>
+    <button type="button" className={styles.manualToggle} aria-expanded={showManual}
+      onClick={() => setShowManual((value) => !value)}>찾는 가게가 없나요? <u>주소로 직접 입력하기</u></button>
+    {(showManual || state === "empty" || state === "error") && <form className={styles.manual} onSubmit={(event) => void manual.handleSubmit(registerAddress)(event)} noValidate>
       <label htmlFor="address">가게 주소 직접 입력</label>
       <input id="address" className={styles.field} placeholder="예: 대구광역시 중구 동성로 1"
         autoComplete="street-address" enterKeyHint="done" disabled={manual.formState.isSubmitting}

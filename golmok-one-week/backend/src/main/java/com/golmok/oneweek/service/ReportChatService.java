@@ -34,6 +34,8 @@ public class ReportChatService {
             "죄송합니다. 지금은 답변을 가져오지 못했습니다. 잠시 후 다시 시도해주세요.";
     private static final String NO_KEY_MESSAGE =
             "죄송합니다. 지금은 챗봇을 사용할 수 없습니다.";
+    private static final String DATA_ONLY_MESSAGE =
+            "챗봇은 리포트 수치를 임의로 해석하지 않도록 현재 준비 중입니다. 화면의 처방 카드와 근거보기를 확인해주세요.";
 
     private static final String SYSTEM_PROMPT = """
             당신은 대구 골목상권 음식점 사장님의 질문에 쉬운 말로 답하는 도우미입니다.
@@ -55,29 +57,9 @@ public class ReportChatService {
     private final ObjectMapper mapper = new ObjectMapper();
 
     public String ask(ReportResponse report, String question, List<ChatMessage> history) {
-        if (!client.hasKey()) {
-            log.info("LLM API 키가 없어 챗봇 응답을 건너뜁니다.");
-            return NO_KEY_MESSAGE;
-        }
-        String factsJson;
-        try {
-            factsJson = buildFacts(report);
-        } catch (Exception e) {
-            log.warn("챗봇용 리포트 데이터 구성 실패: {}", e.toString());
-            return CANNOT_ANSWER;
-        }
-
-        List<ChatMessage> safeHistory = sanitize(history);
-        String allowedText = factsJson + " " + question + " "
-                + safeHistory.stream().map(ChatMessage::content).reduce("", (a, b) -> a + " " + b);
-
-        String reply = tryAsk(factsJson, question, safeHistory, null, allowedText);
-        if (reply == null) {
-            reply = tryAsk(factsJson, question, safeHistory,
-                    "이전 답변에 리포트 데이터에 없는 숫자가 있었습니다. 리포트에 있는 사실과 숫자만 사용해 다시 답해주세요.",
-                    allowedText);
-        }
-        return reply != null ? reply : CANNOT_ANSWER;
+        // 자유 생성형 답변은 숫자 출처는 확인할 수 있어도 숫자의 의미를 잘못 연결할 수 있다.
+        // 검증 가능한 응답 체계를 갖추기 전에는 실제 데이터처럼 보이는 답변을 제공하지 않는다.
+        return DATA_ONLY_MESSAGE;
     }
 
     private String tryAsk(String factsJson, String question, List<ChatMessage> history,

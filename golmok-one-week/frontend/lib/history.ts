@@ -27,6 +27,23 @@ export function readHistory(): WeekEntry[] {
     return parsed.success ? parsed.data : [];
   } catch { return []; }
 }
+
+/** 이 기기에 저장된 특정 가게의 처방 이력을 모두 지운다. 공공데이터 원본 가게는 삭제하지 않는다. */
+export function removeStoreHistory(storeId: number) {
+  const next = readHistory().filter((entry) => entry.storeId !== storeId);
+  try { localStorage.setItem(key, JSON.stringify(next)); } catch { /* 저장 불가 환경에서는 변경을 유지할 수 없다. */ }
+  return next;
+}
+
+/** 가게별 가장 최근 리포트 한 건. 가게 전환·관리 목록에 사용한다. */
+export function latestReportByStore() {
+  const seen = new Set<number>();
+  return readHistory().filter((entry) => {
+    if (seen.has(entry.storeId)) return false;
+    seen.add(entry.storeId);
+    return true;
+  });
+}
 function recordReport(report: AnalysisReport) {
   const entry: WeekEntry = {
     reportId: report.reportId, storeId: report.store.id, storeName: report.store.name,

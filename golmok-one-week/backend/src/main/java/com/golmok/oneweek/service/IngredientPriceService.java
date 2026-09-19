@@ -35,9 +35,8 @@ public class IngredientPriceService {
         if (items.isEmpty()) return List.of();
 
         LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
-        // 수집 당일은 검증된 스냅샷을 사용해 시연 중 중복 외부 호출을 피한다.
-        Map<String, LivePrice> live = snapshots.priceFetchedAt().equals(today)
-                ? Map.of() : kamisPriceProvider.fetchLatest(items);
+        // 새 리포트는 항상 KAMIS API를 우선 조회한다. API 장애·인증 미설정 때만 스냅샷으로 폴백한다.
+        Map<String, LivePrice> live = kamisPriceProvider.fetchLatest(items);
         return ingredientPriceRepository.findByItemIn(items).stream()
                 .map(p -> {
                     LivePrice l = live.get(p.getItem());

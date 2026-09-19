@@ -193,8 +193,8 @@ export function mockReport(
       basis: "주말 수요 변화 가능성", date: weather[5].date, sourceIds: [4],
     },
     {
-      title: "경쟁 상권 · 노출·안내 점검", type: "MARKETING", priority: "MEDIUM", confidence: "MEDIUM", conditionType: "COMPETITION",
-      text: "반경 500m 내 유사 업종이 많습니다. 대표 메뉴, 포장 품질, 대기 시간, 응대 속도의 차별화 점검을 권장합니다. 다만 음식점이 많은 지역일수록 매출도 함께 증가한다는 분석이 있어, 경쟁점 수만으로 상권을 낮게 평가하지는 않습니다.",
+      title: "주변 상권 · 운영 정보 점검", type: "MARKETING", priority: "MEDIUM", confidence: "MEDIUM", conditionType: "COMPETITION",
+      text: "반경 500m 내 음식점은 8곳이고 유사 업종은 3곳입니다. 대표 메뉴와 포장·응대 안내를 점검해보세요.",
       basis: "반경 500m 내 유사 업종 3곳", date: null, sourceIds: [1],
     },
   ];
@@ -211,7 +211,7 @@ export function mockReport(
     weather,
     commercialArea: {
       district: store.district, dong: "데모 동", totalStores: 8, sameCategoryStores: 3,
-      competitionLevel: "높음", note: "반경 500m 기준 음식점 8곳, 유사 업종 3곳 (데모 데이터)",
+      competitionLevel: "COMPLETE", note: "반경 500m 기준 음식점 8곳, 유사 업종 3곳입니다.",
       isDemoData: true, sourceIds: [1],
     },
     ingredientPrices: demoIngredientPrices(menuCategory, weather[0].date),

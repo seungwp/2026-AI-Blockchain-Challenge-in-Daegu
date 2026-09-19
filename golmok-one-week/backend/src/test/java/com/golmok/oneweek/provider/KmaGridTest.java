@@ -47,4 +47,13 @@ class KmaGridTest {
         assertEquals(23, early.getHour());
         assertEquals(15, early.getDayOfMonth());
     }
+
+    @Test
+    void 최고와_최저기온이_모두있어야_단기예보가_완성된것으로_본다() {
+        // 5일차에는 TMP 일부만 먼저 수신될 수 있다. 이때 중기예보가 온도 값을 보완해야 한다.
+        assertFalse(KmaWeatherProvider.hasCompleteShortTermTemperature(17.0, null));
+        assertFalse(KmaWeatherProvider.hasCompleteShortTermTemperature(null, 17.0));
+        assertFalse(KmaWeatherProvider.hasCompleteShortTermTemperature(null, null));
+        assertTrue(KmaWeatherProvider.hasCompleteShortTermTemperature(23.0, 17.0));
+    }
 }

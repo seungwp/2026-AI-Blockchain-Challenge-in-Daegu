@@ -4,11 +4,11 @@ import OnboardingShell from "@/components/onboarding/OnboardingShell";
 import styles from "@/components/onboarding/onboarding.module.css";
 
 export default function HomePage() {
-  return <OnboardingShell step={1} action={<Link className={styles.primary} href="/search">시작하기</Link>}>
-    <p className={styles.greeting}>사장님, 반가워요!</p>
-    <h1>언제 어디서든,<br />이번 주 장사를 챙겨보세요</h1>
+  return <OnboardingShell step={1} action={<Link className={styles.primary} href="/search">가게 등록하러 가기</Link>}>
+    <h1>이번 주 장사,<br />뭘 준비해야 할까요?</h1>
+    <p className={styles.welcomeDescription}>날씨·행사·식자재 가격까지, 사장님 가게 기준으로 모아 매주 할 일로 알려드려요.</p>
     <div className={styles.portrait}>
-      <Image src="/onboarding/owner.png" width={280} height={280} alt="초록 앞치마를 입고 엄지를 든 사장님" priority />
+      <Image src="/onboarding/owner.png" width={304} height={304} alt="초록 앞치마를 입고 엄지를 든 사장님" priority />
     </div>
   </OnboardingShell>;
 }

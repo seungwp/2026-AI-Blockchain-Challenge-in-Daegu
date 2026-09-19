@@ -12,12 +12,10 @@ export default function ConnectPage() {
   const storeId = Number(param);
   const router = useRouter();
   const draft = useOnboardingDraft();
-  const [preparing, setPreparing] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const locked = useRef(false);
   const alive = useRef(true);
-  const notice = useRef<HTMLDivElement>(null);
   const ready = draft.store?.id === storeId && !!draft.mainMenu.trim() && draft.classifiedMenu === draft.mainMenu.trim();
 
   useEffect(() => {
@@ -30,7 +28,6 @@ export default function ConnectPage() {
     }
     return () => { alive.current = false; };
   }, [storeId, router]);
-  useEffect(() => { if (preparing) notice.current?.focus(); }, [preparing]);
 
   async function analyze() {
     if (locked.current || !ready) return;
@@ -60,28 +57,20 @@ export default function ConnectPage() {
   </OnboardingShell>;
 
   return <OnboardingShell step={4} back={`/store/${storeId}/confirm`}
-    title={<>가게 데이터<br />연결하시겠어요?</>}
-    description="연결 없이도 이번 주 처방을 바로 받을 수 있어요">
+    eyebrow="마지막 단계예요" title="가게 데이터를 연결할까요?"
+    description="연결 없이도 처방은 바로 받을 수 있어요"
+    action={<button className={styles.primary} disabled={!ready || pending} onClick={analyze}>이번주 활기차게 시작하기</button>}>
     {!ready ? <p className={styles.status} role="status">입력한 정보를 확인하고 있어요…</p> : <>
       <section className={`${styles.connection} ${styles.recommended}`} aria-labelledby="public-title">
-        <h2 id="public-title">연동 없이 분석하기</h2>
-        <p>공공데이터만으로 이번 주 처방을 확인해요.<br />가게와 대표 메뉴에 맞춰 준비할 일을 알려드려요.</p>
-        <button className={styles.cardAction} disabled={pending} onClick={analyze}>
-          {pending ? "분석 중…" : error ? "다시 분석하기" : "바로 시작하기"}
-        </button>
+        <div><h2 id="public-title">공공데이터로 바로 시작</h2>
+        <p>날씨·행사·상권·식자재 기준으로 지금 바로 이번 주 처방을 받아요.</p></div><span className={styles.connectionCheck}>✓</span>
       </section>
       <section className={`${styles.connection} ${styles.preparing}`} aria-labelledby="pos-title">
-        <h2 id="pos-title">포스기 연결하기</h2>
-        <p>포스기 연결 기능은 준비 중이에요.<br />지금은 공공데이터로 먼저 시작할 수 있어요.</p>
-        <button className={styles.cardAction} disabled={pending} aria-expanded={preparing}
-          aria-controls="pos-notice" onClick={() => setPreparing((value) => !value)}>연결해보기</button>
-        {preparing && <div id="pos-notice" ref={notice} tabIndex={-1} className={styles.posNotice} role="region" aria-label="POS 연결 준비 중 안내">
-          <p>아직 포스기에 연결하거나 매출 정보를 가져오지 않아요. 공공데이터 분석은 바로 이용할 수 있어요.</p>
-          <button className={styles.cardAction} disabled={pending} onClick={analyze}>공공데이터로 분석하기</button>
-        </div>}
+        <div><h2 id="pos-title">가게데이터 연결하기 <small>준비 중</small></h2>
+        <p>카드매출·포스·배달앱을 연결하면 동네 평균이 아니라 우리 가게 기준으로 정확해져요.</p></div><span className={styles.connectionRadio} />
       </section>
+      <p className={styles.connectionHint}>연결은 나중에 ‘내 페이지’에서 언제든 할 수 있어요</p>
       {error && <p className={styles.error} role="alert">{error}</p>}
-      <p className={styles.disclaimer}>운영 참고용 안내이며, 실제 매출을 예측하거나 보장하지 않습니다.</p>
     </>}
   </OnboardingShell>;
 }

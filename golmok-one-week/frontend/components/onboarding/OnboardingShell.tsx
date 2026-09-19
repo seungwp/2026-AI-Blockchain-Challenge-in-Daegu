@@ -10,8 +10,8 @@ export function Icon({ name }: { name: "back" | "search" | "location" | "enter" 
   return <Image src={`/onboarding/${name}.svg`} width={18} height={18} alt="" aria-hidden="true" />;
 }
 
-export default function OnboardingShell({ step, back, title, description, children, action }: {
-  step: number; back?: string; title?: ReactNode; description?: string;
+export default function OnboardingShell({ step, back, eyebrow, title, description, children, action }: {
+  step: number; back?: string; eyebrow?: string; title?: ReactNode; description?: string;
   children: ReactNode; action?: ReactNode;
 }) {
   const shell = useRef<HTMLDivElement>(null);
@@ -51,12 +51,12 @@ export default function OnboardingShell({ step, back, title, description, childr
   return <div className={styles.shell} ref={shell}>
     {back && <div className={styles.navigation}>
       <Link href={back} className={styles.back} aria-label="이전 단계로"><Icon name="back" /></Link>
-      <div className={styles.progress} role="progressbar" aria-label="온보딩 진행" aria-valuemin={1} aria-valuemax={4} aria-valuenow={step}>
-        {[1, 2, 3, 4].map((n) => <span key={n} className={n <= step ? styles.activeStep : undefined} />)}
+      <div className={styles.progress} role="progressbar" aria-label="온보딩 진행" aria-valuemin={2} aria-valuemax={4} aria-valuenow={step}>
+        <span style={{ width: `${((step - 1) / 3) * 100}%` }} />
       </div>
     </div>}
     <main className={`${styles.content} ${step === 1 ? styles.welcome : ""}`}>
-      {title && <div className={styles.heading}><h1>{title}</h1>{description && <p>{description}</p>}</div>}
+      {title && <div className={styles.heading}>{eyebrow && <p className={styles.eyebrow}>{eyebrow}</p>}<h1>{title}</h1>{description && <p>{description}</p>}</div>}
       {children}
     </main>
     {action && <div className={styles.actions}>{action}</div>}

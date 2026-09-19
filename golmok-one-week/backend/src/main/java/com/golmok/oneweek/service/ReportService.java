@@ -29,7 +29,7 @@ public class ReportService {
     public static final String DISCLAIMER =
             "본 결과는 공공데이터 및 연구자료를 기반으로 한 운영 참고용 제안이며, 실제 매출을 보장하지 않습니다.";
     public static final String DEMO_NOTICE =
-            "일부 데이터는 아직 예시 값입니다. 아래 각 항목의 '데모 데이터' 표시로 어느 부분인지 확인할 수 있습니다.";
+            "날씨·행사·상권·식자재 중 일부를 실데이터로 불러오지 못해 예시 값이 포함되어 있습니다.";
     private static final int DAYS = 7;
 
     private final StoreService storeService;
@@ -40,7 +40,6 @@ public class ReportService {
     private final WeeklyGuideRuleEngine ruleEngine;
     private final WeatherProvider weatherProvider;
     private final HolidayProvider holidayProvider;
-    private final LlmAdviceService llmAdviceService;
     private final ReportChatService reportChatService;
     private final AnalysisReportRepository reportRepository;
     private final SourceRepository sourceRepository;
@@ -64,8 +63,9 @@ public class ReportService {
 
         var output = ruleEngine.evaluate(
                 new WeeklyGuideRuleEngine.Input(category, weather, festivals, area, holidays, prices));
-        String aiSummary = llmAdviceService.summarize(
-                request.mainMenu(), category.label(), output.summary(), output.topActions(), area);
+        // LLM은 숫자의 존재 여부만 검증할 수 있고, 상권 분류 같은 숫자의 의미까지 보장할 수 없다.
+        // 주간 리포트에는 규칙 엔진이 만든 검증 가능한 요약만 제공한다.
+        String aiSummary = null;
 
         boolean anyDemo = store.isDemoData()
                 || weather.stream().anyMatch(WeatherDay::isDemoData)
@@ -126,7 +126,7 @@ public class ReportService {
         List<SourceResponse> sources = sourceRepository.findAllById(ids).stream().map(SourceResponse::from).toList();
 
         return new ReportResponse(report.getId(), store, report.getMainMenu(), report.getMenuCategory(),
-                report.getAnalysisStartDate(), report.getAnalysisEndDate(), report.getSummary(), report.getAiSummary(),
+                report.getAnalysisStartDate(), report.getAnalysisEndDate(), report.getSummary(), null,
                 topActions, weather, area, festivals, prices, dailyGuides, sources,
                 report.isDemoData(), report.isDemoData() ? DEMO_NOTICE : null, DISCLAIMER);
     }
