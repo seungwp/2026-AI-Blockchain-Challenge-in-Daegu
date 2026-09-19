@@ -29,6 +29,7 @@ public class CommercialAreaService {
                 store.getLongitude() - dLon, store.getLongitude() + dLon);
         int total = 0, same = 0, classified = 0;
         boolean detailed = store.getDetailCategoryCode() != null;
+        String category = store.getCategory() == null ? null : leaf(store.getCategory());
         for (Store s : all) {
             if (s.isDemoData()) continue; // 직접 입력한 임시 가게로 주변 업소 수를 부풀리지 않는다.
             if (s.getId().equals(store.getId())) continue;
@@ -37,7 +38,7 @@ public class CommercialAreaService {
             if (detailed) {
                 if (s.getDetailCategoryCode() != null) classified++;
                 if (store.getDetailCategoryCode().equals(s.getDetailCategoryCode())) same++;
-            } else if (sameKind(store.getCategory(), s.getCategory())) same++;
+            } else if (category != null && s.getCategory() != null && category.equals(leaf(s.getCategory()))) same++;
         }
         // 세부 업종이 덜 연결된 경우에는 처방 생성을 막기 위한 내부 상태만 남긴다.
         String comparisonStatus = detailed && classified < total ? "INCOMPLETE" : "COMPLETE";
@@ -51,11 +52,6 @@ public class CommercialAreaService {
     }
 
     /** 업종 문자열의 마지막 분류가 같으면 유사 업종으로 본다. */
-    private boolean sameKind(String a, String b) {
-        if (a == null || b == null) return false;
-        return leaf(a).equals(leaf(b));
-    }
-
     private String leaf(String category) {
         String[] parts = category.split(">");
         return parts[parts.length - 1].trim();

@@ -18,12 +18,13 @@ const entrySchema = z.object({
   start: z.string(), end: z.string(), count: z.number(),
 });
 export type WeekEntry = z.infer<typeof entrySchema>;
+const historySchema = z.array(entrySchema);
 const key = "golmok:history:v1";
 
 // ponytail: 처방 이력은 이 브라우저(localStorage)에만 쌓인다. 로그인·가게 저장이 생기면 백엔드 이력 API로 교체.
 export function readHistory(): WeekEntry[] {
   try {
-    const parsed = z.array(entrySchema).safeParse(JSON.parse(localStorage.getItem(key) ?? "[]"));
+    const parsed = historySchema.safeParse(JSON.parse(localStorage.getItem(key) ?? "[]"));
     return parsed.success ? parsed.data : [];
   } catch { return []; }
 }
@@ -58,14 +59,13 @@ function recordReport(report: AnalysisReport) {
 
 /** 탭 화면 공통 리포트 조회. 불러온 리포트는 처방 이력에 기록한다. */
 export function useReport(reportId: number) {
-  const [state, setState] = useState<ViewState>("loading");
-  const [report, setReport] = useState<AnalysisReport | null>(null);
+  const [result, setResult] = useState<{ id: number; state: ViewState; report: AnalysisReport | null }>();
   useEffect(() => {
     let alive = true;
     getReport(reportId)
-      .then((value) => { if (alive) { recordReport(value); setReport(value); setState("success"); } })
-      .catch(() => { if (alive) setState("error"); });
+      .then((value) => { if (alive) { recordReport(value); setResult({ id: reportId, state: "success", report: value }); } })
+      .catch(() => { if (alive) setResult({ id: reportId, state: "error", report: null }); });
     return () => { alive = false; };
   }, [reportId]);
-  return { state, report };
+  return result && Object.is(result.id, reportId) ? result : { state: "loading" as ViewState, report: null };
 }

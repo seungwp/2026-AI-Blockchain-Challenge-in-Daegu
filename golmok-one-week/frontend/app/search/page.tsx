@@ -97,7 +97,6 @@ export default function SearchPage() {
           type="button" aria-pressed={draft.store?.id === store.id} onClick={() => selectStore(store)}>
           <span className={styles.storeText}>{store.name}
             <small>{store.roadAddress ?? store.address} · {store.category ?? "업종 정보 없음"}</small>
-            {store.isDemoData && <span className={styles.demo}>데모 데이터</span>}
           </span><span className={styles.radio} aria-hidden="true" />
         </button>
       </li>)}
