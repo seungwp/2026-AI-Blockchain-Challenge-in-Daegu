@@ -1,19 +1,14 @@
+import Image from "next/image";
 import Link from "next/link";
+import OnboardingShell from "@/components/onboarding/OnboardingShell";
+import styles from "@/components/onboarding/onboarding.module.css";
 
 export default function HomePage() {
-  return (
-    <main>
-      <h1>골목 한 주</h1>
-      <p>
-        대구 골목상권 음식점 사장님을 위해 이번 주 날씨·행사·상권·메뉴 정보를 모아
-        운영 참고용 점검 항목을 정리해 드립니다.
-      </p>
-      <p className="muted">
-        매출을 예측하거나 보장하지 않습니다. 준비·점검이 필요한 부분을 알려드리는 서비스입니다.
-      </p>
-      <Link href="/search">
-        <button type="button">가게 검색 시작</button>
-      </Link>
-    </main>
-  );
+  return <OnboardingShell step={1} action={<Link className={styles.primary} href="/search">시작하기</Link>}>
+    <p className={styles.greeting}>사장님, 반가워요!</p>
+    <h1>언제 어디서든,<br />이번 주 장사를 챙겨보세요</h1>
+    <div className={styles.portrait}>
+      <Image src="/onboarding/owner.png" width={280} height={280} alt="초록 앞치마를 입고 엄지를 든 사장님" priority />
+    </div>
+  </OnboardingShell>;
 }

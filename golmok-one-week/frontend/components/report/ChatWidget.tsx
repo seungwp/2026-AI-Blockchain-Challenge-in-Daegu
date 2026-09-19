@@ -8,8 +8,24 @@ import type { ChatMessage } from "@/types";
  * 우측 하단 플로팅 챗봇. 지금 보고 있는 리포트 데이터만 근거로 답한다(일반 지식 챗봇 아님).
  * 위치(fixed, 우측 하단)만 고정하고 그 외 디자인은 넣지 않았다 — 디자인팀이 자유롭게 스타일링.
  */
-export default function ChatWidget({ reportId }: { reportId: number }) {
-  const [open, setOpen] = useState(false);
+export default function ChatWidget({
+  reportId,
+  open: controlledOpen,
+  onOpenChange,
+  hideLauncher = false,
+}: {
+  reportId: number;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideLauncher?: boolean;
+}) {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  const setOpen = (next: boolean | ((current: boolean) => boolean)) => {
+    const value = typeof next === "function" ? next(open) : next;
+    if (controlledOpen === undefined) setUncontrolledOpen(value);
+    onOpenChange?.(value);
+  };
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,7 +48,7 @@ export default function ChatWidget({ reportId }: { reportId: number }) {
   }
 
   return (
-    <div style={{ position: "fixed", right: "16px", bottom: "16px", zIndex: 50 }}>
+    <div style={{ position: "fixed", right: "16px", bottom: hideLauncher ? "82px" : "16px", zIndex: 50 }}>
       {open && (
         <section
           aria-label="리포트 챗봇"
@@ -76,9 +92,9 @@ export default function ChatWidget({ reportId }: { reportId: number }) {
         </section>
       )}
 
-      <button type="button" onClick={() => setOpen((v) => !v)} aria-label="리포트 챗봇 열기">
+      {!hideLauncher && <button type="button" onClick={() => setOpen((v) => !v)} aria-label="리포트 챗봇 열기">
         {open ? "닫기" : "챗봇"}
-      </button>
+      </button>}
     </div>
   );
 }

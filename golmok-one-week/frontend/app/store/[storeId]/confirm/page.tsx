@@ -2,116 +2,124 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import MenuCategorySelector from "@/components/store/MenuCategorySelector";
-import StateMessage from "@/components/common/StateMessage";
-import DemoBadge from "@/components/common/DemoBadge";
-import { classifyMenu, createReport, getStore } from "@/lib/api";
+import OnboardingShell, { Icon } from "@/components/onboarding/OnboardingShell";
+import styles from "@/components/onboarding/onboarding.module.css";
+import { classifyMenu, getStore } from "@/lib/api";
+import { readDraft, saveDraft, selectStore, useOnboardingDraft } from "@/lib/onboarding";
 import { MENU_CATEGORIES } from "@/types";
-import type { MenuCategory, MenuClassification, Store, ViewState } from "@/types";
+import type { MenuCategory } from "@/types";
 
-const schema = z.object({
-  mainMenu: z.string().trim().min(1, "대표 메뉴를 입력해주세요."),
-  menuCategory: z.enum(MENU_CATEGORIES),
-});
-
-type ConfirmValues = z.infer<typeof schema>;
+const schema = z.object({ mainMenu: z.string().trim().min(1, "대표 메뉴를 입력해주세요.") });
+const examples = ["떡볶이", "튀김", "순대"];
 
 export default function StoreConfirmPage() {
+  const { storeId: param } = useParams<{ storeId: string }>();
+  const storeId = Number(param);
   const router = useRouter();
-  const params = useParams<{ storeId: string }>();
-  const storeId = Number(params.storeId);
-
-  const [state, setState] = useState<ViewState>("loading");
-  const [store, setStore] = useState<Store | null>(null);
-  const [classification, setClassification] = useState<MenuClassification | null>(null);
-  const [error, setError] = useState<string>();
-
-  const { register, handleSubmit, watch, setValue, formState } = useForm<ConfirmValues>({
-    resolver: zodResolver(schema),
-    defaultValues: { mainMenu: "", menuCategory: "기타" },
+  const draft = useOnboardingDraft();
+  const [error, setError] = useState("");
+  const [retry, setRetry] = useState(0);
+  const manualCategory = useRef(false);
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema), values: { mainMenu: draft.mainMenu },
   });
-  const mainMenu = watch("mainMenu");
-  const menuCategory = watch("menuCategory");
+  const store = draft.store?.id === storeId ? draft.store : null;
+  const menu = draft.mainMenu.trim();
+  const resolved = !!menu && draft.classifiedMenu === menu;
 
   useEffect(() => {
-    let alive = true;
-    getStore(storeId)
-      .then((s) => { if (alive) { setStore(s); setState("success"); } })
-      .catch(() => { if (alive) { setError("가게 정보를 불러오지 못했습니다."); setState("error"); } });
-    return () => { alive = false; };
-  }, [storeId]);
+    let active = true;
+    if (!Number.isSafeInteger(storeId) || storeId <= 0) { router.replace("/search"); return; }
+    if (readDraft().store?.id === storeId) return;
+    getStore(storeId).then((result) => {
+      if (!active) return;
+      if (result.id !== storeId) { router.replace("/search"); return; }
+      selectStore(result);
+    }).catch(() => { if (active) router.replace("/search"); });
+    return () => { active = false; };
+  }, [storeId, router]);
 
-  /** 메뉴 입력이 멈추면 자동 분류 API 호출 */
   useEffect(() => {
-    const menu = mainMenu.trim();
-    if (!menu) { setClassification(null); return; }
-    const timer = setTimeout(async () => {
-      const result = await classifyMenu(menu, store?.category ?? undefined);
-      setClassification(result);
-      setValue("menuCategory", result.menuCategory);
+    if (!store || !menu || readDraft().classifiedMenu === menu) return;
+    let active = true;
+    const timer = setTimeout(() => {
+      classifyMenu(menu, store.category ?? undefined).then((result) => {
+        if (!active || readDraft().mainMenu.trim() !== menu || manualCategory.current) return;
+        saveDraft({ classification: result, menuCategory: result.menuCategory, classifiedMenu: menu });
+        setError("");
+      }).catch(() => {
+        if (active) setError("자동 분류를 완료하지 못했어요. 다시 시도하거나 카테고리를 직접 선택해주세요.");
+      });
     }, 400);
-    return () => clearTimeout(timer);
-  }, [mainMenu, store?.category, setValue]);
+    return () => { active = false; clearTimeout(timer); };
+  }, [menu, store, retry]);
 
-  async function onSubmit(values: ConfirmValues) {
-    setError(undefined);
-    try {
-      const report = await createReport(storeId, values.mainMenu.trim(), values.menuCategory);
-      router.push(`/report/${report.reportId}/area`);
-    } catch {
-      setError("분석 요청 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.");
+  function changeMenu(value: string) {
+    manualCategory.current = false;
+    setError("");
+    saveDraft({ mainMenu: value, classifiedMenu: "", classification: null, menuCategory: "기타" });
+  }
+  function confirmMenu({ mainMenu }: z.infer<typeof schema>) {
+    saveDraft({ mainMenu });
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  }
+  function next() {
+    const current = readDraft();
+    if (current.store?.id === storeId && current.mainMenu.trim() && current.classifiedMenu === current.mainMenu.trim()) {
+      router.push(`/store/${storeId}/connect`);
     }
   }
 
-  return (
-    <main>
-      <h1>대표 메뉴·영업 형태 확인</h1>
-      <StateMessage state={state === "success" ? "success" : state} message={error} />
-
-      {store && (
-        <>
-          <section aria-label="선택한 가게">
-            <div className="row">
-              <h2>{store.name}</h2>
-              <DemoBadge show={store.isDemoData} />
-            </div>
-            <p className="muted">영업 형태: {store.category ?? "정보 없음"}</p>
-            <p>{store.address}</p>
-          </section>
-
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <section aria-label="대표 메뉴 입력">
-              <label htmlFor="mainMenu">대표 메뉴</label>
-              <input id="mainMenu" placeholder="예: 닭똥집" {...register("mainMenu")} />
-              {formState.errors.mainMenu && (
-                <p role="alert" className="error">{formState.errors.mainMenu.message}</p>
-              )}
-
-              {classification && (
-                <p className="muted">
-                  자동 분류 결과: <strong>{classification.menuCategory}</strong> (신뢰도 {classification.confidence}
-                  {classification.matchedKeywords.length ? `, 키워드: ${classification.matchedKeywords.join(", ")}` : ""})
-                  {classification.confidence === "LOW" && " · 아래에서 직접 선택해주세요."}
-                </p>
-              )}
-
-              <MenuCategorySelector
-                value={menuCategory as MenuCategory}
-                onChange={(v) => setValue("menuCategory", v)}
-              />
-
-              <p>
-                <button type="submit" disabled={!mainMenu.trim() || formState.isSubmitting}>
-                  {formState.isSubmitting ? "분석 중..." : "이번 주 분석하기"}
-                </button>
-              </p>
-            </section>
-          </form>
-        </>
-      )}
-    </main>
-  );
+  return <OnboardingShell step={3} back="/search" title={<>대표 메뉴를<br />입력해주세요</>}
+    description="입력하면 카테고리가 자동으로 분류돼요"
+    action={<button className={styles.primary} disabled={!store || !resolved} onClick={next}>다음</button>}>
+    {!store ? <p className={styles.status} role="status">가게 정보를 확인하고 있어요…</p> : <>
+      <form onSubmit={form.handleSubmit(confirmMenu)} noValidate>
+        <label htmlFor="mainMenu" className={styles.visuallyHidden}>대표 메뉴</label>
+        <div className={styles.menuEntry}>
+          <input id="mainMenu" className={styles.menuInput} placeholder="메뉴 이름 입력" enterKeyHint="done"
+            aria-invalid={!!form.formState.errors.mainMenu}
+            {...form.register("mainMenu")} onChange={(event) => {
+              void form.register("mainMenu").onChange(event);
+              changeMenu(event.target.value);
+            }} />
+          <button className={`${styles.iconButton} ${styles.enter}`} type="submit" aria-label="대표 메뉴 등록"><Icon name="enter" /></button>
+        </div>
+        {form.formState.errors.mainMenu && <p className={styles.error} role="alert">{form.formState.errors.mainMenu.message}</p>}
+      </form>
+      <div className={styles.chips} aria-label="대표 메뉴 예시">
+        {examples.map((example) => <button key={example} className={styles.chip}
+          aria-pressed={menu === example} onClick={() => { changeMenu(example); form.clearErrors(); }}>
+          {example}<Icon name="chip" />
+        </button>)}
+      </div>
+      {menu && <div className={styles.classification}>
+        <p role="status">{resolved ? `등록된 대표 메뉴: ${menu}` : error ? "카테고리를 직접 선택할 수 있어요." : "메뉴 카테고리를 확인하고 있어요…"}</p>
+        {draft.classification && <p>
+          자동 분류: {draft.classification.menuCategory}
+          {draft.classification.confidence === "LOW" && " · 정확한 카테고리를 직접 선택해주세요."}
+          {draft.classification.isDemoData && <span className={styles.demo}>데모 데이터</span>}
+        </p>}
+        <label htmlFor="menuCategory">메뉴 카테고리 확인·수정</label>
+        <select id="menuCategory" className={styles.field} value={draft.menuCategory}
+          onChange={(event) => {
+            manualCategory.current = true;
+            saveDraft({ menuCategory: event.target.value as MenuCategory, classifiedMenu: menu });
+            setError("");
+          }}>
+          {MENU_CATEGORIES.map((category) => <option key={category}>{category}</option>)}
+        </select>
+        {!resolved && <button className={styles.secondary} onClick={() => {
+          manualCategory.current = true; saveDraft({ classifiedMenu: menu }); setError("");
+        }}>이 카테고리로 등록</button>}
+      </div>}
+      {error && <div role="alert" className={styles.error}>
+        <p>{error}</p><button className={styles.secondary} onClick={() => { setError(""); setRetry((n) => n + 1); }}>분류 다시 시도</button>
+      </div>}
+      {store.isDemoData && <p className={styles.status}>{store.name} <span className={styles.demo}>데모 데이터</span></p>}
+    </>}
+  </OnboardingShell>;
 }
