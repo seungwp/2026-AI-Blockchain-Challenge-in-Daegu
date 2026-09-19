@@ -123,7 +123,7 @@ public class KamisPriceProvider {
         JsonNode items = data.path("item");
         if (!items.isArray()) return null;
 
-        Map<LocalDate, Double> averages = new TreeMap<>();
+        TreeMap<LocalDate, Double> averages = new TreeMap<>();
         Map<LocalDate, Double> normals = new TreeMap<>();
         for (JsonNode it : items) {
             String county = it.path("countyname").asText();
@@ -138,7 +138,7 @@ public class KamisPriceProvider {
             }
         }
         if (averages.isEmpty()) return null;
-        LocalDate latest = averages.keySet().stream().max(LocalDate::compareTo).orElseThrow();
+        LocalDate latest = averages.lastKey();
         return new LivePrice(averages.get(latest), normals.get(latest), latest,
                 averages.entrySet().stream().map(e -> new PricePoint(e.getKey(), e.getValue())).toList());
     }

@@ -6,6 +6,8 @@ import { mockChatAnswer, mockClassify, mockReport, mockReportById, mockStore, mo
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
 const client = axios.create({ baseURL: API_BASE_URL, timeout: 8000 });
+// ponytail: 탭 이동용 30초·최대 30건 캐시. 서버 재시작 후에도 30초 안에 다시 조회한다.
+const reports = new Map<number, { value: Promise<AnalysisReport>; expires: number }>();
 
 /** 백엔드가 꺼져 있어도 데모 데이터로 전체 흐름이 돌아가게 한다. */
 async function withFallback<T>(request: () => Promise<T>, fallback: () => T): Promise<T> {
@@ -64,10 +66,25 @@ export async function createReport(
 }
 
 export async function getReport(reportId: number): Promise<AnalysisReport> {
-  return withFallback(
+  if (!Number.isSafeInteger(reportId) || reportId <= 0) throw new Error("올바른 리포트 주소가 아닙니다.");
+  const cached = reports.get(reportId);
+  if (cached && cached.expires > Date.now()) return cached.value;
+  const entry = { value: withFallback(
     async () => (await client.get<AnalysisReport>(`/api/reports/${reportId}`)).data,
     () => mockReportById(reportId),
-  );
+  ), expires: Date.now() + 30_000 };
+  reports.delete(reportId);
+  reports.set(reportId, entry);
+  if (reports.size > 30) reports.delete(reports.keys().next().value!);
+  try {
+    const report = await entry.value;
+    // 데모 응답과 실패는 보관하지 않아 서버 복구 즉시 실제 데이터를 다시 요청한다.
+    if (report.isDemoData && reports.get(reportId) === entry) reports.delete(reportId);
+    return report;
+  } catch (error) {
+    if (reports.get(reportId) === entry) reports.delete(reportId);
+    throw error;
+  }
 }
 
 export async function askReportQuestion(

@@ -17,7 +17,6 @@ import com.golmok.oneweek.repository.SourceRepository;
 import com.golmok.oneweek.rule.WeeklyGuideRuleEngine;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -45,7 +44,7 @@ public class ReportService {
     private final SourceRepository sourceRepository;
     private final ObjectMapper objectMapper;
 
-    @Transactional
+    // 외부 API 대기 중 DB 연결을 점유하지 않는다. 단일 저장은 repository 트랜잭션으로 처리한다.
     public ReportResponse create(CreateRequest request) {
         Store store = storeService.getEntity(request.storeId());
         MenuCategory category = request.menuCategory() != null

@@ -150,7 +150,6 @@ export default function StoreConfirmPage() {
       {error && <div role="alert" className={styles.error}>
         <p>{error}</p><button className={styles.secondary} onClick={() => { setError(""); setRetry((n) => n + 1); }}>분류 다시 시도</button>
       </div>}
-      {store.isDemoData && <p className={styles.status}>{store.name} <span className={styles.demo}>데모 데이터</span></p>}
     </>}
   </OnboardingShell>;
 }
