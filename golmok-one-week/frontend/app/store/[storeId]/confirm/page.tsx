@@ -26,6 +26,23 @@ const menuSuggestions: Record<MenuCategory, readonly string[]> = {
   "기타": ["족발", "보쌈", "아구찜", "샌드위치", "팥빙수"],
 };
 
+type StoreMenuSuggestion = { category: MenuCategory; menus: readonly string[] };
+
+/** 업태가 넓게 등록된 가게도 있어 상호명에 드러난 메뉴를 먼저 반영한다. */
+const storeNameSuggestions: Array<StoreMenuSuggestion & { pattern: RegExp }> = [
+  { pattern: /보쌈|족발/, category: "기타", menus: ["보쌈", "족발", "막국수", "쟁반국수"] },
+  { pattern: /치킨|통닭|닭강정/, category: "치킨", menus: menuSuggestions["치킨"] },
+  { pattern: /국밥|순대국/, category: "국물요리", menus: ["돼지국밥", "순대국", "내장국밥", "수육", "수육국밥"] },
+  { pattern: /냉면|밀면/, category: "냉면류", menus: ["물냉면", "비빔냉면", "밀면", "만두"] },
+  { pattern: /삼겹|갈비|고기|불고기/, category: "구이", menus: ["삼겹살", "목살", "갈비", "냉면", "된장찌개"] },
+  { pattern: /떡볶이|김밥|분식/, category: "분식", menus: menuSuggestions["분식"] },
+  { pattern: /초밥|스시|돈카츠|라멘|우동/, category: "일식", menus: ["초밥", "사시미", "돈카츠", "우동", "라멘"] },
+  { pattern: /짜장|짬뽕|중화|중국/, category: "중식", menus: ["짜장면", "짬뽕", "탕수육", "볶음밥"] },
+  { pattern: /피자|파스타|스테이크|레스토랑/, category: "양식", menus: ["파스타", "피자", "스테이크", "리조또"] },
+  { pattern: /삼계|추어|장어|백숙/, category: "보양식", menus: ["삼계탕", "추어탕", "장어구이", "오리백숙"] },
+  { pattern: /카페|커피/, category: "기타", menus: ["아메리카노", "카페라떼", "디저트"] },
+];
+
 function categoryFromStore(storeCategory: string | null): MenuCategory {
   const value = storeCategory?.replaceAll(" ", "") ?? "";
   if (/치킨|통닭|호프/.test(value)) return "치킨";
@@ -38,6 +55,14 @@ function categoryFromStore(storeCategory: string | null): MenuCategory {
   if (/보양|삼계|추어/.test(value)) return "보양식";
   if (/국밥|탕|찌개|한식/.test(value)) return "국물요리";
   return "기타";
+}
+
+function suggestMenus(storeName: string | null, storeCategory: string | null): StoreMenuSuggestion {
+  const value = `${storeName ?? ""} ${storeCategory ?? ""}`.replaceAll(" ", "");
+  const matched = storeNameSuggestions.find((suggestion) => suggestion.pattern.test(value));
+  if (matched) return matched;
+  const category = categoryFromStore(storeCategory);
+  return { category, menus: menuSuggestions[category] };
 }
 
 export default function StoreConfirmPage() {
@@ -54,8 +79,11 @@ export default function StoreConfirmPage() {
   const store = draft.store?.id === storeId ? draft.store : null;
   const menu = draft.mainMenu.trim();
   const resolved = !!menu && draft.classifiedMenu === menu;
-  const suggestedCategory = menu ? draft.menuCategory : categoryFromStore(store?.category ?? null);
-  const examples = menuSuggestions[suggestedCategory];
+  const suggestion = menu
+    ? { category: draft.menuCategory, menus: menuSuggestions[draft.menuCategory] }
+    : suggestMenus(store?.name ?? null, store?.category ?? null);
+  const suggestedCategory = suggestion.category;
+  const examples = suggestion.menus;
 
   useEffect(() => {
     let active = true;
