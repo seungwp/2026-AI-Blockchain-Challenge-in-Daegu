@@ -11,7 +11,7 @@
 - `POST /api/stores/manual`: 실제 주소를 확인한 뒤 생성한다. 모호하거나 없는 주소는 400.
   네이버 지오코딩으로 주소 좌표를 확인한 뒤 생성한다.
 - `commercialArea.note`: 세부 업종이 연결된 경우 기준월·분류 확인 수를 표시하고 `sourceIds`에 15를 추가한다.
-  주변 점포의 세부 분류가 불완전하면 `competitionLevel="판단 보류"`이다.
+  화면은 반경 500m 음식점 수와 유사 업종 수만 표시한다.
 - `festivals[]` 추가: `playTime`, `fee`, `contact`(문자열 또는 null), `fetchedAt`(확인일 또는 null).
 - `ingredientPrices[]` 추가: `history: [{date,price}]`, `comparisonDate`, `vsPreviousWeekRatio`,
   `predictionDate`, `predictionStale`, `priceBasis`. 비교 비율 0.1은 +10%이며 계산은 서버에서 한다.
@@ -83,7 +83,7 @@
   "menuCategory": "치킨",
   "analysisStartDate": "2026-09-17",
   "analysisEndDate": "2026-09-23",
-  "summary": "이번 주는 인근 행사 '대구메이커페스타' 조건이 있습니다. 해당 날짜의 점검 항목을 확인해보세요. 주변 경쟁 강도는 '높음'입니다.",
+  "summary": "이번 주는 인근 행사 '대구메이커페스타' 조건이 있습니다. 해당 날짜의 점검 항목을 확인해보세요.",
   "aiSummary": "이번 주는 토요일 비 예보와 무더운 날씨가 겹쳐 있어요. 포장·배달 준비를 미리 해두시면 좋겠습니다.",
   "topActions": [
     {
@@ -109,8 +109,8 @@
   ],
   "commercialArea": {
     "district": "달서구", "dong": "두류동",
-    "totalStores": 179, "sameCategoryStores": 25, "competitionLevel": "높음",
-    "note": "반경 500m 기준 음식점 179곳, 유사 업종 25곳으로 경쟁 강도는 '높음' 수준입니다. 운영 참고용 집계입니다.",
+    "totalStores": 179, "sameCategoryStores": 25,
+    "note": "반경 500m 기준 음식점 179곳, 유사 업종 25곳입니다. 운영 참고용 집계입니다.",
     "isDemoData": false, "sourceIds": [1]
   },
   "festivals": [

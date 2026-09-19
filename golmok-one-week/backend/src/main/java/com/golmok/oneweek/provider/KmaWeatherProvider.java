@@ -30,8 +30,8 @@ import java.util.*;
  *   <li>중기예보(getMidLandFcst, getMidTa): +5일 이후. <b>대구 광역 단위</b>라 동네 구분이 없다.</li>
  * </ul>
  *
- * 어느 단계든 실패하면 남은 날짜를 {@link MockWeatherProvider} 예시 값으로 채우고 로그만 남긴다.
- * 심사 시연 중 외부 API 가 죽어도 화면이 비지 않도록 하기 위한 것이다.
+ * 일부 응답이 비어 있으면 그 값을 예시 수치로 채우지 않고 "예보 정보 없음"과 데모 상태로 표시한다.
+ * API 키가 전혀 없는 개발용 환경만 {@link MockWeatherProvider} 전체 예시 값을 사용한다.
  */
 @Component
 @Slf4j
@@ -65,10 +65,9 @@ public class KmaWeatherProvider implements WeatherProvider {
 
     @Override
     public List<WeatherDay> weekly(double latitude, double longitude, LocalDate start, int days) {
-        List<WeatherDay> filler = fallback.weekly(latitude, longitude, start, days);
         if (serviceKey == null || serviceKey.isBlank()) {
             log.warn("DATA_GO_KR_KEY 가 없어 예시 날씨를 사용합니다.");
-            return filler;
+            return fallback.weekly(latitude, longitude, start, days);
         }
 
         Map<LocalDate, DayBuilder> byDate = new LinkedHashMap<>();
@@ -86,10 +85,8 @@ public class KmaWeatherProvider implements WeatherProvider {
         }
 
         List<WeatherDay> out = new ArrayList<>();
-        int i = 0;
         for (Map.Entry<LocalDate, DayBuilder> e : byDate.entrySet()) {
-            WeatherDay demo = filler.get(i++);
-            out.add(e.getValue().toWeatherDay(e.getKey(), demo));
+            out.add(e.getValue().toWeatherDay(e.getKey()));
         }
         return out;
     }
@@ -216,7 +213,7 @@ public class KmaWeatherProvider implements WeatherProvider {
 
     // ── 값 변환 ─────────────────────────────────────────────────────────────
 
-    /** 하루치 조각을 모아 WeatherDay 로 만든다. 비어 있는 값은 예시 값으로 메운다. */
+    /** 하루치 조각을 모아 WeatherDay 로 만든다. 없는 값은 null로 두어 실제 수치처럼 보이지 않게 한다. */
     private static final class DayBuilder {
         Double tMax, tMin, mm;
         Integer pop;
@@ -230,8 +227,7 @@ public class KmaWeatherProvider implements WeatherProvider {
             return hasCompleteShortTermTemperature(tMax, tMin);
         }
 
-        WeatherDay toWeatherDay(LocalDate date, WeatherDay demo) {
-            boolean real = hasShortTerm() || wide;
+        WeatherDay toWeatherDay(LocalDate date) {
             Double max = tMax != null ? tMax : orNull(temps.stream().mapToDouble(Double::doubleValue).max());
             Double min = tMin != null ? tMin : orNull(temps.stream().mapToDouble(Double::doubleValue).min());
             String cond = pty != null ? pty
@@ -240,16 +236,13 @@ public class KmaWeatherProvider implements WeatherProvider {
                             .map(Map.Entry::getKey).orElse(null);
             Integer reh = humidity.isEmpty() ? null
                     : (int) Math.round(humidity.stream().mapToDouble(Double::doubleValue).average().orElse(0));
+            boolean complete = cond != null && max != null && min != null && pop != null;
 
             return new WeatherDay(date,
                     MockWeatherProvider.DOW[date.getDayOfWeek().getValue() - 1],
-                    cond != null ? cond : demo.condition(),
-                    max != null ? max : demo.tempMax(),
-                    min != null ? min : demo.tempMin(),
-                    pop != null ? pop : demo.precipitationProbability(),
-                    mm != null ? mm : (real ? 0.0 : demo.precipitationMm()),
-                    reh != null ? reh : (real ? null : demo.humidity()),   // 중기예보에는 습도가 없다
-                    !real,                // 실제 예보로 채워졌으면 데모 아님
+                    cond != null ? cond : "예보 정보 없음",
+                    max, min, pop, mm, reh,
+                    !complete,
                     SourceCatalog.WEATHER_API_ID);
         }
     }

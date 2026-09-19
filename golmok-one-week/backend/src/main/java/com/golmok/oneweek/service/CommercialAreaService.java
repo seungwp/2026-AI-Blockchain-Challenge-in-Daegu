@@ -39,12 +39,13 @@ public class CommercialAreaService {
                 if (store.getDetailCategoryCode().equals(s.getDetailCategoryCode())) same++;
             } else if (sameKind(store.getCategory(), s.getCategory())) same++;
         }
-        String level = detailed && classified < total ? "판단 보류" : same >= 3 ? "높음" : same >= 1 ? "보통" : "낮음";
-        String note = "반경 %dm 기준 음식점 %d곳, 유사 업종 %d곳으로 경쟁 강도는 '%s' 수준입니다. 운영 참고용 집계입니다."
-                .formatted(RADIUS_METERS, total, same, level);
+        // 세부 업종이 덜 연결된 경우에는 처방 생성을 막기 위한 내부 상태만 남긴다.
+        String comparisonStatus = detailed && classified < total ? "INCOMPLETE" : "COMPLETE";
+        String note = "반경 %dm 기준 음식점 %d곳, 유사 업종 %d곳입니다. 운영 참고용 집계입니다."
+                .formatted(RADIUS_METERS, total, same);
         if (detailed) note += " 세부 업종 '%s' 기준이며 주변 %d곳 중 %d곳만 분류가 확인되었습니다. 미분류 점포는 유사 업종 수에서 제외됩니다. 상가정보 기준월: %s."
                 .formatted(store.getDetailCategoryName(), total, classified, store.getCategoryAsOf());
-        return new CommercialArea(store.getDistrict(), dongOf(store), total, same, level, note, false,
+        return new CommercialArea(store.getDistrict(), dongOf(store), total, same, comparisonStatus, note, false,
                 detailed ? List.of(SourceCatalog.STORE_LICENSE_ID, SourceCatalog.SBIZ_STORE_ID)
                         : List.of(SourceCatalog.STORE_LICENSE_ID));
     }
