@@ -21,7 +21,20 @@ function demoStore(
 
 /** id 로 데모 가게 하나를 찾는다. 없으면 첫 번째 가게를 돌려준다. */
 export function mockStore(storeId: number): Store {
-  return DEMO_STORES.find((s) => s.id === storeId) ?? DEMO_STORES[0];
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(`golmok:demo-store:${storeId}`) ?? "null") as Store | null;
+    if (saved?.id === storeId && typeof saved.name === "string") return { ...saved, isDemoData: true };
+  } catch { /* 저장소가 없는 환경에서는 기본 데모로 진행 */ }
+  return rememberedStores.get(storeId) ?? DEMO_STORES.find((s) => s.id === storeId) ?? DEMO_STORES[0];
+}
+
+const rememberedStores = new Map<number, Store>();
+/** 직접 입력·검색한 가게도 데모 전환 시 다른 가게로 바뀌지 않도록 보관한다. */
+export function rememberDemoStore(store: Store): Store {
+  const demo = { ...store, isDemoData: true };
+  rememberedStores.set(store.id, demo);
+  try { sessionStorage.setItem(`golmok:demo-store:${store.id}`, JSON.stringify(demo)); } catch { /* 메모리 폴백 */ }
+  return store;
 }
 
 export function mockStores(keyword: string): Store[] {
@@ -138,13 +151,19 @@ let lastReport: AnalysisReport | null = null;
 
 /** reportId 로 데모 리포트를 조회한다. 직전에 만든 리포트가 있으면 그것을 쓴다. */
 export function mockReportById(reportId: number): AnalysisReport {
+  if (lastReport?.reportId !== reportId) {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(`golmok:demo-report:${reportId}`) ?? "null") as AnalysisReport | null;
+      if (saved?.reportId === reportId && saved.isDemoData && Array.isArray(saved.weather)) lastReport = saved;
+    } catch { /* 메모리 폴백 */ }
+  }
   return lastReport?.reportId === reportId ? lastReport : mockReport(1, "닭똥집", "구이", reportId);
 }
 
 export function mockReport(
   storeId: number, mainMenu: string, menuCategory: MenuCategory, reportId = 1,
 ): AnalysisReport {
-  const store = DEMO_STORES.find((s) => s.id === storeId) ?? DEMO_STORES[0];
+  const store = mockStore(storeId);
   const weather = demoWeather();
   const topActions: AnalysisReport["topActions"] = [
     {
@@ -199,5 +218,6 @@ export function mockReport(
     demoNotice: "백엔드에 연결하지 못해 프론트 데모 데이터로 표시하고 있습니다.",
     disclaimer: "본 결과는 공공데이터 및 연구자료를 기반으로 한 운영 참고용 제안이며, 실제 매출을 보장하지 않습니다.",
   };
+  try { sessionStorage.setItem(`golmok:demo-report:${reportId}`, JSON.stringify(lastReport)); } catch { /* 메모리 폴백 */ }
   return lastReport;
 }

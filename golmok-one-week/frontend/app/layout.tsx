@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import AppChrome from "@/components/layout/AppChrome";
 
 export const metadata: Metadata = {
   title: "골목 한 주",
@@ -12,9 +11,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko">
       <body>
-        <Header />
-        {children}
-        <Footer />
+        <AppChrome>{children}</AppChrome>
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { AnalysisReport, ChatMessage, MenuCategory, MenuClassification, Store } from "@/types";
-import { mockChatAnswer, mockClassify, mockReport, mockReportById, mockStore, mockStores } from "./mock";
+import { mockChatAnswer, mockClassify, mockReport, mockReportById, mockStore, mockStores, rememberDemoStore } from "./mock";
 
 /** 백엔드 주소. .env.local 의 NEXT_PUBLIC_API_BASE_URL 로 교체한다. */
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
@@ -24,22 +24,22 @@ async function withFallback<T>(request: () => Promise<T>, fallback: () => T): Pr
 
 export async function searchStores(keyword: string, city = "대구광역시"): Promise<Store[]> {
   return withFallback(
-    async () => (await client.get<Store[]>("/api/stores/search", { params: { keyword, city } })).data,
+    async () => (await client.get<Store[]>("/api/stores/search", { params: { keyword, city } })).data.map(rememberDemoStore),
     () => mockStores(keyword),
   );
 }
 
 export async function getStore(storeId: number): Promise<Store> {
   return withFallback(
-    async () => (await client.get<Store>(`/api/stores/${storeId}`)).data,
+    async () => rememberDemoStore((await client.get<Store>(`/api/stores/${storeId}`)).data),
     () => mockStore(storeId),
   );
 }
 
 export async function createStoreFromAddress(address: string, city = "대구광역시"): Promise<Store> {
   return withFallback(
-    async () => (await client.post<Store>("/api/stores/manual", { address, city })).data,
-    () => ({ ...mockStore(0), id: 9001, name: `${address} (직접 입력)`, address, roadAddress: address }),
+    async () => rememberDemoStore((await client.post<Store>("/api/stores/manual", { address, city })).data),
+    () => rememberDemoStore({ ...mockStore(0), id: 9001, name: `${address} (직접 입력)`, address, roadAddress: address }),
   );
 }
 

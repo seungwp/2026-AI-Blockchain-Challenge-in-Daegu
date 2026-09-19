@@ -1,5 +1,12 @@
 # 골목 한 주 코드 지도 (Claude Code용)
 
+> 2026-09-19: 온보딩 4화면 적용. 대표 메뉴 confirm 다음에
+> `/store/[storeId]/connect`가 추가되고 리포트 생성은 connect에서 실행한다.
+> 공통 레이아웃은 `frontend/components/onboarding/`, 세션 상태는 `frontend/lib/onboarding.ts`.
+> 상세 동작과 검증: [온보딩 구현 기록](onboarding-implementation.md).
+> 메인 리포트 화면은 frontend/components/report/MainDashboard.tsx가 담당하며,
+> /report/[reportId]가 이 화면을 렌더한다.
+
 > 2026-09-18 추가: `scripts/collect_public_data.py` → `resources/data/*{enrichment,details,history}.json`
 > → `service/PublicDataSnapshots.java` → DataSeeder(상가 업종·행사) / IngredientPriceService(가격 이력).
 > 주소 직접 입력은 `provider/NaverGeocodingProvider.java`의 네이버 지오코딩(WGS84 좌표)을 거친다.
