@@ -1,4 +1,4 @@
-# 골목 한 주 — 프론트엔드
+# 장사메이트 — 프론트엔드
 
 Next.js(App Router) · TypeScript · Axios · React Hook Form + Zod
 스타일은 `app/globals.css` 최소 CSS만 사용합니다. **디자인은 하지 않았습니다.**

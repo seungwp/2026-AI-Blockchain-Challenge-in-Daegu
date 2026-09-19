@@ -24,7 +24,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public OpenAPI golmokOpenApi() {
         return new OpenAPI().info(new Info()
-                .title("골목 한 주 API")
+                .title("장사메이트 API")
                 .version("0.1.0")
                 .description("대구 골목상권 음식점 대상 주간 운영 가이드 MVP. 응답은 운영 참고용이며 매출을 보장하지 않습니다."));
     }

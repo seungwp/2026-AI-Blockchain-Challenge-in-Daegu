@@ -62,12 +62,16 @@ golmok-one-week/
 | `GET /api/stores/{storeId}` | StoreController → `StoreService.get` | `getStore` | `F:app/store/[storeId]/confirm/page.tsx` | `mockStore` |
 | `POST /api/stores/manual` | StoreController → `StoreService.createFromAddress` | `createStoreFromAddress` | `F:app/search/page.tsx` | 인라인 객체 |
 | `POST /api/menu/classify` | MenuController → `MenuClassificationService.classify` | `classifyMenu` | confirm 페이지 | `mockClassify` |
-| `POST /api/reports` | ReportController → `ReportService.create` | `createReport` | confirm 페이지 → `/report/{id}/area`로 이동 | `mockReport` |
-| `GET /api/reports/{reportId}` | ReportController → `ReportService.get` | `getReport` | `F:app/report/[reportId]/area/page.tsx`, `F:app/report/[reportId]/page.tsx` | `mockReportById` |
-| `POST /api/reports/{reportId}/chat` | ReportController → `ReportService.chat` → `ReportChatService.ask` | `askReportQuestion` | `F:components/report/ChatWidget.tsx` | `mockChatAnswer` |
+| `POST /api/reports` | ReportController → `ReportService.create` | `createReport` | connect 페이지(분석 로딩) → `/report/{id}` 홈으로 이동 | `mockReport` |
+| `GET /api/reports/{reportId}` | ReportController → `ReportService.get` | `getReport` | `F:lib/history.ts`의 `useReport` (탭 화면 전체 공통) | `mockReportById` |
+| `POST /api/reports/{reportId}/chat` | ReportController → `ReportService.chat` → `ReportChatService.ask` | `askReportQuestion` | `F:app/report/[reportId]/chat/page.tsx` | `mockChatAnswer` |
 | `GET /api/sources`, `/api/sources/{id}` | SourceController → `SourceRepository` (서비스 없음) | (없음, 출처는 리포트 응답에 포함) | – | – |
 
-화면 흐름: `/` → `/search` → `/store/[storeId]/confirm` → `/report/[reportId]/area` → `/report/[reportId]`
+화면 흐름: `/` → `/search` → `/store/[storeId]/confirm` → `/store/[storeId]/connect`(분석 로딩) → `/report/[reportId]` 홈
+
+하단 탭(`F:app/report/[reportId]/layout.tsx` + `F:components/layout/TabBar.tsx`, Figma 사이트맵 33:594):
+홈 `/report/[id]` · 처방이력 `/history`(지난 주 상세 `/history/[weekId]`) · 챗봇 `/chat` · 마이페이지 `/my`(생활권 `/area`).
+처방 이력은 `F:lib/history.ts`가 브라우저 localStorage에 기록한다(백엔드 이력 API 없음).
 
 ## 4. 리포트 생성 데이터 흐름 (`B:service/ReportService.java#create`)
 
@@ -152,7 +156,7 @@ CreateRequest(storeId, mainMenu, menuCategory?)
 ### 7-5. 날씨 (기상청 단기·중기예보)
 - 핵심 파일: `B:provider/KmaWeatherProvider.java`(308줄, 가장 큼), `B:provider/KmaGrid.java`(위경도→격자), `B:provider/MockWeatherProvider.java`(키 없음·실패 시 채움값), `B:provider/Providers.java#WeatherProvider`
 - 진입점: `ReportService.weather()`
-- 의존: KmaWeatherProvider → KmaGrid, MockWeatherProvider, SourceCatalog. 표시: `F:components/report/WeatherList.tsx`
+- 의존: KmaWeatherProvider → KmaGrid, MockWeatherProvider, SourceCatalog. 표시: `F:components/report/ActionCard.tsx`(날씨 카드 조건 줄)
 - 테스트: `T:provider/KmaGridTest.java`
 
 ### 7-6. 명절 (추석)
@@ -178,17 +182,17 @@ CreateRequest(storeId, mainMenu, menuCategory?)
 ### 7-10. AI 요약 (aiSummary)
 - 핵심 파일: `B:service/LlmAdviceService.java`(프롬프트·600토큰), `B:service/GroqChatClient.java`(HTTP·reasoning_effort=low·잘린 응답 거부), `B:service/LlmNumberGuard.java`(입력에 없는 숫자 차단)
 - 진입점: `ReportService.create` → `LlmAdviceService.summarize`
-- 의존: GroqChatClient ← `golmok.keys.groq-*`. 표시: `F:components/report/ReportSummary.tsx`
+- 의존: GroqChatClient ← `golmok.keys.groq-*`. 표시: `F:components/report/MainDashboard.tsx`(AI 요약 카드)
 - 테스트: `T:service/LlmNumberGuardTest.java`
 
 ### 7-11. 리포트 챗봇
-- 핵심 파일: `B:service/ReportChatService.java`(시스템 프롬프트·매출 예측 거절·재시도·history role 강등), `B:dto/ChatDtos.java`, `F:components/report/ChatWidget.tsx`
+- 핵심 파일: `B:service/ReportChatService.java`(시스템 프롬프트·매출 예측 거절·재시도·history role 강등), `B:dto/ChatDtos.java`, `F:app/report/[reportId]/chat/page.tsx`
 - 진입점: `ReportController.chat` → `ReportService.chat` → `ReportChatService.ask`
 - API: `POST /api/reports/{reportId}/chat`
 - 의존: GroqChatClient, LlmNumberGuard, ReportDtos(리포트를 사실 JSON으로 변환)
 
 ### 7-12. 리포트 화면 표시
-- 핵심 파일: `F:app/report/[reportId]/page.tsx`(섹션 조합), `F:components/report/*.tsx`(ReportSummary, RecommendationList, DailyGuideList, WeatherList, CommercialAreaSummary, FestivalList, IngredientPriceList, SourceList, ChatWidget), `F:components/common/*`(DemoBadge, Disclaimer, StateMessage)
+- 핵심 파일: `F:app/report/[reportId]/page.tsx`(섹션 조합), `F:components/report/*.tsx`(MainDashboard=홈, ActionCard=날씨·행사·식자재 처방 카드+근거 바텀시트, CommercialAreaSummary), `F:components/common/*`(DemoBadge, StateMessage)
 - 의존: 전부 `F:types/index.ts`만 참조, 데이터 조회는 페이지의 `getReport` 한 번
 
 ### 7-13. 백엔드 없이 동작 (데모 폴백)
@@ -196,7 +200,7 @@ CreateRequest(storeId, mainMenu, menuCategory?)
 - 규칙: API 함수 추가 시 mock 함수도 함께 추가
 
 ### 7-14. 출처(근거) 목록
-- 핵심 파일: `R:data/sources.csv`, `B:entity/Source.java`, `B:dto/SourceResponse.java`, `B:entity/SourceCatalog.java`, `B:service/ReportService.java#toResponse`(리포트에 인용된 출처만 모음), `F:components/report/SourceList.tsx`
+- 핵심 파일: `R:data/sources.csv`, `B:entity/Source.java`, `B:dto/SourceResponse.java`, `B:entity/SourceCatalog.java`, `B:service/ReportService.java#toResponse`(리포트에 인용된 출처만 모음), `F:components/report/ActionCard.tsx`(근거 바텀 시트 출처)
 - API: `GET /api/sources`, `GET /api/sources/{id}` / 근거 설명 문서: `docs/coefficients.md`
 
 ### 7-15. 에러 응답 · CORS · Swagger
