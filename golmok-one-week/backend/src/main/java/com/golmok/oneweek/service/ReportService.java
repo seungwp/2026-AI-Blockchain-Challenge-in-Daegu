@@ -8,6 +8,7 @@ import com.golmok.oneweek.dto.SourceResponse;
 import com.golmok.oneweek.dto.StoreResponse;
 import com.golmok.oneweek.entity.AnalysisReport;
 import com.golmok.oneweek.entity.Enums.MenuCategory;
+import com.golmok.oneweek.entity.Enums.DataStatus;
 import com.golmok.oneweek.entity.Store;
 import com.golmok.oneweek.exception.NotFoundException;
 import com.golmok.oneweek.provider.Providers.HolidayProvider;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 @Service
@@ -134,11 +136,17 @@ public class ReportService {
         double lat = store.getLatitude() == null ? 35.8714 : store.getLatitude();
         double lon = store.getLongitude() == null ? 128.6014 : store.getLongitude();
         var result = weatherProvider.weekly(lat, lon, start, DAYS);
-        if (store.getLatitude() != null && store.getLongitude() != null) return result;
+        LocalDate retrievedAt = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        if (store.getLatitude() != null && store.getLongitude() != null) {
+            return result.stream().map(w -> new WeatherDay(w.date(), w.dayOfWeek(), w.condition(),
+                    w.tempMax(), w.tempMin(), w.precipitationProbability(), w.precipitationMm(), w.humidity(),
+                    w.isDemoData(), w.sourceId(), w.isDemoData() ? DataStatus.DEMO : DataStatus.LIVE,
+                    retrievedAt.toString())).toList();
+        }
         // 가게 위치가 미확인인 경우 시청 기준 예보를 실제 가게 예보로 표시하지 않는다.
         return result.stream().map(w -> new WeatherDay(w.date(), w.dayOfWeek(), w.condition(),
                 w.tempMax(), w.tempMin(), w.precipitationProbability(), w.precipitationMm(), w.humidity(),
-                true, w.sourceId())).toList();
+                true, w.sourceId(), DataStatus.DEMO, retrievedAt.toString())).toList();
     }
 
     private String write(Object value) {

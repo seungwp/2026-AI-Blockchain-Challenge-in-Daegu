@@ -42,6 +42,12 @@
 .sectionTitle span { color: var(--ink-40); font-size: 14px; font-weight: 500; }
 .aiLabel { color: var(--green-dark); font-size: 13px; font-weight: 700; }
 .aiText { font-size: 14px; line-height: 22px; }
+.refreshCard { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 14px 16px; border: 1px solid #bde5ca; border-radius: 16px; background: #f7fcf8; }
+.refreshCard strong { display: block; color: var(--ink); font-size: 14px; }
+.refreshCard p { margin-top: 3px !important; color: var(--ink-60); font-size: 12px; line-height: 18px; }
+.refreshCard button { min-width: 82px; min-height: 40px; padding: 0 12px; border: 1px solid var(--green); border-radius: 10px; color: var(--green-dark); background: #fff; font: inherit; font-size: 13px; font-weight: 700; }
+.refreshCard button:disabled { opacity: .55; cursor: not-allowed; }
+.refreshCard .refreshError { grid-column: 1 / -1; margin-top: 4px !important; color: #b42318; }
 .empty, .endNote { color: var(--ink-40); font-size: 13px; text-align: center; }
 .disclaimer { color: var(--ink-40); font-size: 11px; text-align: center; }
 
@@ -85,6 +91,19 @@
 .sheetWhy a { color: var(--green-dark); font-weight: 700; white-space: nowrap; }
 .sheetNote { margin-top: 16px !important; color: var(--ink-50); font-size: 11px; }
 .sheetClose { width: 100%; min-height: 52px; margin-top: 14px; border: 0; border-radius: 16px; color: #fff; background: var(--green); font-size: 15px; }
+.dataStatus h3 { margin: 18px 0 6px !important; color: var(--ink-50); font-size: 12px; }
+.dataStatusRow { padding: 10px 12px; border-radius: 12px; background: #f6f6f6; }
+.dataStatusRow + .dataStatusRow { margin-top: 8px; }
+.dataStatusRow > div { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.dataStatusRow strong { color: var(--ink); font-size: 13px; }
+.dataStatusRow span { flex: none; padding: 2px 7px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+.statusLIVE { color: #166534; background: #dcfce7; }
+.statusSNAPSHOT { color: #1d4ed8; background: #dbeafe; }
+.statusDEMO { color: #92400e; background: #fef3c7; }
+.statusUNKNOWN { color: var(--ink-50); background: #e5e7eb; }
+.dataStatusRow p { margin-top: 5px !important; color: var(--ink-60); font-size: 12px; line-height: 18px; }
+.dataStatusRow .dataSource { color: var(--ink-50); }
+.dataSource a { color: var(--green-dark); font-weight: 700; white-space: nowrap; }
 @media (prefers-reduced-motion: no-preference) { .sheet[open] { animation: sheetUp .22s ease-out; } }
 @keyframes sheetUp { from { transform: translateY(40px); opacity: 0; } }
 

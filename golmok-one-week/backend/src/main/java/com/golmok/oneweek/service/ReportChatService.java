@@ -34,9 +34,6 @@ public class ReportChatService {
             "죄송합니다. 지금은 답변을 가져오지 못했습니다. 잠시 후 다시 시도해주세요.";
     private static final String NO_KEY_MESSAGE =
             "죄송합니다. 지금은 챗봇을 사용할 수 없습니다.";
-    private static final String DATA_ONLY_MESSAGE =
-            "챗봇은 리포트 수치를 임의로 해석하지 않도록 현재 준비 중입니다. 화면의 처방 카드와 근거보기를 확인해주세요.";
-
     private static final String SYSTEM_PROMPT = """
             당신은 대구 골목상권 음식점 사장님의 질문에 쉬운 말로 답하는 도우미입니다.
             아래 [리포트 데이터]는 이번 주 리포트에 실제로 있는 사실입니다. 이 안에 있는 사실과 숫자만 사용해 답하세요.
@@ -49,6 +46,10 @@ public class ReportChatService {
             - [리포트 데이터]에 없는 사실을 지어내는 것. 모르면 "이 정보는 리포트에 없습니다"라고 답하세요.
             - JSON 키 이름이나 id를 그대로 문장에 쓰는 것. (예: '급등확인필요' 항목은 false 처럼 쓰지 말고
               "현재 급등 우려는 없습니다"처럼 자연스러운 문장으로 바꿔서 답하세요.)
+            - 매출, 이익, 손님 수, 주문 수, 판매량, 효과처럼 미래 또는 성과의 구체적인 수치·퍼센트를
+              묻는 질문에는 수치를 제시하거나 사용자가 말한 수치를 되풀이하지 마세요. "정확한 수치 예측은
+              어렵습니다"라고 답한 뒤, 리포트에서 확인할 수 있는 날씨·행사·식자재·상권 근거를 안내하세요.
+              단, 리포트에 명시된 과거·현재 사실(날씨, 행사 날짜, 식자재 가격, 거리)은 질문 의도에 맞게 설명할 수 있습니다.
 
             쉽고 친절한 말투로 2~4문장 이내로 답하세요.
             """;
@@ -57,9 +58,32 @@ public class ReportChatService {
     private final ObjectMapper mapper = new ObjectMapper();
 
     public String ask(ReportResponse report, String question, List<ChatMessage> history) {
-        // 자유 생성형 답변은 숫자 출처는 확인할 수 있어도 숫자의 의미를 잘못 연결할 수 있다.
-        // 검증 가능한 응답 체계를 갖추기 전에는 실제 데이터처럼 보이는 답변을 제공하지 않는다.
-        return DATA_ONLY_MESSAGE;
+        if (!client.hasKey()) {
+            log.info("LLM API 키가 없어 챗봇 응답을 건너뜁니다.");
+            return NO_KEY_MESSAGE;
+        }
+        String factsJson;
+        try {
+            factsJson = buildFacts(report);
+        } catch (Exception e) {
+            log.warn("챗봇용 리포트 데이터 구성 실패: {}", e.toString());
+            return CANNOT_ANSWER;
+        }
+
+        List<ChatMessage> safeHistory = sanitize(history);
+        // 사용자 질문에 든 임의 수치를 허용 목록에 넣지 않는다. "매출 20%" 같은 수치를 AI가
+        // 그대로 인용해 확정적인 답처럼 보이는 일을 막고, 리포트와 과거 AI 답변의 검증된 수치만 허용한다.
+        String allowedText = factsJson + " " + safeHistory.stream()
+                .filter(message -> "assistant".equals(message.role()))
+                .map(ChatMessage::content).reduce("", (a, b) -> a + " " + b);
+
+        String reply = tryAsk(factsJson, question, safeHistory, null, allowedText);
+        if (reply == null) {
+            reply = tryAsk(factsJson, question, safeHistory,
+                    "이전 답변에 리포트에 없는 숫자가 있었습니다. 숫자를 빼고, 리포트에 있는 사실만 사용해 다시 답해주세요.",
+                    allowedText);
+        }
+        return reply != null ? reply : CANNOT_ANSWER;
     }
 
     private String tryAsk(String factsJson, String question, List<ChatMessage> history,

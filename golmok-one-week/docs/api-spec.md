@@ -16,6 +16,9 @@
 - `ingredientPrices[]` 추가: `history: [{date,price}]`, `comparisonDate`, `vsPreviousWeekRatio`,
   `predictionDate`, `predictionStale`, `priceBasis`. 비교 비율 0.1은 +10%이며 계산은 서버에서 한다.
   예측이 오래되면 `probSpike=null`, `alert=false`; 이는 가격 안정 판정이 아닌 예측 갱신 대기다.
+- 날씨·행사·식자재·상권에는 선택적 `dataStatus`와 `dataAsOf`가 추가된다. `LIVE`는 리포트 생성 시
+  외부 API를 조회한 값, `SNAPSHOT`은 검증 후 저장한 수집값, `DEMO`는 예시값이다. 과거 리포트는 두 값이
+  없을 수 있으며 화면은 이를 실시간 값으로 간주하지 않는다.
 - 출처는 기존 14건에서 15건으로 늘었다. 출처 15는 상가정보이며 관리번호를 응답하지 않는다.
 - 프론트는 4xx 오류를 데모로 대체하지 않는다. 기존 데모 폴백은 연결/서버 실패 시 유지한다.
 

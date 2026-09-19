@@ -8,6 +8,8 @@ public final class Enums {
     private Enums() {}
 
     public enum SourceType { PAPER, PUBLIC_DATA, API, FESTIVAL, INDUSTRY, DEMO }
+    /** 값이 만들어진 경로. LIVE=요청 시 외부 API 조회, SNAPSHOT=검증 후 저장한 수집본, DEMO=예시값. */
+    public enum DataStatus { LIVE, SNAPSHOT, DEMO }
     public enum ConditionType { RAIN, HOT, COLD, WEEKEND, HOLIDAY, FESTIVAL, COMPETITION, PRICE_SPIKE }
     public enum RecommendationType { INVENTORY, STAFFING, MENU, DELIVERY, MARKETING, NOTICE }
     public enum Confidence { HIGH, MEDIUM, LOW }

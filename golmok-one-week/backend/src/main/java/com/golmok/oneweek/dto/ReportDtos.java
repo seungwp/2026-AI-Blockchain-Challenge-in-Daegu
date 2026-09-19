@@ -19,17 +19,38 @@ public final class ReportDtos {
     /** 하루치 날씨 (예보). */
     public record WeatherDay(LocalDate date, String dayOfWeek, String condition, Double tempMax, Double tempMin,
                              Integer precipitationProbability, Double precipitationMm, Integer humidity,
-                             boolean isDemoData, Long sourceId) {}
+                             boolean isDemoData, Long sourceId, DataStatus dataStatus, String dataAsOf) {
+        public WeatherDay(LocalDate date, String dayOfWeek, String condition, Double tempMax, Double tempMin,
+                          Integer precipitationProbability, Double precipitationMm, Integer humidity,
+                          boolean isDemoData, Long sourceId) {
+            this(date, dayOfWeek, condition, tempMax, tempMin, precipitationProbability, precipitationMm, humidity,
+                    isDemoData, sourceId, null, null);
+        }
+    }
 
     /** 주변 상권 요약. */
     public record CommercialArea(String district, String dong, Integer totalStores, Integer sameCategoryStores,
-                                 String competitionLevel, String note, boolean isDemoData, List<Long> sourceIds) {}
+                                 String competitionLevel, String note, boolean isDemoData, List<Long> sourceIds,
+                                 DataStatus dataStatus, String dataAsOf) {
+        public CommercialArea(String district, String dong, Integer totalStores, Integer sameCategoryStores,
+                              String competitionLevel, String note, boolean isDemoData, List<Long> sourceIds) {
+            this(district, dong, totalStores, sameCategoryStores, competitionLevel, note, isDemoData, sourceIds, null, null);
+        }
+    }
 
     /** 행사 정보 + 가게와의 거리·영향 구분. */
     public record FestivalInfo(Long id, String name, LocalDate startDate, LocalDate endDate, String locationName,
                                String address, Double latitude, Double longitude, Integer distanceMeters,
                                String impactLevel, String impactNote, boolean isDemoData, Long sourceId,
-                               String playTime, String fee, String contact, LocalDate fetchedAt) {
+                               String playTime, String fee, String contact, LocalDate fetchedAt,
+                               DataStatus dataStatus, String dataAsOf) {
+        public FestivalInfo(Long id, String name, LocalDate startDate, LocalDate endDate, String locationName,
+                            String address, Double latitude, Double longitude, Integer distanceMeters,
+                            String impactLevel, String impactNote, boolean isDemoData, Long sourceId,
+                            String playTime, String fee, String contact, LocalDate fetchedAt) {
+            this(id, name, startDate, endDate, locationName, address, latitude, longitude, distanceMeters,
+                    impactLevel, impactNote, isDemoData, sourceId, playTime, fee, contact, fetchedAt, null, null);
+        }
         public FestivalInfo(Long id, String name, LocalDate startDate, LocalDate endDate, String locationName,
                             String address, Double latitude, Double longitude, Integer distanceMeters,
                             String impactLevel, String impactNote, boolean isDemoData, Long sourceId) {
@@ -53,12 +74,21 @@ public final class ReportDtos {
                                       Double probSpike, boolean alert, Double vsNormalRatio,
                                       boolean isDemoData, Long sourceId, List<PricePoint> history,
                                       LocalDate comparisonDate, Double vsPreviousWeekRatio,
-                                      LocalDate predictionDate, boolean predictionStale, String priceBasis) {
+                                      LocalDate predictionDate, boolean predictionStale, String priceBasis,
+                                      DataStatus dataStatus, String dataAsOf) {
+        public IngredientPriceInfo(String item, String unit, Double price, LocalDate priceDate,
+                                   Double probSpike, boolean alert, Double vsNormalRatio,
+                                   boolean isDemoData, Long sourceId, List<PricePoint> history,
+                                   LocalDate comparisonDate, Double vsPreviousWeekRatio,
+                                   LocalDate predictionDate, boolean predictionStale, String priceBasis) {
+            this(item, unit, price, priceDate, probSpike, alert, vsNormalRatio, isDemoData, sourceId, history,
+                    comparisonDate, vsPreviousWeekRatio, predictionDate, predictionStale, priceBasis, null, null);
+        }
         public IngredientPriceInfo(String item, String unit, Double price, LocalDate priceDate,
                                    Double probSpike, boolean alert, Double vsNormalRatio,
                                    boolean isDemoData, Long sourceId) {
             this(item, unit, price, priceDate, probSpike, alert, vsNormalRatio, isDemoData, sourceId,
-                    List.of(), null, null, null, true, null);
+                    List.of(), null, null, null, true, null, null, null);
         }
     }
 

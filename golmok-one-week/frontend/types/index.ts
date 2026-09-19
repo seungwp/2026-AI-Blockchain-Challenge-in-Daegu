@@ -15,6 +15,7 @@ export type RecommendationType =
 export type ConditionType =
   | "RAIN" | "HOT" | "COLD" | "WEEKEND" | "HOLIDAY" | "FESTIVAL" | "COMPETITION" | "PRICE_SPIKE";
 export type SourceType = "PAPER" | "PUBLIC_DATA" | "API" | "FESTIVAL" | "INDUSTRY" | "DEMO";
+export type DataStatus = "LIVE" | "SNAPSHOT" | "DEMO";
 
 export interface Store {
   id: number;
@@ -47,6 +48,8 @@ export interface WeatherDay {
   humidity: number | null;
   isDemoData: boolean;
   sourceId: number | null;
+  dataStatus?: DataStatus | null;
+  dataAsOf?: string | null;
 }
 
 export interface CommercialArea {
@@ -58,6 +61,8 @@ export interface CommercialArea {
   note: string | null;
   isDemoData: boolean;
   sourceIds: number[];
+  dataStatus?: DataStatus | null;
+  dataAsOf?: string | null;
 }
 
 export interface FestivalEvent {
@@ -78,6 +83,8 @@ export interface FestivalEvent {
   fee?: string | null;
   contact?: string | null;
   fetchedAt?: string | null;
+  dataStatus?: DataStatus | null;
+  dataAsOf?: string | null;
 }
 
 export interface IngredientPrice {
@@ -96,6 +103,8 @@ export interface IngredientPrice {
   predictionDate?: string | null;
   predictionStale?: boolean;
   priceBasis?: string | null;
+  dataStatus?: DataStatus | null;
+  dataAsOf?: string | null;
 }
 
 export interface Recommendation {

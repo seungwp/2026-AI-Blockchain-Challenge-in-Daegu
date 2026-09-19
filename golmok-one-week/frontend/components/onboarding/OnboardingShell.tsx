@@ -48,7 +48,7 @@ export default function OnboardingShell({ step, back, eyebrow, title, descriptio
     };
   }, []);
 
-  return <div className={styles.shell} ref={shell}>
+  return <div className={`${styles.shell} ${step === 1 ? styles.welcomeShell : ""}`} ref={shell}>
     {back && <div className={styles.navigation}>
       <Link href={back} className={styles.back} aria-label="이전 단계로"><Icon name="back" /></Link>
       <div className={styles.progress} role="progressbar" aria-label="온보딩 진행" aria-valuemin={2} aria-valuemax={4} aria-valuenow={step}>

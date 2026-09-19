@@ -2,6 +2,7 @@ package com.golmok.oneweek.service;
 
 import com.golmok.oneweek.dto.ReportDtos.CommercialArea;
 import com.golmok.oneweek.entity.SourceCatalog;
+import com.golmok.oneweek.entity.Enums.DataStatus;
 import com.golmok.oneweek.entity.Store;
 import com.golmok.oneweek.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,7 @@ public class CommercialAreaService {
                 .formatted(store.getDetailCategoryName(), total, classified, store.getCategoryAsOf());
         return new CommercialArea(store.getDistrict(), dongOf(store), total, same, comparisonStatus, note, false,
                 detailed ? List.of(SourceCatalog.STORE_LICENSE_ID, SourceCatalog.SBIZ_STORE_ID)
-                        : List.of(SourceCatalog.STORE_LICENSE_ID));
+                        : List.of(SourceCatalog.STORE_LICENSE_ID), DataStatus.SNAPSHOT, store.getCategoryAsOf());
     }
 
     /** 업종 문자열의 마지막 분류가 같으면 유사 업종으로 본다. */

@@ -40,6 +40,19 @@
 .welcomeDescription { max-width: 327px; margin-top: 8px !important; color: var(--muted); font-size: 15px; font-weight: 500; line-height: 21px; word-break: keep-all; }
 .portrait { position: relative; width: min(304px, calc(100vw - 71px)); aspect-ratio: 1; margin: 78px auto 0; border-radius: 50%; overflow: hidden; background: rgb(179 255 207 / 41%); }
 .portrait img { position: absolute; width: 96.5%; height: 96.5%; max-width: none; left: 1.6%; top: 7.2%; object-fit: contain; }
+@media (prefers-reduced-motion: no-preference) {
+  .welcome > h1, .welcome > .welcomeDescription, .welcome > .portrait, .welcomeShell .actions {
+    opacity: 0;
+    animation: welcomeIn .5s cubic-bezier(.22, 1, .36, 1) forwards;
+  }
+  .welcome > .welcomeDescription { animation-delay: .2s; }
+  .welcome > .portrait { animation-delay: .4s; }
+  .welcomeShell .actions { animation-delay: .6s; }
+}
+@keyframes welcomeIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .search { display: flex; gap: 2px; align-items: center; background: white; border-radius: 14px; padding: 0 8px; }
 .shell .search input { width: 100%; min-width: 0; background: transparent; border: 0; padding: 12px 4px; font-size: 16px; }
 .shell .iconButton { display: grid; place-items: center; flex: none; width: 44px; height: 44px; min-height: 44px; padding: 10px; border: 0; border-radius: 50%; background: transparent; }
