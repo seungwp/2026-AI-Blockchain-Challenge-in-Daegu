@@ -39,7 +39,7 @@ export default function ConnectPage() {
     setError("");
     try {
       const report = await createReport(storeId, draft.mainMenu.trim(), draft.menuCategory);
-      if (alive.current) router.push(`/report/${report.reportId}/area`);
+      if (alive.current) router.push(`/report/${report.reportId}`);
     } catch (cause) {
       if (alive.current) {
         setError(cause instanceof Error ? cause.message : "분석을 완료하지 못했어요. 다시 시도해주세요.");
@@ -48,6 +48,16 @@ export default function ConnectPage() {
       locked.current = false;
     }
   }
+
+  // 사이트맵 5. 분석 로딩 — 오류가 나면 다시 연결 선택 화면으로 돌아간다.
+  if (pending) return <OnboardingShell step={4} title={<>이번 주 처방을<br />준비하고 있어요</>}
+    description={`${draft.store?.name ?? "가게"} · ${draft.mainMenu}`}>
+    <ol className={styles.loadingSteps} role="status" aria-label="분석 진행">
+      <li>이번 주 날씨 예보 확인</li>
+      <li>가까운 축제·행사 확인</li>
+      <li>주변 상권·식자재 가격 확인</li>
+    </ol>
+  </OnboardingShell>;
 
   return <OnboardingShell step={4} back={`/store/${storeId}/confirm`}
     title={<>가게 데이터<br />연결하시겠어요?</>}
@@ -70,7 +80,6 @@ export default function ConnectPage() {
           <button className={styles.cardAction} disabled={pending} onClick={analyze}>공공데이터로 분석하기</button>
         </div>}
       </section>
-      {pending && <p className={styles.status} role="status">이번 주 날씨·행사·상권 정보를 모으고 있어요. 잠시만 기다려주세요.</p>}
       {error && <p className={styles.error} role="alert">{error}</p>}
       <p className={styles.disclaimer}>운영 참고용 안내이며, 실제 매출을 예측하거나 보장하지 않습니다.</p>
     </>}

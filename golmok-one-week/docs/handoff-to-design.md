@@ -127,15 +127,10 @@ cd golmok-one-week/frontend && npm run dev          # 3000
 | `StoreSearchForm` | `components/search/StoreSearchForm.tsx` | 검색 입력 + 유효성 검사(React Hook Form + Zod) |
 | `StoreResultList` | `components/search/StoreResultList.tsx` | 검색 결과 목록과 선택 이동 |
 | `MenuCategorySelector` | `components/store/MenuCategorySelector.tsx` | 메뉴 카테고리 select box |
-| `ReportSummary` | `components/report/ReportSummary.tsx` | 가게·메뉴·기간·요약·Top 3 |
-| `RecommendationList` | `components/report/RecommendationList.tsx` | 권고 카드 목록(근거·출처 ID 포함) |
-| `WeatherList` | `components/report/WeatherList.tsx` | 7일 날씨 표 |
-| `CommercialAreaSummary` | `components/report/CommercialAreaSummary.tsx` | 생활권 요약 — `/area` 페이지와 리포트 페이지 양쪽에서 재사용 |
-| `FestivalList` | `components/report/FestivalList.tsx` | 행사 목록(거리·영향 구분) |
-| **`IngredientPriceList`** | `components/report/IngredientPriceList.tsx` | **(신규)** 식자재 참고 가격 목록 |
-| `DailyGuideList` | `components/report/DailyGuideList.tsx` | 요일별 가이드 |
-| `SourceList` | `components/report/SourceList.tsx` | 출처 목록 |
-| `Disclaimer` | `components/common/Disclaimer.tsx` | 면책 문구 |
+| `MainDashboard` | `components/report/MainDashboard.tsx` | 홈 탭(Figma 1차 홈화면): AI 요약 + 처방 카드 + 면책 문구 |
+| `ActionCard` / `ActionList` / `IngredientCard` | `components/report/ActionCard.tsx` | 날씨·행사·식자재·일반 처방 카드, 근거보기 바텀 시트(출처 포함) |
+| `TabBar` | `components/layout/TabBar.tsx` | 하단 탭 4개(홈·처방 이력·챗봇·내 페이지) |
+| `CommercialAreaSummary` | `components/report/CommercialAreaSummary.tsx` | 생활권 요약 — 내 페이지 › `/area` |
 | `DemoBadge` | `components/common/DemoBadge.tsx` | 데모 데이터 표기 |
 | `StateMessage` | `components/common/StateMessage.tsx` | 상태별 메시지 |
 
@@ -185,7 +180,7 @@ cd golmok-one-week/frontend && npm run dev          # 3000
 
 1. **API 인터페이스와 타입 이름을 바꾸지 않습니다.** (`frontend/types/index.ts`, `frontend/lib/api.ts`)
 2. **추천의 `sourceIds` 연결을 제거하지 않습니다.** 출처 추적이 이 서비스의 신뢰 근거입니다.
-3. **면책 문구를 제거하지 않습니다.** (`Disclaimer` 컴포넌트)
+3. **면책 문구를 제거하지 않습니다.** (홈 하단 `report.disclaimer`, 근거 바텀 시트, 내 페이지 하단)
 4. **`isDemoData`가 true면 "데모 데이터" 표기를 유지합니다.**
 5. **실제 매출 예측처럼 보이는 표현을 쓰지 않습니다.** ("매출 30% 상승", "매출 보장" 등 금지. "준비 권장", "점검 권장", "수요 변화 가능성" 사용)
 6. **식자재 가격에는 반드시 단위를 함께 표시합니다.** 단위 없는 가격 숫자는 오해를 부릅니다.
