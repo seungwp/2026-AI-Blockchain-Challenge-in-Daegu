@@ -23,7 +23,7 @@ const menuSuggestions: Record<MenuCategory, readonly string[]> = {
   "중식": ["짜장면", "짬뽕", "탕수육", "마파두부", "볶음밥"],
   "양식": ["파스타", "피자", "스테이크", "리조또", "샐러드"],
   "보양식": ["삼계탕", "추어탕", "장어구이", "전복죽", "오리백숙"],
-  "기타": ["족발", "보쌈", "아구찜", "샌드위치", "팥빙수"],
+  "기타": [],
 };
 
 type StoreMenuSuggestion = { category: MenuCategory; menus: readonly string[] };
@@ -31,6 +31,7 @@ type StoreMenuSuggestion = { category: MenuCategory; menus: readonly string[] };
 /** 업태가 넓게 등록된 가게도 있어 상호명에 드러난 메뉴를 먼저 반영한다. */
 const storeNameSuggestions: Array<StoreMenuSuggestion & { pattern: RegExp }> = [
   { pattern: /보쌈|족발/, category: "기타", menus: ["보쌈", "족발", "막국수", "쟁반국수"] },
+  { pattern: /횟집|횟|활어|수산|회센터|사시미/, category: "일식", menus: ["광어회", "우럭회", "모둠회", "회덮밥", "매운탕"] },
   { pattern: /치킨|통닭|닭강정/, category: "치킨", menus: menuSuggestions["치킨"] },
   { pattern: /국밥|순대국/, category: "국물요리", menus: ["돼지국밥", "순대국", "내장국밥", "수육", "수육국밥"] },
   { pattern: /냉면|밀면/, category: "냉면류", menus: ["물냉면", "비빔냉면", "밀면", "만두"] },
@@ -144,12 +145,12 @@ export default function StoreConfirmPage() {
         </div>
         {form.formState.errors.mainMenu && <p className={styles.error} role="alert">{form.formState.errors.mainMenu.message}</p>}
       </form>
-      <div className={styles.chips} aria-label="대표 메뉴 예시">
+      {examples.length > 0 && <div className={styles.chips} aria-label="대표 메뉴 예시">
         {examples.map((example) => <button key={example} className={styles.chip}
           aria-pressed={menu === example} onClick={() => { changeMenu(example, suggestedCategory); form.clearErrors(); }}>
           {example}<Icon name="chip" />
         </button>)}
-      </div>
+      </div>}
       {menu && <div className={styles.classification}>
         <p role="status">{resolved ? `등록된 대표 메뉴: ${menu}` : error ? "카테고리를 직접 선택할 수 있어요." : "메뉴 카테고리를 확인하고 있어요…"}</p>
         {draft.classification && <p>
