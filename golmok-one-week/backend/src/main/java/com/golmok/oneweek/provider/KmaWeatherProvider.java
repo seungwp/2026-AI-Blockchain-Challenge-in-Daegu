@@ -138,6 +138,15 @@ public class KmaWeatherProvider implements WeatherProvider {
         return now.minusDays(1).withHour(23).withMinute(0);
     }
 
+    /**
+     * 중기예보를 건너뛸 수 있는 단기예보는 하루 최고·최저기온이 모두 있을 때뿐이다.
+     * 발표 시점 경계의 5일차에는 TMP 몇 건만 먼저 도착할 수 있어, 한쪽 값만으로
+     * 단기예보가 완성됐다고 보면 최고·최저기온이 같은 값으로 표시될 수 있다.
+     */
+    static boolean hasCompleteShortTermTemperature(Double max, Double min) {
+        return max != null && min != null;
+    }
+
     // ── 중기예보 (+5일 이후) ────────────────────────────────────────────────
 
     private void readMidTerm(Map<LocalDate, DayBuilder> byDate) throws Exception {
@@ -218,7 +227,7 @@ public class KmaWeatherProvider implements WeatherProvider {
         final Map<String, Integer> skyCounts = new LinkedHashMap<>();
 
         boolean hasShortTerm() {
-            return !temps.isEmpty() || tMax != null || tMin != null;
+            return hasCompleteShortTermTemperature(tMax, tMin);
         }
 
         WeatherDay toWeatherDay(LocalDate date, WeatherDay demo) {
