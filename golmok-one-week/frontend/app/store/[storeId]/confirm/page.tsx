@@ -13,7 +13,32 @@ import { MENU_CATEGORIES } from "@/types";
 import type { MenuCategory } from "@/types";
 
 const schema = z.object({ mainMenu: z.string().trim().min(1, "대표 메뉴를 입력해주세요.") });
-const examples = ["떡볶이", "튀김", "순대"];
+const menuSuggestions: Record<MenuCategory, readonly string[]> = {
+  "국물요리": ["돼지국밥", "김치찌개", "순두부찌개", "설렁탕", "된장찌개"],
+  "구이": ["삼겹살", "갈비", "소불고기", "닭갈비", "오리구이"],
+  "냉면류": ["물냉면", "비빔냉면", "회냉면", "밀면", "갈비냉면"],
+  "분식": ["떡볶이", "김밥", "라면", "순대", "튀김"],
+  "치킨": ["후라이드치킨", "양념치킨", "간장치킨", "닭강정", "치킨텐더"],
+  "일식": ["초밥", "사시미", "돈카츠", "우동", "라멘"],
+  "중식": ["짜장면", "짬뽕", "탕수육", "마파두부", "볶음밥"],
+  "양식": ["파스타", "피자", "스테이크", "리조또", "샐러드"],
+  "보양식": ["삼계탕", "추어탕", "장어구이", "전복죽", "오리백숙"],
+  "기타": ["족발", "보쌈", "아구찜", "샌드위치", "팥빙수"],
+};
+
+function categoryFromStore(storeCategory: string | null): MenuCategory {
+  const value = storeCategory?.replaceAll(" ", "") ?? "";
+  if (/치킨|통닭|호프/.test(value)) return "치킨";
+  if (/분식/.test(value)) return "분식";
+  if (/중식/.test(value)) return "중식";
+  if (/일식/.test(value)) return "일식";
+  if (/양식|경양식|이탈리안/.test(value)) return "양식";
+  if (/냉면|밀면/.test(value)) return "냉면류";
+  if (/구이|갈비|고기/.test(value)) return "구이";
+  if (/보양|삼계|추어/.test(value)) return "보양식";
+  if (/국밥|탕|찌개|한식/.test(value)) return "국물요리";
+  return "기타";
+}
 
 export default function StoreConfirmPage() {
   const { storeId: param } = useParams<{ storeId: string }>();
@@ -29,6 +54,8 @@ export default function StoreConfirmPage() {
   const store = draft.store?.id === storeId ? draft.store : null;
   const menu = draft.mainMenu.trim();
   const resolved = !!menu && draft.classifiedMenu === menu;
+  const suggestedCategory = menu ? draft.menuCategory : categoryFromStore(store?.category ?? null);
+  const examples = menuSuggestions[suggestedCategory];
 
   useEffect(() => {
     let active = true;
@@ -57,10 +84,10 @@ export default function StoreConfirmPage() {
     return () => { active = false; clearTimeout(timer); };
   }, [menu, store, retry]);
 
-  function changeMenu(value: string) {
+  function changeMenu(value: string, category: MenuCategory = "기타") {
     manualCategory.current = false;
     setError("");
-    saveDraft({ mainMenu: value, classifiedMenu: "", classification: null, menuCategory: "기타" });
+    saveDraft({ mainMenu: value, classifiedMenu: "", classification: null, menuCategory: category });
   }
   function confirmMenu({ mainMenu }: z.infer<typeof schema>) {
     saveDraft({ mainMenu });
@@ -86,13 +113,12 @@ export default function StoreConfirmPage() {
               void form.register("mainMenu").onChange(event);
               changeMenu(event.target.value);
             }} />
-          <button className={`${styles.iconButton} ${styles.enter}`} type="submit" aria-label="대표 메뉴 등록"><Icon name="enter" /></button>
         </div>
         {form.formState.errors.mainMenu && <p className={styles.error} role="alert">{form.formState.errors.mainMenu.message}</p>}
       </form>
       <div className={styles.chips} aria-label="대표 메뉴 예시">
         {examples.map((example) => <button key={example} className={styles.chip}
-          aria-pressed={menu === example} onClick={() => { changeMenu(example); form.clearErrors(); }}>
+          aria-pressed={menu === example} onClick={() => { changeMenu(example, suggestedCategory); form.clearErrors(); }}>
           {example}<Icon name="chip" />
         </button>)}
       </div>

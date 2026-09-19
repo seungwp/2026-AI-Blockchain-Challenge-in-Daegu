@@ -59,7 +59,6 @@
 .manual .secondary { margin-top: 10px; }
 .menuEntry { display: flex; align-items: center; gap: 8px; }
 .shell .menuInput { flex: 1; min-width: 0; padding: 8px 2px; font-size: 16px; border: 0; border-bottom: 1px solid #d8d2c4; background: transparent; }
-.shell .enter { background: var(--green); }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .shell .chip { display: flex; gap: 6px; align-items: center; padding: 8px 12px; min-height: 44px; border: 1px solid transparent; border-radius: 99px; background: white; font-size: 13px; font-weight: 700; }
 .shell .chip[aria-pressed="true"] { border-color: var(--green); background: #dcfce7; }
