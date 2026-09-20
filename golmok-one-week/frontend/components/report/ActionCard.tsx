@@ -88,7 +88,14 @@ function PriceRows({ prices }: { prices: IngredientPrice[] }) {
       const ratio = p.vsPreviousWeekRatio ?? null;
       const change = ratio !== null ? "전주 대비 " + pct(ratio) : p.vsNormalRatio !== null ? "평년 대비 " + pct(p.vsNormalRatio) : "";
       return <div className={styles.priceRow} key={p.item}>
-        <div><span>{p.item} {p.unit ?? ""}</span>{change && <small className={(ratio ?? p.vsNormalRatio ?? 0) >= 0.1 ? styles.up : undefined}>{change}</small>}</div>
+        <div>
+          <span>{p.item} {p.unit ?? ""}</span>
+          {change && <small className={(ratio ?? p.vsNormalRatio ?? 0) >= 0.1 ? styles.up : undefined}>{change}</small>}
+          {/* 급등 확률: 예측 모델 결과(다음 7일 10% 이상 상승 가능성). 예측이 오래되면 백엔드가 null로 내려준다. */}
+          {typeof p.probSpike === "number" && <small className={p.alert ? styles.spikeAlert : styles.spike}>
+            다음 7일 급등 확률 {Math.round(p.probSpike * 100)}%{p.predictionDate ? ` · ${shortDay(p.predictionDate)} 예측` : ""}
+          </small>}
+        </div>
         <strong>{p.price !== null ? p.price.toLocaleString("ko-KR") + "원" : "-"}</strong>
         <PriceTrend item={p} />
       </div>;
@@ -151,6 +158,9 @@ export function IngredientCard({ prices, sources }: { prices: IngredientPrice[];
       onClick={(e) => { if (e.target === e.currentTarget) e.currentTarget.close(); }}>
       <div className={styles.sheetHandle} aria-hidden="true" />
       <h2>식자재 가격 데이터 확인</h2>
+      <p className={styles.sheetText}>급등 확률은 KAMIS 대구 소매가와 대구 날씨 기록으로 학습한 예측 모델의 결과로,
+        <strong> 다음 7일 평균가가 지난 7일보다 10% 이상 오를 가능성</strong>을 뜻합니다.
+        2026년 실제 가격으로 검증했으며(같은 기간 단순 규칙보다 놓치는 급등이 적음), 예측일로부터 7일이 지나면 표시하지 않습니다.</p>
       <DataStatusNote items={prices.map((price) => ({
         label: `${price.item} ${price.unit ?? ""}`.trim(), status: price.dataStatus, asOf: price.dataAsOf ?? price.priceDate,
         source: sources.find((source) => source.id === price.sourceId),
