@@ -108,6 +108,8 @@
 .preparing { color: var(--muted); }
 .posNotice { padding-top: 16px; }
 .shell .disclaimer { color: var(--muted); font-size: 12px; margin-top: 24px; }
+.brand { display: flex; align-items: center; gap: 8px; margin-bottom: 14px !important; color: var(--ink); font-size: 17px; font-weight: 900; letter-spacing: -.3px; }
+.brand img { border-radius: 8px; }
 .loadingSteps { display: flex; flex-direction: column; gap: 10px; margin: 30px 0 0; padding: 0; list-style: none; }
 .loadingSteps li { display: flex; align-items: center; gap: 12px; padding: 16px; border-radius: 16px; background: white; font-size: 14px; font-weight: 500; }
 .loadingSteps li::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--green); opacity: .25; }
