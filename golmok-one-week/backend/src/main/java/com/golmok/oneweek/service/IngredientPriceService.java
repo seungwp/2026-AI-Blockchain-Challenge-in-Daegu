@@ -26,6 +26,9 @@ public class IngredientPriceService {
     private final KamisPriceProvider kamisPriceProvider;
     private final PublicDataSnapshots snapshots;
 
+    /** 급등확률 예측이 유효한 기간(일). 모델의 예측 구간이 7일이라 그 기간까지만 노출한다. */
+    private static final int PREDICTION_VALID_DAYS = 7;
+
     /**
      * 메뉴 카테고리에 대응하는 KAMIS 품목의 가격·급등확률을 조회한다.
      * 가격·기준일은 요청 시점에 KAMIS 를 실시간으로 조회해 채우고(실패 시 최근 시드 스냅샷으로 대체),
@@ -49,7 +52,8 @@ public class IngredientPriceService {
                             : p.getVsNormalRatio();
                     List<PricePoint> history = l == null ? List.of() : l.history();
                     PricePoint previous = comparison(history, date);
-                    boolean stale = p.getPriceDate() == null || p.getPriceDate().isBefore(today.minusDays(1));
+                    // 모델은 "다음 7일 급등 확률"을 예측하므로 예측 기준일로부터 7일 동안 유효하게 본다.
+                    boolean stale = p.getPriceDate() == null || p.getPriceDate().isBefore(today.minusDays(PREDICTION_VALID_DAYS));
                     DataStatus status = l != null ? (l.live() ? DataStatus.LIVE : DataStatus.SNAPSHOT)
                             : p.isDemoData() ? DataStatus.DEMO : DataStatus.SNAPSHOT;
                     return new IngredientPriceInfo(p.getItem(), p.getUnit(), price, date, stale ? null : p.getProbSpike(),

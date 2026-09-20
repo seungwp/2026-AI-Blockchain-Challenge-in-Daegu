@@ -21,7 +21,8 @@ import matplotlib.pyplot as plt
 kamis_csv, weather_csv, data, figs = sys.argv[1], sys.argv[2], Path(sys.argv[3]), Path(sys.argv[4])
 figs.mkdir(parents=True, exist_ok=True)
 H, TH, MOMENTUM = 7, 0.10, 0.05
-LAST = pd.Timestamp("2026-09-13")
+# 마지막 예측일은 수집된 가격 데이터의 마지막 날. (날씨가 더 짧으면 최근 날씨 특성은 결측으로 들어간다)
+LAST = pd.Timestamp(pd.read_csv(kamis_csv, usecols=["date"])["date"].max())
 VAL_START, VAL_END = pd.Timestamp("2025-07-01"), pd.Timestamp("2025-12-23")
 TEST_START, TEST_END = pd.Timestamp("2026-01-01"), LAST - pd.Timedelta(days=H)
 PURGE = pd.Timedelta(days=H + 1)  # 학습 라벨이 검증 기간 가격을 보지 않도록

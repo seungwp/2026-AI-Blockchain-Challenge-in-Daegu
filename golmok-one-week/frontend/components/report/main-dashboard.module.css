@@ -68,6 +68,8 @@
 .priceRow span { display: block; font-size: 14px; font-weight: 500; }
 .priceRow small { display: block; color: var(--ink-50); font-size: 12px; }
 .priceRow .up { color: #dc2626; }
+.priceRow .spike { color: var(--ink-40); }
+.priceRow .spikeAlert { color: #dc2626; font-weight: 700; }
 .priceRow strong { flex: none; color: var(--ink); font-size: 16px; }
 .priceTrend { grid-column: 1 / -1; min-width: 0; padding-top: 2px; }
 .priceTrendTop { display: flex; justify-content: space-between; gap: 12px; color: var(--ink-40); font-size: 11px; }

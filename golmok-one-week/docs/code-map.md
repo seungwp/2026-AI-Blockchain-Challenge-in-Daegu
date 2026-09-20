@@ -175,8 +175,11 @@ CreateRequest(storeId, mainMenu, menuCategory?)
 - 의존: StoreRepository, SourceCatalog. 테스트 `T:service/DongOfTest.java`
 
 ### 7-9. 식자재 가격·급등 신호
-- 핵심 파일: `B:provider/KamisPriceProvider.java`(실시간 가격), `B:service/MenuIngredientMap.java`(카테고리→품목), `B:repository/IngredientPriceRepository.java` + `R:data/ingredient_prices.csv`(급등확률 스냅샷), `B:service/IngredientPriceService.java`(실시간 가격+스냅샷 병합, 진입점 `forCategory`), `F:components/report/IngredientPriceList.tsx`
+- 핵심 파일: `B:provider/KamisPriceProvider.java`(실시간 가격), `B:service/MenuIngredientMap.java`(카테고리→품목), `B:repository/IngredientPriceRepository.java` + `R:data/ingredient_prices.csv`(급등확률 스냅샷), `B:service/IngredientPriceService.java`(실시간 가격+스냅샷 병합, 진입점 `forCategory`), `F:components/report/ActionCard.tsx`(식자재 카드·급등 확률 표시)
 - 의존: 급등 권고 규칙은 `menu_rules.csv` PRICE_SPIKE 행. 확률 모델 원본은 저장소 루트 `pipeline/price_spike_model.py`(이 폴더 밖)
+- **급등 확률 갱신 절차**: `py -X utf8 pipeline/fetch_kamis.py data/raw/kamis` → `py -X utf8 pipeline/price_spike_model.py data/raw/kamis/daegu_retail_daily.csv data/raw/weather/daegu_asos143_daily_*.csv data/processed docs/figures`
+  → `data/processed/price_spike_latest.csv` 값을 `R:data/ingredient_prices.csv`로 옮김(단위 열 유지) → 재배포.
+  예측은 기준일로부터 **7일** 동안만 노출된다(`IngredientPriceService.PREDICTION_VALID_DAYS`). 지나면 확률·경고가 숨겨지므로 주 1회 갱신이 필요하다.
 - 테스트: `T:service/MenuIngredientMapTest.java`, `T:provider/KamisPriceProviderLiveTest.java`
 
 ### 7-10. AI 요약 (aiSummary)

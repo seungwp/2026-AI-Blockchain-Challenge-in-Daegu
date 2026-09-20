@@ -13,3 +13,6 @@ graphify-out/cache/
 web/node_modules/
 web/dist/
 __pycache__/
+
+# 제안서 작업용 임시 렌더링
+docs/.proposal-work/rendered/

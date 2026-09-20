@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<title>골목 한 주 서비스 흐름</title>
+<title>장사메이트 서비스 흐름</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
@@ -94,7 +94,7 @@
 </head>
 <body>
   <header>
-    <h1>골목 한 주 — 서비스 흐름</h1>
+    <h1>장사메이트 — 서비스 흐름</h1>
     <div class="tagline">대구 골목상권 공공데이터 기반 AI 운영 컨설팅</div>
   </header>
   <div class="legend">
@@ -134,7 +134,7 @@
     <section class="col">
       <h2>STEP 3</h2>
       <h3>분석 · AI</h3>
-      <div class="box ai"><b>식자재 급등확률 모델</b><small>향후 7일 내 10% 이상 상승 확률 예측<br>(gradient boosting, 검증 완료)</small></div>
+      <div class="box ai"><b>식자재 급등확률 모델</b><small>향후 7일 내 10% 이상 상승 확률 예측<br>(LightGBM · 2026년 실가격 검증: 급등 33건 중 27건 사전 경고)</small></div>
       <div class="box"><b>근거 기반 규칙 엔진</b><small>날씨·명절·행사·상권·가격 조건 × 메뉴 카테고리<br>→ 운영 권고 37종, 논문·통계 근거 14건 연결<br>우선순위: 명절 &gt; 요일 &gt; 기온 &gt; 강수</small></div>
       <div class="box ai"><b>LLM 요약 (Groq · gpt-oss-120b)</b><small>규칙 결과를 사장님이 읽기 쉬운 문장으로</small></div>
       <div class="guard"><strong>안전장치</strong>LLM 문장 속 숫자는 입력 데이터에 있는 값만 허용<br>(없는 숫자가 나오면 자동 폐기)</div>
