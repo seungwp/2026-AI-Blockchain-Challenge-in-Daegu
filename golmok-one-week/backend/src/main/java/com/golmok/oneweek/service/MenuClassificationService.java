@@ -3,13 +3,30 @@ package com.golmok.oneweek.service;
 import com.golmok.oneweek.dto.MenuDtos.ClassifyResponse;
 import com.golmok.oneweek.entity.Enums.Confidence;
 import com.golmok.oneweek.entity.Enums.MenuCategory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.*;
 
-/** 메뉴명 키워드 기반 카테고리 분류. 매칭 실패 시 기타(LOW)로 두고 사용자가 직접 고르게 한다. */
+/**
+ * 메뉴명 키워드 기반 카테고리 분류. 키워드가 없으면 LLM에 카테고리 코드 하나만 고르게 하고,
+ * 그것도 실패하면 기타(LOW)로 두고 사용자가 직접 고르게 한다.
+ */
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class MenuClassificationService {
+
+    private static final Duration LLM_TIMEOUT = Duration.ofSeconds(4);
+    private static final String LLM_PROMPT = """
+            음식점 대표 메뉴명을 아래 코드 중 하나로 분류하세요. 설명 없이 코드 하나만 출력하세요.
+            SOUP(국물요리) GRILL(구이) COLD_NOODLE(냉면류) SNACK(분식) CHICKEN(치킨) JAPANESE(일식)
+            CHINESE(중식) WESTERN(양식) HEALTH(보양식) ETC(어디에도 맞지 않음)
+            """;
+
+    private final GroqChatClient llm;
 
     private static final Map<MenuCategory, List<String>> KEYWORDS = new LinkedHashMap<>();
     static {
@@ -38,7 +55,29 @@ public class MenuClassificationService {
         if (byStore != null) {
             return new ClassifyResponse(byStore.category(), Confidence.MEDIUM, List.of(byStore.keyword()), true);
         }
+        MenuCategory byLlm = classifyByLlm(menu);
+        if (byLlm != null) {
+            return new ClassifyResponse(byLlm, Confidence.MEDIUM, List.of(), true);
+        }
         return new ClassifyResponse(MenuCategory.ETC, Confidence.LOW, List.of(), true);
+    }
+
+    /** 응답이 코드 이름과 정확히 같을 때만 채택. 키 없음·오류·엉뚱한 응답·ETC는 모두 null. */
+    private MenuCategory classifyByLlm(String menu) {
+        if (menu.isBlank() || !llm.hasKey()) return null;
+        try {
+            String text = llm.complete(List.of(
+                    Map.of("role", "system", "content", LLM_PROMPT),
+                    Map.of("role", "user", "content", menu)), 0, 300, LLM_TIMEOUT);
+            if (text == null) return null;
+            MenuCategory c = MenuCategory.valueOf(text.strip());
+            return c == MenuCategory.ETC || c == MenuCategory.COMMON ? null : c;
+        } catch (IllegalArgumentException e) {
+            return null;
+        } catch (Exception e) {
+            log.warn("LLM 메뉴 분류 실패, 기타로 둡니다: {}", e.toString());
+            return null;
+        }
     }
 
     private record Match(MenuCategory category, String keyword) {}
