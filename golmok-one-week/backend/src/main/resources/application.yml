@@ -29,10 +29,15 @@ golmok:
     data-go-kr: ${DATA_GO_KR_KEY:}
     kamis-cert-key: ${KAMIS_CERT_KEY:}
     kamis-cert-id: ${KAMIS_CERT_ID:}
-    groq-api-key: ${GROQ_API_KEY:}
-    groq-model: ${GROQ_MODEL:openai/gpt-oss-120b}
+    # LLM은 OpenAI 호환 API면 무엇이든 된다. LLM_* 가 있으면 우선(예: CLOVA Studio HCX-005), 없으면 Groq.
+    groq-api-key: ${LLM_API_KEY:${GROQ_API_KEY:}}
+    groq-model: ${LLM_MODEL:${GROQ_MODEL:openai/gpt-oss-120b}}
     naver-map-client-id: ${NAVER_MAP_CLIENT_ID:}
     naver-map-client-secret: ${NAVER_MAP_CLIENT_SECRET:}
+  llm:
+    url: ${LLM_API_URL:https://api.groq.com/openai/v1/chat/completions}
+    # 추론 모델(gpt-oss)은 low로 제한해야 답이 잘리지 않는다. 비우면 보내지 않는다(HCX-005 등).
+    reasoning-effort: ${LLM_REASONING_EFFORT:low}
   # 외부 API 키는 환경변수로만 주입 (코드·yml에 직접 쓰지 않음)
   providers:
     weather: kma       # kma(기상청) | mock(예시 값)
@@ -51,5 +56,6 @@ golmok:
     data-go-kr: ${DATA_GO_KR_KEY:}
     kamis-cert-key: ${KAMIS_CERT_KEY:}
     kamis-cert-id: ${KAMIS_CERT_ID:}
-    groq-api-key: ${GROQ_API_KEY:}
-    groq-model: ${GROQ_MODEL:openai/gpt-oss-120b}
+    # LLM은 OpenAI 호환 API면 무엇이든 된다. LLM_* 가 있으면 우선(예: CLOVA Studio HCX-005), 없으면 Groq.
+    groq-api-key: ${LLM_API_KEY:${GROQ_API_KEY:}}
+    groq-model: ${LLM_MODEL:${GROQ_MODEL:openai/gpt-oss-120b}}
