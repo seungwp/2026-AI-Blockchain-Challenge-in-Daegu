@@ -59,8 +59,8 @@ export default function MainDashboard({ report, reportId }: { report: AnalysisRe
       <span className={styles.pill} title="준비 중">준비 중</span>
     </section>
     <div className={styles.sectionTitle}><h2>이번 주 처방</h2><span>{count}건</span></div>
-    <section className={styles.card} aria-label="AI 요약">
-      <p className={styles.aiLabel}>AI 요약</p>
+    <section className={styles.card} aria-label="이번 주 요약">
+      <p className={styles.aiLabel}>이번 주 요약</p>
       <p className={styles.aiText}>{summary || fallbackSummary}</p>
     </section>
     <section className={styles.refreshCard} aria-label="오늘 기준으로 다시 분석">

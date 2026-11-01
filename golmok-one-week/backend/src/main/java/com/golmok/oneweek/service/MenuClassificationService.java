@@ -22,8 +22,17 @@ public class MenuClassificationService {
     private static final Duration LLM_TIMEOUT = Duration.ofSeconds(4);
     private static final String LLM_PROMPT = """
             음식점 대표 메뉴명을 아래 코드 중 하나로 분류하세요. 설명 없이 코드 하나만 출력하세요.
-            SOUP(국물요리) GRILL(구이) COLD_NOODLE(냉면류) SNACK(분식) CHICKEN(치킨) JAPANESE(일식)
-            CHINESE(중식) WESTERN(양식) HEALTH(보양식) ETC(어디에도 맞지 않음)
+            분류 기준은 재료가 아니라 그 메뉴를 주로 파는 가게 종류입니다. 확실하지 않으면 ETC를 고르세요.
+            SOUP: 국밥·찌개·탕·전골·칼국수·쌀국수처럼 뜨거운 국물이 중심인 메뉴
+            GRILL: 고기를 굽거나 볶는 메뉴 (삼겹살·갈비·닭갈비·곱창·불고기)
+            COLD_NOODLE: 냉면·밀면·막국수처럼 차가운 면
+            SNACK: 분식 (떡볶이·김밥·라면·순대·튀김)
+            CHICKEN: 치킨집 메뉴 (후라이드·양념치킨·닭강정)
+            JAPANESE: 일식 (초밥·돈가스·라멘·우동·회)
+            CHINESE: 중식 (짜장면·짬뽕·탕수육·깐풍기·유린기·마라탕)
+            WESTERN: 양식 (파스타·피자·스테이크·햄버거·타코)
+            HEALTH: 보양식 (삼계탕·추어탕·장어·백숙)
+            ETC: 위 어디에도 분명히 속하지 않으면 (비빔밥·백반·카페 등)
             """;
 
     private final GroqChatClient llm;
