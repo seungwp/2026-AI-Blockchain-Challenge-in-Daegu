@@ -9,9 +9,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * 리포트 화면의 챗봇. "이 리포트에 있는 사실만" 근거로 사장님 질문에 답한다 — 대구 상권 전반이나
@@ -34,6 +37,12 @@ public class ReportChatService {
             "죄송합니다. 지금은 답변을 가져오지 못했습니다. 잠시 후 다시 시도해주세요.";
     private static final String NO_KEY_MESSAGE =
             "죄송합니다. 지금은 챗봇을 사용할 수 없습니다.";
+    /** 성과 예측 질문. HCX-005는 금지해도 "주문이 늘어날 것" 같은 전망을 덧붙여서 LLM에 보내지 않고 고정 답을 준다. */
+    private static final Pattern PERFORMANCE_QUESTION = Pattern.compile(
+            "매출|손님\\s*수|손님.{0,6}(많|올|늘)|판매량|이익|수익|얼마나\\s*(벌|팔|오르|늘)|장사\\s*(잘|되)");
+    /** 이 가게의 성과가 늘거나 줄 것이라는 전망 문장. 다른 질문의 답에 섞여 나오면 그 문장만 뺀다. */
+    private static final Pattern FORECAST = Pattern.compile(
+            "(늘어날|증가할|오를|많아질|줄어들|감소할)\\s*(것|가능성)|긍정적인\\s*(영향|결과)|매출.{0,10}(오를|늘|기대)");
     private static final String SYSTEM_PROMPT = """
             당신은 대구 골목상권 음식점 사장님의 질문에 쉬운 말로 답하는 도우미입니다.
             아래 [리포트 데이터]는 이번 주 리포트에 실제로 있는 사실입니다. 이 안에 있는 사실과 숫자만 사용해 답하세요.
@@ -50,6 +59,9 @@ public class ReportChatService {
               묻는 질문에는 수치를 제시하거나 사용자가 말한 수치를 되풀이하지 마세요. "정확한 수치 예측은
               어렵습니다"라고 답한 뒤, 리포트에서 확인할 수 있는 날씨·행사·식자재·상권 근거를 안내하세요.
               단, 리포트에 명시된 과거·현재 사실(날씨, 행사 날짜, 식자재 가격, 거리)은 질문 의도에 맞게 설명할 수 있습니다.
+            - 수치가 없더라도 "주문이 늘어날 것입니다", "긍정적인 영향을 미칠 것입니다"처럼 이 가게의 매출·주문·손님 수가
+              늘거나 줄 것이라고 전망하는 것. 연구 결과는 "~한다는 분석이 있습니다"처럼 리포트 문장 그대로만 전하세요.
+            - **, #, - 같은 마크다운 기호를 쓰는 것. 일반 문장으로만 답하세요.
 
             쉽고 친절한 말투로 2~4문장 이내로 답하세요.
             """;
@@ -62,6 +74,7 @@ public class ReportChatService {
             log.info("LLM API 키가 없어 챗봇 응답을 건너뜁니다.");
             return NO_KEY_MESSAGE;
         }
+        if (question != null && PERFORMANCE_QUESTION.matcher(question).find()) return performanceAnswer(report);
         String factsJson;
         try {
             factsJson = buildFacts(report);
@@ -97,12 +110,34 @@ public class ReportChatService {
 
             String text = client.complete(messages, 0.3, 800, TIMEOUT);
             if (text == null || text.isBlank()) return null;
-            text = text.strip();
+            text = dropForecasts(text.replace("**", "").strip());
+            if (text == null) return null;
             return LlmNumberGuard.hasInventedNumber(allowedText, text) ? null : text;
         } catch (Exception e) {
             log.warn("챗봇 응답 생성 실패: {}", e.toString());
             return null;
         }
+    }
+
+    /** 고정 답: 예측은 하지 않고, 이번 주 처방 제목과 근거만 그대로 안내한다. */
+    static String performanceAnswer(ReportResponse report) {
+        List<Recommendation> actions = report.topActions() == null ? List.of() : report.topActions();
+        if (actions.isEmpty()) {
+            return "정확한 매출이나 손님 수는 예측하기 어렵습니다. 이번 주 리포트에는 특별히 점검할 항목이 없습니다.";
+        }
+        String items = actions.stream()
+                .map(a -> a.basis() == null ? a.title() : a.title() + "(" + a.basis() + ")")
+                .collect(Collectors.joining(", "));
+        return "정확한 매출이나 손님 수는 예측하기 어렵습니다. 대신 이번 주에는 " + items
+                + " 항목을 미리 확인해 보세요. 처방 카드의 근거보기에서 자세한 내용을 볼 수 있어요.";
+    }
+
+    /** 전망 문장만 빼고 나머지를 돌려준다. 남는 문장이 없으면 null(재시도 대상). */
+    static String dropForecasts(String text) {
+        String kept = Arrays.stream(text.split("(?<=[.!?])\\s+"))
+                .filter(s -> !FORECAST.matcher(s).find())
+                .collect(Collectors.joining(" "));
+        return kept.isBlank() ? null : kept;
     }
 
     /** 클라이언트가 보낸 role을 신뢰하지 않는다 — user/assistant 외 값(예: system)은 전부 user로 강등한다. */

@@ -38,7 +38,7 @@ class ReportChatServiceTest {
         when(client.complete(anyList(), anyDouble(), anyInt(), any(Duration.class)))
                 .thenReturn("9월 20일에는 비 예보가 있습니다. 포장 준비를 점검해보세요.");
 
-        String answer = new ReportChatService(client).ask(report(), "매출이 20% 오를까요?", List.of());
+        String answer = new ReportChatService(client).ask(report(), "비 오는 날은 언제예요?", List.of());
 
         assertEquals("9월 20일에는 비 예보가 있습니다. 포장 준비를 점검해보세요.", answer);
         @SuppressWarnings("unchecked")
@@ -46,6 +46,29 @@ class ReportChatServiceTest {
                 .filter(invocation -> invocation.getMethod().getName().equals("complete"))
                 .findFirst().orElseThrow().getArgument(0);
         assertTrue(messages.getFirst().get("content").contains("성과의 구체적인 수치"));
+    }
+
+    @Test
+    void 매출_질문은_LLM에_보내지_않고_예측불가와_처방을_안내한다() throws Exception {
+        var client = mock(GroqChatClient.class);
+        when(client.hasKey()).thenReturn(true);
+
+        String answer = new ReportChatService(client).ask(report(), "이번 주 매출 얼마나 오를까요?", List.of());
+
+        assertTrue(answer.startsWith("정확한 매출이나 손님 수는 예측하기 어렵습니다."));
+        verify(client, never()).complete(anyList(), anyDouble(), anyInt(), any(Duration.class));
+    }
+
+    @Test
+    void 전망_문장과_마크다운은_빼고_나머지만_남긴다() throws Exception {
+        var client = mock(GroqChatClient.class);
+        when(client.hasKey()).thenReturn(true);
+        when(client.complete(anyList(), anyDouble(), anyInt(), any(Duration.class)))
+                .thenReturn("**9월 20일**에는 비 예보가 있습니다. 배달 주문이 늘어날 것으로 보입니다. 포장 준비를 점검해보세요.");
+
+        String answer = new ReportChatService(client).ask(report(), "비 오는 날은 언제예요?", List.of());
+
+        assertEquals("9월 20일에는 비 예보가 있습니다. 포장 준비를 점검해보세요.", answer);
     }
 
     private ReportResponse report() {
