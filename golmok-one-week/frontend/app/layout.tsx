@@ -15,6 +15,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko">
       <body>
+        {/* 토스식 타이포그래피에 맞춘 본문 글꼴(SIL OFL). 불러오지 못하면 기존 Noto·시스템 글꼴로 대체 */}
+        <link rel="stylesheet" precedence="default"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
         <AppChrome>{children}</AppChrome>
       </body>
     </html>

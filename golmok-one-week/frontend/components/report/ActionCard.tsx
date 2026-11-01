@@ -16,7 +16,7 @@ function kind(item: Recommendation) {
   if (item.type === "STAFFING") return { label: "인력", icon: "calendar" };
   return { label: item.type === "DELIVERY" ? "배달" : "운영", icon: "cloud" };
 }
-const monthDay = (iso: string) => {
+export const monthDay = (iso: string) => {
   const d = new Date(iso + "T00:00:00");
   return `${d.getMonth() + 1}월 ${d.getDate()}일(${"일월화수목금토"[d.getDay()]})`;
 };
@@ -47,7 +47,7 @@ function nextStep(item: Recommendation) {
               : "운영 준비 사항을 확인하세요.";
     }
   })();
-  return `→ ${when} ${what}`;
+  return `${when} ${what}`;
 }
 
 /** 카드에는 실행할 일만, 연구·모델·출처 설명은 근거보기에서만 보여준다. */
@@ -79,7 +79,9 @@ function CardFrame({ label, icon, badge, children }: { label: string; icon: stri
     {children}
   </article>;
 }
-const Priority = ({ item }: { item: Recommendation }) => <span className={styles.badge}>{item.priority === "HIGH" ? "★★★ 필수" : "★★ 확인"}</span>;
+const Priority = ({ item }: { item: Recommendation }) => item.priority === "HIGH"
+  ? <span className={styles.badge}>꼭 확인</span>
+  : <span className={`${styles.badge} ${styles.badgeMuted}`}>확인</span>;
 
 function PriceRows({ prices }: { prices: IngredientPrice[] }) {
   const first = prices[0];
@@ -184,7 +186,7 @@ function WeatherCard({ report }: { report: AnalysisReport }) {
   return <CardFrame label="날씨" icon="cloud" badge={<span className={`${styles.badge} ${styles.badgeMuted}`}>예보</span>}>
     <p className={styles.condition}>{monthDay(day.date)} · {day.condition} · 최고 {day.tempMax ?? "-"}° / 최저 {day.tempMin ?? "-"}° · 강수확률 {day.precipitationProbability ?? "-"}%</p>
     <p className={styles.body}>기상청 예보를 기준으로 이번 주 날씨를 확인했어요.</p>
-    <p className={styles.action}>→ 영업 전 날씨와 매장 준비 상태를 확인하세요.</p>
+    <p className={styles.action}>영업 전 날씨와 매장 준비 상태를 확인하세요.</p>
   </CardFrame>;
 }
 

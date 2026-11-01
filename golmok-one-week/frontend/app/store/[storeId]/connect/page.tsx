@@ -59,7 +59,7 @@ export default function ConnectPage() {
   return <OnboardingShell step={4} back={`/store/${storeId}/confirm`}
     eyebrow="마지막 단계예요" title="가게 데이터를 연결할까요?"
     description="연결 없이도 처방은 바로 받을 수 있어요"
-    action={<button className={styles.primary} disabled={!ready || pending} onClick={analyze}>이번주 활기차게 시작하기</button>}>
+    action={<button className={styles.primary} disabled={!ready || pending} onClick={analyze}>이번 주 처방 받기</button>}>
     {!ready ? <p className={styles.status} role="status">입력한 정보를 확인하고 있어요…</p> : <>
       <section className={`${styles.connection} ${styles.recommended}`} aria-labelledby="public-title">
         <div><h2 id="public-title">공공데이터로 바로 시작</h2>

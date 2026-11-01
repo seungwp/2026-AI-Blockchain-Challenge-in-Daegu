@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ActionList } from "./ActionCard";
+import { ActionList, monthDay } from "./ActionCard";
 import type { AnalysisReport } from "@/types";
 import { refreshReport } from "@/lib/api";
 import styles from "./main-dashboard.module.css";
@@ -48,7 +48,7 @@ export default function MainDashboard({ report, reportId }: { report: AnalysisRe
     </header>
     <section className={styles.hero} aria-labelledby="weekly-title">
       <h1 id="weekly-title">이번 주,<br />뭘 챙겨야 할까요?</h1>
-      <p>이번 주 처방 {count}건이 도착했어요</p>
+      <p>{monthDay(report.analysisStartDate)} ~ {monthDay(report.analysisEndDate)} · 처방 {count}건</p>
     </section>
     {report.isDemoData && <section className={styles.dataNotice} role="status">
       <strong>실데이터를 모두 불러오지 못했어요</strong>

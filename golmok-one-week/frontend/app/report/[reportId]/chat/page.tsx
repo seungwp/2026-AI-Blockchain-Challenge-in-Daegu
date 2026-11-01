@@ -42,8 +42,7 @@ export default function ChatPage() {
 
   return <main className={`${styles.main} ${styles.chatMain}`}>
     <header className={styles.chatHeader}>
-      <span className={styles.aiAvatar} aria-hidden="true">AI</span>
-      <div><h1>AI 챗봇</h1><p>이번 주 처방에 대해 편하게 물어보세요</p></div>
+      <div><h1>챗봇</h1><p>이번 주 처방에 대해 물어보세요</p></div>
     </header>
     {!report ? <StateMessage state={state} message={state === "error" ? "리포트를 불러오지 못했습니다." : undefined} /> : <>
       <div className={styles.botRow}><p className={styles.botBubble}>안녕하세요, 사장님! 이번 주 처방 중 궁금한 게 있으면 편하게 물어보세요.</p></div>
